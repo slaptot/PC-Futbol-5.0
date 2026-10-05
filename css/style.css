@@ -355,3 +355,8 @@ body.mui .award .nm{grid-area:nm;font-size:15px}
 body.mui .award .sb{grid-area:sb;font-size:13px}
 body.mui .award .dt{grid-area:dt;font-size:12px;line-height:14px}
 body.mui .award .mn{grid-area:mn}
+.dlg .btn.tvoffer{position:relative;display:block;margin:5px 0;height:auto;line-height:14px;padding:4px 8px;white-space:normal;text-align:left}
+.dlg .btn.tvoffer .l1{font-family:'euroh5';font-size:13px;letter-spacing:1px}
+.dlg .btn.tvoffer .l2{font-family:'proman8';font-size:11px;color:#fff;text-shadow:none;margin-top:2px}
+body.mui .dlg .btn.tvoffer{height:auto!important;line-height:16px;padding:6px 10px}
+body.mui .dlg .btn.tvoffer .l2{font-size:13px}

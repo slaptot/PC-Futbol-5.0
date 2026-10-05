@@ -30,7 +30,7 @@ function tvIncome(hm,r){ const tv=G.tv; if(!tv) return 0; const N=Math.max(30,ca
 function scrTvOffers(after){
   const me=team(G.team); const body=h('div',{});
   body.appendChild(h('div',{style:{marginBottom:'6px'}},'Las televisiones presentan sus ofertas por los derechos del '+me.name+' para esta temporada. Elige una:'));
-  G.tvOffers.forEach(o=>{ const txtl=o.name+' ('+tvKind(o).toLowerCase()+'): '+fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); body.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'4px 0'},onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},txtl)); });
+  G.tvOffers.forEach(o=>{ const l1=o.name+' · '+tvKind(o); const l2=fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); body.appendChild(h('div',{class:'btn blue tvoffer',onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},h('div',{class:'l1'},l1),h('div',{class:'l2'},l2))); });
   dialog('OFERTAS DE TELEVISIÓN',body,[]);
 }
 // ---- balance semanal: taquilla, televisión y sueldos
