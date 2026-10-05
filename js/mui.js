@@ -29,10 +29,17 @@ function muiSort(c){ const kids=[...c.children]; const ord=kids.map((k,i)=>({k,i
   ord.sort((a,b)=>a.hdr-b.hdr||Math.floor(a.p[0]/10)-Math.floor(b.p[0]/10)||a.p[1]-b.p[1]||a.i-b.i); ord.forEach(o=>c.appendChild(o.k)); }
 function muiReflow(root){
   if(!root.dataset.m){ root.dataset.m=1; } muiSort(root);
-  root.querySelectorAll('.panel').forEach(p=>{ if(p.dataset.m) return; p.dataset.m=1; muiSort(p); });
+  root.querySelectorAll('.panel').forEach(p=>{ if(p.dataset.m) return; p.dataset.m=1; muiSort(p); muiNavRow(p); });
   // botones sueltos de la pantalla (VOLVER, IMPRIMIR…) a la barra inferior
   const act=document.getElementById('mact'); [...root.children].forEach(el=>{ if(el.classList.contains('btn')&&!el.dataset.m){ el.dataset.m=1; act.appendChild(el); } });
   // menú principal: los textos están en la imagen de fondo; en móvil se escriben
   root.querySelectorAll('.menu-item').forEach(el=>{ if(el.dataset.m) return; el.dataset.m=1; el.textContent=el.title.replace(' (no disponible)',''); });
   root.querySelectorAll('.hot').forEach(el=>{ if(el.dataset.m) return; el.dataset.m=1; el.textContent=el.title||''; });
+}
+
+// botones < y > con el número entre ellos: una sola fila alineada
+function muiNavRow(c){
+  const kids=[...c.children]; const i=kids.findIndex(k=>k.classList.contains('btn')&&k.textContent.trim()==='<'); if(i<0) return;
+  const j=kids.findIndex((k,idx)=>idx>i&&k.classList.contains('btn')&&k.textContent.trim()==='>'); if(j<0||j-i>3) return;
+  const wrap=h('div',{class:'navrow'}); c.insertBefore(wrap,kids[i]); kids.slice(i,j+1).forEach(k=>wrap.appendChild(k));
 }

@@ -201,6 +201,7 @@ function scrSeguimiento(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   sc.appendChild(table([{t:'',w:14,k:r=>h('img',{src:escImg(r.h.id,'ridi'),style:{height:'14px'}})},{t:'LOCAL',k:r=>r.h.name},{t:'',w:40,cls:'c',k:r=>r.gh===null||r.gh===undefined?'-':r.gh+' - '+r.ga,cell:()=>'y'},{t:'VISITANTE',k:r=>r.a.name},{t:'',w:14,k:r=>h('img',{src:escImg(r.a.id,'ridi'),style:{height:'14px'}})}],rows,{onRow:r=>scrCronica(lg,j,r.i,()=>scrSeguimiento({lg,j}))}));
   R.appendChild(btn('<',10,314,30,()=>scrSeguimiento({lg,j:Math.max(1,j-1)}),'blue'));
   R.appendChild(btn('>',46,314,30,()=>scrSeguimiento({lg,j:Math.min(maxJ,j+1)}),'blue'));
+  if(typeof UI!=='undefined'&&UI==='mobile') R.appendChild(txt('JORNADA '+j,40,314,60,16,'f-e4'));
   const hint=txt('Pulsa un partido para ver la crónica',86,320,160,12,'f-m8'); hint.style.whiteSpace='nowrap'; hint.style.overflow='hidden'; hint.style.fontSize='10px'; R.appendChild(hint);
   const C=panel(268,66,362,340); s.appendChild(C); C.appendChild(h('div',{class:'hdr'},'CLASIFICACIÓN'));
   const sc2=at(h('div',{class:'scroll'}),0,18,358,318); C.appendChild(sc2);

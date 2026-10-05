@@ -240,3 +240,6 @@ body.mui .scroll.mlev .txt{margin:3px 4px}
 body.mui .topbar .teambox .n1,body.mui .topbar .teambox .n2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mact .btn .ico{display:none}
 #mact .btn{font-size:13px;padding:0 4px}
+body.mui .navrow{display:flex;align-items:center;gap:8px;flex-basis:100%;width:100%;margin:2px 0}
+body.mui .navrow .btn{flex:0 0 64px;min-width:64px;font-size:18px}
+body.mui .navrow .txt{flex:1 1 auto;text-align:center;margin:0;font-size:18px}
