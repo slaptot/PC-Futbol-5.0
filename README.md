@@ -36,7 +36,11 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   según la posición del año anterior: fijo, fijo más prima por victoria, o fijo más partidos
   televisados) y paga cada jornada los sueldos de la plantilla (la ficha anual de cada jugador es el
   8 % de su valor de mercado, salvo la pactada en su contrato al ficharlo); el balance jornada a jornada se
-  consulta en Finanzas. También se venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
+  consulta en Finanzas. Los premios están estipulados (botón "Premios en juego" en Finanzas): por la
+  posición final en la liga (de 600 M al campeón de 1ª a 80 M al resto; en 2ª de 150 a 40), por cada
+  ronda jugada de Copa (15 a 120 M), Copa de Europa (120 a 400 M), Recopa (80 a 250 M) y UEFA (60 a
+  250 M) y por el título (150, 500, 300 y 250 M), más la taquilla de los partidos de copa en casa.
+  También se venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
   semanas y el jugador no puede alinearse mientras tanto; cada lesión es de uno de los 17 tipos del
   juego original (gripe, sobrecarga, esguince de tobillo, rotura fibrilar, menisco, fractura de tibia
   y peroné, rotura de ligamentos…), con su duración, y desde la lista de lesionados se puede pagar

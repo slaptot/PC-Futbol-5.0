@@ -68,7 +68,7 @@ function resolveTie(tie){
 function simLeg(tie,leg,nlegs,live,after){
   const [hid,aid]=tieLeg(tie,leg,nlegs); const hm=team(hid), aw=team(aid);
   const lh=hid===G.team?G.lineup:bestLineup(hm,'4-4-2'), la=aid===G.team?G.lineup:bestLineup(aw,'4-4-2');
-  if(live){ scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+hm.stadium,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
+  if(live){ scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+hm.stadium,att:hid===G.team?attendanceModel(hm,aw):null,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
   const r=simulateMatch(hm,aw,lh,la); applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();
 }
 function playCupEvent(e,drawn){
@@ -78,7 +78,7 @@ function playCupEvent(e,drawn){
   const mine=round.ties.find(t=>t.a===G.team||t.b===G.team);
   // simular las eliminatorias de los demás
   for(const t of round.ties){ if(t===mine||t.winner) continue; for(let l=0;l<round.nlegs;l++) simLeg(t,l,round.nlegs,false,()=>{}); resolveTie(t); }
-  const finishRound=()=>{ if(mine) resolveTie(mine); decInjuries(); c.alive=round.ties.map(t=>t.winner); if(c.alive.length===1){ c.winner=c.alive[0]; } G.step++; saveGame(); scrCupResult(e.cup,e.round); };
+  const finishRound=()=>{ if(mine) resolveTie(mine); decInjuries(); c.alive=round.ties.map(t=>t.winner); if(c.alive.length===1){ c.winner=c.alive[0]; } if(mine&&!mine.awarded){ mine.awarded=true; awardCupRound(e.cup,e.round,c.winner===G.team); } G.step++; saveGame(); scrCupResult(e.cup,e.round); };
   if(!mine||mine.winner){ finishRound(); return; }
   const playLeg=l=>{ if(l>=round.nlegs){ finishRound(); return; } simLeg(mine,l,round.nlegs,true,()=>playLeg(l+1)); };
   playLeg(0);

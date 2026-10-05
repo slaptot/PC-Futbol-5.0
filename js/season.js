@@ -66,7 +66,7 @@ function nextSeasonPlan(ft){
   const won=Object.keys(G.cups).filter(k=>G.cups[k].winner===me);
   let europe='No juega competición europea.'; const d1champ=in1&&pos===1;
   if(d1champ||won.includes('CE')) europe='Jugará la COPA DE EUROPA'+(d1champ?' como campeón de liga.':' como vigente campeón.'); else if(won.includes('COPA')) europe='Jugará la RECOPA DE EUROPA como campeón de copa.'; else if((in1&&pos>=2&&pos<=5)||won.includes('UEFA')) europe='Jugará la COPA DE LA UEFA.';
-  let bonus=Math.round((G.budget||0)*0.1)+(d1champ?300:(in1&&pos<=5)?120:40); won.forEach(k=>{ bonus+=k==='CE'?500:k==='UEFA'?250:150; });
+  const bonus=leaguePrize(in1?ft.d1:ft.d2,pos);
   return {pos,in1,lg,move,europe,bonus,won,st};
 }
 function pageNueva(s,ft){
@@ -75,7 +75,7 @@ function pageNueva(s,ft){
   const lines=[t.name+': '+p.pos+'º en '+league(p.in1?ft.d1:ft.d2).long+' ('+p.st[p.pos-1].pts+' puntos).',
     p.won.length?'Títulos: '+p.won.map(k=>cupName(k)).join(', ')+'.':'Sin títulos de copa esta temporada.',
     p.move, p.europe,
-    'Ingresos de fin de temporada: '+fmtNum(p.bonus)+' millones (presupuesto: '+fmtNum((G.budget||0)+p.bonus)+').',
+    'Premio de la liga por el '+p.pos+'º puesto: '+fmtNum(p.bonus)+' millones (presupuesto: '+fmtNum((G.budget||0)+p.bonus)+'). Los premios de copa ya se cobraron ronda a ronda.',
     'Los jugadores cumplen un año más; los contratos y la plantilla se mantienen.',
     'Se generará un calendario nuevo para '+league(ft.d1).name+' y '+league(ft.d2).name+' con los ascensos y descensos.'];
   const tx=txt(lines.join('\n\n'),170,30,436,300,'f-p12'); tx.style.lineHeight='15px'; P.appendChild(tx);
@@ -93,7 +93,7 @@ function startNextSeason(){
     champions[f.d1]=f.s1[0].id; champions[f.d2]=f.s2[0].id; });
   G.lastCups={}; Object.keys(G.cups).forEach(k=>G.lastCups[k]=G.cups[k].winner);
   G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups)});
-  G.budget=(G.budget||0)+p.bonus; G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
+  G.budget=(G.budget||0)+p.bonus; finOther('Premio de liga · '+p.pos+'º puesto',p.bonus); G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
   G.cal=G.cal||{}; LEAGUE_ORDER.forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
   G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit();
   const t=team(me); if(!G.lineup||G.lineup.length!==11||G.lineup.some(l=>!t.players[l.idx])) G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=[]; G.benchSet=false;

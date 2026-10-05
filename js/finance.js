@@ -54,6 +54,7 @@ function scrFinanzas(){
   const nm=nextMatch(); const home=nm&&nm[0]===G.team; const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;
   const render=()=>{ colA.innerHTML=''; colB.innerHTML=''; const price=ticketPrice();
     colA.appendChild(blk('lbl','PRECIO DE LA ENTRADA')).style.marginTop='6px';
+    const pb=btn('PREMIOS EN JUEGO',0,0,180,()=>scrPremios(()=>scrFinanzas()),'green'); pb.style.position='static'; pb.style.display='block'; pb.style.margin='6px 8px 0'; colA.appendChild(pb);
     const row=h('div',{class:'navrow',style:{position:'static',display:'flex',alignItems:'center',justifyContent:'space-between',margin:'4px 8px 6px'}}); row.appendChild(btn('−',0,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); row.appendChild(h('div',{class:'f-e4',style:{flex:'1',textAlign:'center'}},fmtNum(price)+' ptas')); row.appendChild(btn('+',0,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); row.querySelectorAll('.btn').forEach(b=>{ b.style.position='static'; b.style.width='40px'; b.style.flex='0 0 40px'; }); colA.appendChild(row);
     const d=attendanceModel(me,rival||me,price,true); const lines=['Aforo: '+fmtNum(d.cap)];
     if(rival){ lines.push((home?'En casa vs ':'Fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att)+(d.full?' · ¡LLENO!':''),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price,d.cap))+' M'+(d.full?' (+10 % por lleno)':'')); }
@@ -81,4 +82,28 @@ function scrFinanzas(){
         tbl.appendChild(h('tr',{},h('td',{class:'c'},String(x.j)),h('td',{},concept(x)),h('td',{class:'r '+(x.full?'y':'')},pub),num(x.gate,true,'g'),num(x.tv,true,'g'),num(x.wages?-x.wages:0,false,'red'),num(x.other,true,x.other>0?'g':'red'),h('td',{class:'r y'},fmtNum(x.budget)))); } });
     sc.appendChild(tbl); }
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
+}
+
+// ---- premios (millones de pesetas): liga por posición final, y copas por ronda jugada y por el título
+const PRIZES={
+  liga1:[600,450,350,250,250,150,150,150,150,150], liga1rest:80,
+  liga2:[150,100,100,60,60], liga2rest:40,
+  COPA:{rounds:[15,25,40,70,120],champion:150},
+  CE:{rounds:[120,180,250,400],champion:500},
+  RECOPA:{rounds:[80,120,170,250],champion:300},
+  UEFA:{rounds:[60,90,130,180,250],champion:250},
+};
+function leaguePrize(lg,pos){ const d1=lg.endsWith('1'); const t=d1?PRIZES.liga1:PRIZES.liga2; return t[pos-1]!==undefined?t[pos-1]:(d1?PRIZES.liga1rest:PRIZES.liga2rest); }
+function cupPrize(k,ri){ const p=PRIZES[k]; return p?(p.rounds[ri]||0):0; }
+function cupChampionPrize(k){ const p=PRIZES[k]; return p?p.champion:0; }
+function awardCupRound(k,ri,champion){ const d=CUP_DEFS[k]; const v=cupPrize(k,ri); if(v){ G.budget=(G.budget||0)+v; finOther(cupName(k)+' · '+d.rounds[ri].toLowerCase(),v); } if(champion){ const c=cupChampionPrize(k); G.budget+=c; finOther('Campeón de '+cupName(k),c); } }
+function cupMatchFinance(hm,aw,r){ if(hm.id!==G.team) return; const gate=gateIncome(r.att,null,hm.capacity); G.budget=(G.budget||0)+gate; G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:aw.name+' (copa)',home:true,att:r.att,full:isFull(hm,r.att),gate,tv:0,wages:0,budget:G.budget}]).slice(-40); }
+function scrPremios(back){
+  const lg=G.league; const d1=lg.endsWith('1'); const t=d1?PRIZES.liga1:PRIZES.liga2; const rest=d1?PRIZES.liga1rest:PRIZES.liga2rest;
+  const body=h('div',{class:'scroll',style:{maxHeight:'300px'}});
+  const sec=(title,lines)=>{ body.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'6px 0 2px',letterSpacing:'1px'}},title)); lines.forEach(l=>body.appendChild(h('div',{class:'f-p8',style:{lineHeight:'12px'}},l))); };
+  sec('LIGA · '+league(lg).name.toUpperCase()+' (al final de la temporada)',t.map((v,i)=>(i+1)+'º: '+fmtNum(v)+' M').concat(['Resto: '+fmtNum(rest)+' M']));
+  Object.keys(G.cups).forEach(k=>{ const p=PRIZES[k]; const d=CUP_DEFS[k]; if(!p) return; sec(cupName(k).toUpperCase()+' (por ronda jugada)',d.rounds.map((r,i)=>r.charAt(0)+r.slice(1).toLowerCase()+': '+fmtNum(p.rounds[i]||0)+' M').concat(['Campeón: +'+fmtNum(p.champion)+' M'])); });
+  sec('ADEMÁS',['Taquilla de los partidos en casa (liga y copas), contrato de televisión y primas por victoria según el contrato.']);
+  dialog('PREMIOS EN JUEGO',body,[{t:'ACEPTAR',f:back}]);
 }
