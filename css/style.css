@@ -125,7 +125,7 @@ table.t td.red{color:#ff8a60}
 .menu-item.dis{cursor:default}
 .menu-item.dis:hover{background:none}
 .fade{position:absolute;inset:0;background:rgba(0,0,0,.6)}
-.dlg{position:absolute;left:120px;top:140px;width:400px;background:#0d1a4e;border:2px solid;border-color:#5f78c8 #060c2a #060c2a #5f78c8;padding:12px;color:#fff;font-family:'proman12';font-size:13px;line-height:15px}
+.dlg{position:absolute;left:120px;top:140px;width:400px;display:flex;flex-direction:column;max-height:460px;overflow:hidden;box-sizing:border-box;background:#0d1a4e;border:2px solid;border-color:#5f78c8 #060c2a #060c2a #5f78c8;padding:12px;color:#fff;font-family:'proman12';font-size:13px;line-height:15px}
 .dlg h3{margin:0 0 8px;font-family:'euroh4';font-size:15px;color:#ffe24a;font-weight:normal;letter-spacing:1px}
 .dlg .btn{position:relative;display:inline-block;margin:8px 6px 0 0}
 .dlg .btn.dis{opacity:.45;cursor:default}
@@ -321,3 +321,6 @@ body.mui .sorteo-nota{flex-basis:100%}
 .prize b{color:#ffe24a;font-weight:normal}
 .prize.champ{border-color:#5ad05a;color:#8dff8d}
 body.mui .prize{font-size:13px;line-height:15px;padding:4px 8px}
+.dlg>h3{flex:0 0 auto}
+.dlg>div{flex:0 1 auto;min-height:0;overflow:auto}
+.dlg>div:last-child{flex:0 0 auto;overflow:visible}

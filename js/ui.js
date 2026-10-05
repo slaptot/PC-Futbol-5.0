@@ -70,6 +70,7 @@ function dialog(title, body, buttons){
   const bar=h('div',{});
   (buttons||[{t:'ACEPTAR'}]).forEach(b=>bar.appendChild(h('div',{class:'btn '+(b.cls||''),onclick:()=>{closeDialog(); b.f&&b.f();}},b.t)));
   d.appendChild(bar); m.appendChild(h('div',{class:'fade'})); m.appendChild(d);
+  if(!(typeof UI!=='undefined'&&UI==='mobile')){ const H=d.offsetHeight; if(140+H>470) d.style.top=Math.max(8,470-H)+'px'; } // diálogos altos: que no se salgan de la pantalla
 }
 function closeDialog(){ const m=$('#modal'); m.classList.remove('on'); m.innerHTML=''; }
 function pitch(x,y,w,hh,players,opts){
