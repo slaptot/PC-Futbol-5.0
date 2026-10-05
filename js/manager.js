@@ -93,11 +93,10 @@ function scrClasif(state){
   const R=panel(460,68,170,372); s.appendChild(R);
   R.appendChild(at(h('img',{src:escImg(G.team,'big'),style:{maxHeight:'96px',maxWidth:'90px'},onerror:function(){this.src=escImg(G.team)}}),40,14));
   const sib=SIBLING[G.league];
-  R.appendChild(btn(league(G.league).name,14,130,140,()=>scrClasif({lg:G.league}),lg===G.league?'green':'blue','ico_liga'));
-  R.appendChild(btn(league(sib).name,14,156,140,()=>scrClasif({lg:sib}),lg===sib?'green':'blue','ico_liga'));
-  R.appendChild(btn('GOLEADORES',14,200,140,()=>scrGoleadores(),'blue','ico_golea'));
-  R.appendChild(btn('CALENDARIO',14,226,140,()=>scrCalendario({lg}),'blue','calendario'));
-  const me=st.find(x=>x.id===G.team); if(me&&lg===G.league) R.appendChild(txt('Posición: '+(st.indexOf(me)+1)+'º\nPuntos: '+me.pts+'\nGoles: '+me.gf+' - '+me.gc,14,270,140,50,'f-p12'));
+  LEAGUE_ORDER.forEach((k,i)=>R.appendChild(btn(LEAGUE_SHORT[k],14,118+i*22,140,()=>scrClasif({lg:k}),lg===k?'green':'blue')));
+  R.appendChild(btn('GOLEADORES',14,258,140,()=>scrGoleadores(),'blue','ico_golea'));
+  R.appendChild(btn('CALENDARIO',14,282,140,()=>scrCalendario({lg}),'blue','calendario'));
+  const me=st.find(x=>x.id===G.team); if(me&&lg===G.league) R.appendChild(txt('Posición: '+(st.indexOf(me)+1)+'º · '+me.pts+' puntos · '+me.gf+'-'+me.gc,14,312,140,40,'f-p8'));
   R.appendChild(btn('VOLVER',14,330,140,()=>scrOficina(),'blue','ico_volver'));
 }
 function scrGoleadores(){
@@ -279,7 +278,7 @@ function scrPartido(){
   const lh=isHome?G.lineup:bestLineup(hm,'4-4-2'), la=isHome?bestLineup(aw,'4-4-2'):G.lineup;
   scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
-    const sib=SIBLING[G.league]; G.results[sib][G.jornada-1]=playJornadaAI(sib,G.jornada);
+    LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
     applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const log=applyTraining(); const j=G.jornada; G.jornada++; G.step++; saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }

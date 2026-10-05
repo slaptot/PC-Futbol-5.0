@@ -20,11 +20,12 @@ function buildCups(){
   // europeas: mejor equipo por país (excluido el del usuario), por media
   const foreign=Object.values(DATA.teams).filter(t=>t.id<2800&&t.nat!==country&&t.players.length>=14&&!(t.nat===22&&!t.league)&&!(t.nat===30&&!t.league)&&!(t.nat===36&&!t.league));
   const byCountry={}; foreign.forEach(t=>{ (byCountry[t.nat]=byCountry[t.nat]||[]).push(t); });
-  Object.values(byCountry).forEach(a=>a.sort((x,y)=>teamME(y)-teamME(x)));
+  const lpOf=t=>{ const lp=G.lastPos&&G.lastPos[t.id]; return lp&&lp.lg.endsWith('1')?lp.pos:999; };
+  Object.values(byCountry).forEach(a=>a.sort((x,y)=>lpOf(x)-lpOf(y)||teamME(y)-teamME(x)));
   const pick=(rank)=>Object.values(byCountry).map(a=>a[rank]).filter(Boolean).sort((x,y)=>teamME(y)-teamME(x));
   const lp=G.lastPos&&G.lastPos[me.id]; const pos=lp?(lp.lg===G.league&&G.league.endsWith('1')?lp.pos:99):(me.positions&&me.positions.length?me.positions[me.positions.length-1]:99);
   const lc=G.lastCups||{}; const champ=pos===1||lc.CE===me.id, recopa=!champ&&lc.COPA===me.id, uefa=!champ&&!recopa&&((pos>=2&&pos<=5)||lc.UEFA===me.id);
-  const own=teamsOfLeague(G.league).filter(t=>t.id!==me.id).sort((a,b)=>teamME(b)-teamME(a));
+  const own=teamsOfLeague(divKeys(G.league)[0]).filter(t=>t.id!==me.id).sort((a,b)=>lpOf(a)-lpOf(b)||teamME(b)-teamME(a));
   let ce=pick(0).slice(0,15); ce.push(champ?me:own[0]); cups.CE=mkCup('CE',shuffle(ce.map(t=>t.id)));
   let rc=pick(2).slice(0,recopa?15:16); if(recopa) rc.push(me); cups.RECOPA=mkCup('RECOPA',shuffle(rc.map(t=>t.id)));
   let uf=pick(1).concat(pick(3)).slice(0,uefa?29:30); if(uefa) uf.push(me); uf=uf.concat(own.slice(1,3)); cups.UEFA=mkCup('UEFA',shuffle(uf.slice(0,32).map(t=>t.id)));

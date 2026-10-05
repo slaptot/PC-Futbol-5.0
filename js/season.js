@@ -2,9 +2,13 @@
 function seasonLabel(i){ const y=96+i; return String(y%100).padStart(2,'0')+'-'+String((y+1)%100).padStart(2,'0'); }
 function mgrDate(k,j){ const d=new Date(roundDate(k,j)); if(G&&G.seasonIdx) d.setFullYear(d.getFullYear()+G.seasonIdx); return d; }
 function mgrIds(k){ return [...new Set(calOf(k).flat().map(m=>m[0]))]; }
-function divKeys(){ const sib=SIBLING[G.league]; const d1=G.league.endsWith('1')?G.league:sib; return [d1,SIBLING[d1]]; }
-function swapCount(){ return league(G.league).country===36?4:3; }
-function finalTables(){ const [d1,d2]=divKeys(); return {d1,d2,s1:standings(mgrIds(d1),myResults(d1)),s2:standings(mgrIds(d2),myResults(d2))}; }
+function divKeys(lg){ lg=lg||G.league; const sib=SIBLING[lg]; const d1=lg.endsWith('1')?lg:sib; return [d1,SIBLING[d1]]; }
+function swapCount(lg){ return league(lg||G.league).country===36?4:3; }
+const COUNTRY_D1=['ESP1','ENG1','ITA1'];
+function countryOrder(){ const [mine]=divKeys(); return [mine].concat(COUNTRY_D1.filter(k=>k!==mine)); }
+function completeLeagues(){ // simula las jornadas que falten en todas las ligas (las de más jornadas que la del usuario)
+  let n=0; LEAGUE_ORDER.forEach(k=>{ const N=calOf(k).length; G.results[k]=G.results[k]||[]; for(let j=1;j<=N;j++){ if(!G.results[k][j-1]||(k!==G.league&&!G.results[k][j-1].length)){ G.results[k][j-1]=playJornadaAI(k,j); n++; } } }); if(n) saveGame(); return n; }
+function finalTables(d1){ const [a,b]=divKeys(d1||G.league); return {d1:a,d2:b,s1:standings(mgrIds(a),myResults(a)),s2:standings(mgrIds(b),myResults(b))}; }
 function roundRobin(ids){ // liga a doble vuelta por el método del círculo
   const a=shuffle(ids.slice()); if(a.length%2) a.push(null); const n=a.length; const rounds=[];
   for(let r=0;r<n-1;r++){ const ms=[]; for(let i=0;i<n/2;i++){ let x=a[i], y=a[n-1-i]; if(x===null||y===null) continue; if(i===0&&r%2) [x,y]=[y,x]; ms.push([x,y,null,null,null]); } rounds.push(ms); a.splice(1,0,a.pop()); }
@@ -13,10 +17,11 @@ function roundRobin(ids){ // liga a doble vuelta por el método del círculo
 function seasonOver(){ return !!(G&&G.sched&&!curEvent()); }
 // ---- pantallas
 function scrFinTemporada(i){
-  i=i||0; const t=team(G.team); setMusic('manager'); const pages=['LIGA','COPA','CE','RECOPA','UEFA','NUEVA']; const k=pages[i];
-  setBg(k==='LIGA'?'fondo0':k==='NUEVA'?'fondo5':'fondo3'); const s=clearScreen(); const ft=finalTables();
-  s.appendChild(topbar({team:t,title:'FIN DE TEMPORADA',date:gameDate(),sub:'TEMPORADA '+seasonLabel(G.seasonIdx||0)+' · '+(k==='LIGA'?'CAMPEONES DE LIGA':k==='NUEVA'?'NUEVA TEMPORADA':cupName(k).toUpperCase())}));
-  if(k==='LIGA') pageLiga(s,ft); else if(k==='NUEVA') pageNueva(s,ft); else pageCup(s,k);
+  i=i||0; const t=team(G.team); setMusic('manager'); if(i===0) completeLeagues();
+  const pages=countryOrder().map(k=>'LIGA:'+k).concat(['COPA','CE','RECOPA','UEFA','NUEVA']); const k=pages[i]; const isLiga=k.startsWith('LIGA:');
+  setBg(isLiga?'fondo0':k==='NUEVA'?'fondo5':'fondo3'); const s=clearScreen(); const ft=finalTables(isLiga?k.slice(5):G.league);
+  s.appendChild(topbar({team:t,title:'FIN DE TEMPORADA',date:gameDate(),sub:'TEMPORADA '+seasonLabel(G.seasonIdx||0)+' · '+(isLiga?'LIGA '+countryName(league(ft.d1).country).toUpperCase():k==='NUEVA'?'NUEVA TEMPORADA':cupName(k).toUpperCase())}));
+  if(isLiga) pageLiga(s,ft); else if(k==='NUEVA') pageNueva(s,ft); else pageCup(s,k);
   s.appendChild(btn(i<pages.length-1?'SIGUIENTE':'EMPEZAR TEMPORADA '+seasonLabel((G.seasonIdx||0)+1),380,446,250,()=>{ if(i<pages.length-1) scrFinTemporada(i+1); else { startNextSeason(); scrOficina(); } },'green'));
   if(i>0) s.appendChild(btn('ANTERIOR',10,446,100,()=>scrFinTemporada(i-1),'blue','ico_volver'));
 }
@@ -28,7 +33,7 @@ function champBox(P,id,label,x,y){
 function miniStandings(st,n,opts){ opts=opts||{}; const rows=st.slice(0,n).map((x,i)=>({pos:i+1,x}));
   return table([{t:'POS',w:30,cls:'c',k:r=>r.pos},{t:'EQUIPO',k:r=>team(r.x.id).name},{t:'PJ',w:26,cls:'r',k:r=>r.x.pj},{t:'PTS',w:34,cls:'r',k:r=>r.x.pts,cell:()=>'y'}],rows,{rowClass:r=>r.x.id===G.team?'me':(opts.cls&&opts.cls(r.pos))||''}); }
 function pageLiga(s,ft){
-  const n=swapCount();
+  const n=swapCount(ft.d1);
   [[ft.d1,ft.s1,10],[ft.d2,ft.s2,322]].forEach(([k,st,x],i)=>{ const P=panel(x,68,308,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},league(k).long.toUpperCase()));
     champBox(P,st[0].id,'CAMPEÓN DE LIGA',10,26);
     const sc=at(h('div',{class:'scroll'}),0,114,304,196); P.appendChild(sc); const N=st.length;
@@ -74,14 +79,17 @@ function pageNueva(s,ft){
 }
 // ---- nueva temporada
 function startNextSeason(){
-  const ft=finalTables(); const p=nextSeasonPlan(ft); const n=swapCount(); const me=G.team;
-  const down=ft.s1.slice(-n).map(x=>x.id), up=ft.s2.slice(0,n).map(x=>x.id);
-  G.leagueMoves=G.leagueMoves||{}; down.forEach(id=>{ team(id).league=ft.d2; G.leagueMoves[id]=ft.d2; }); up.forEach(id=>{ team(id).league=ft.d1; G.leagueMoves[id]=ft.d1; });
-  G.lastPos={}; ft.s1.forEach((x,i)=>G.lastPos[x.id]={lg:ft.d1,pos:i+1}); ft.s2.forEach((x,i)=>G.lastPos[x.id]={lg:ft.d2,pos:i+1});
+  completeLeagues(); const ft=finalTables(); const p=nextSeasonPlan(ft); const me=G.team;
+  G.leagueMoves=G.leagueMoves||{}; G.lastPos={}; const champions={};
+  COUNTRY_D1.forEach(d1=>{ const f=finalTables(d1); const n=swapCount(f.d1);
+    const down=f.s1.slice(-n).map(x=>x.id), up=f.s2.slice(0,n).map(x=>x.id);
+    down.forEach(id=>{ team(id).league=f.d2; G.leagueMoves[id]=f.d2; }); up.forEach(id=>{ team(id).league=f.d1; G.leagueMoves[id]=f.d1; });
+    f.s1.forEach((x,i)=>G.lastPos[x.id]={lg:f.d1,pos:i+1}); f.s2.forEach((x,i)=>G.lastPos[x.id]={lg:f.d2,pos:i+1});
+    champions[f.d1]=f.s1[0].id; champions[f.d2]=f.s2[0].id; });
   G.lastCups={}; Object.keys(G.cups).forEach(k=>G.lastCups[k]=G.cups[k].winner);
-  G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign({[ft.d1]:ft.s1[0].id,[ft.d2]:ft.s2[0].id},G.lastCups)});
+  G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups)});
   G.budget=(G.budget||0)+p.bonus; G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
-  G.cal=G.cal||{}; [ft.d1,ft.d2].forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
+  G.cal=G.cal||{}; LEAGUE_ORDER.forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
   G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cups=buildCups(); G.sched=buildSchedule(); G.step=0;
   const t=team(me); if(!G.lineup||G.lineup.length!==11||G.lineup.some(l=>!t.players[l.idx])) G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=[]; G.benchSet=false;
   saveGame();

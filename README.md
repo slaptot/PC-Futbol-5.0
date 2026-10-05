@@ -37,7 +37,9 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   la nueva temporada bajan los 3 últimos de 1ª (4 en Italia) y suben los primeros de 2ª, se genera un
   calendario nuevo a doble vuelta para las dos divisiones del país, los jugadores cumplen un año más y
   tu equipo entra en la Copa de Europa (campeón de liga o vigente campeón), la Recopa (campeón de copa)
-  o la UEFA (2º a 5º o vigente campeón) según lo conseguido. Los ascensos y descensos y el historial
+  o la UEFA (2º a 5º o vigente campeón) según lo conseguido. Las seis ligas (España, Inglaterra e
+  Italia) se simulan jornada a jornada, con sus ascensos y descensos y calendarios nuevos cada año, y
+  desde Clasificación se puede consultar cualquiera de ellas. Los ascensos y descensos y el historial
   de temporadas se guardan con la partida.
 - **Alineación y táctica**: en Alineación un click selecciona un jugador y muestra sus parámetros;
   un doble click sobre un convocado o no convocado lo marca para cambiar (fila naranja) y el siguiente
