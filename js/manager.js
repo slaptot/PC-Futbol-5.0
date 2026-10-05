@@ -84,7 +84,7 @@ function scrOficina(){
   M.appendChild(btn('GUARDAR PARTIDA',20,216,270,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
   M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
   M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.'+(G.lastFin?'\nÚltima jornada: taquilla +'+fmtNum(G.lastFin.gate||0)+' · TV +'+fmtNum(G.lastFin.tv||0)+' · sueldos -'+fmtNum(G.lastFin.wages||0)+' M':''),20,292,270,70,'f-p8'));
+  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación
@@ -328,7 +328,7 @@ function scrPartido(){
   scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,att:isHome?attendanceModel(hm,aw):null,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
     LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
-    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const fin=weeklyFinance(hm,aw,r); const log=applyTraining(); log.unshift((fin.gate?'Taquilla ('+fmtNum(fin.att)+' espectadores): +'+fmtNum(fin.gate)+' M · ':'')+'TV: +'+fmtNum(fin.tv)+' M · Sueldos: -'+fmtNum(fin.wages)+' M'); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
+    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); weeklyFinance(hm,aw,r); const log=applyTraining(); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }
 // ---- amistoso
