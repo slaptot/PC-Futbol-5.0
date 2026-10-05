@@ -50,7 +50,7 @@ function simulateMatch(home, away, lh, la, opts){
   const cdH=cardable(home,lh), cdA=cardable(away,la);
   const yellows=new Set(); const full=!!opts.full; // con el estadio lleno, el público empuja al local si no gana en los últimos 10 minutos
   for(let m=1;m<=90;m++){
-    const boost=(full&&m>80&&gh<=ga)?1.5:1;
+    const boost=(full&&m>80&&gh<=ga)?1.15:1;
     if(rnd()<expH*boost/90){ gh++; events.push({min:m,type:'goal',side:'H',player:scH(),score:[gh,ga]}); }
     if(rnd()<expA/90){ ga++; events.push({min:m,type:'goal',side:'A',player:scA(),score:[gh,ga]}); }
     if(rnd()<0.035){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); const k=side+p.idx;
