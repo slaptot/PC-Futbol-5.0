@@ -24,10 +24,11 @@ function scrSelectTeam(state){
   setMusic('manager');
   state=state||{lg:'ESP1'}; const lg=state.lg; setBg('seleccion_fondo'); const s=clearScreen();
   s.appendChild(topbar({title:'ELIGE TU EQUIPO',right:league(lg).name}));
-  const teams=teamsOfLeague(lg); let sel=state.sel||teams[0].id;
+  const teams=teamsOfLeague(lg); let sel=state.sel||teams[0].id; const MUI=(typeof UI!=='undefined'&&UI==='mobile'); let picked=!MUI||!!state.sel; let elegir=null;
+  if(MUI){ const LP=panel(10,40,620,30); s.appendChild(LP); LEAGUE_ORDER.forEach((k,i)=>LP.appendChild(btn(LEAGUE_SHORT[k],10+i*104,0,100,()=>scrSelectTeam({lg:k}),k===lg?'green':'blue'))); }
   const P=panel(10,70,340,340); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},league(lg).long.toUpperCase()+' 96-97'));
   const grid=at(h('div',{class:'teamlist'}),4,22,332,310); P.appendChild(grid);
-  const render=()=>{ grid.innerHTML=''; teams.forEach(t=>grid.appendChild(h('div',{class:t.id===sel?'sel':'',onclick:()=>{sel=t.id; render(); info();}},h('img',{src:escImg(t.id,'ridi')}),t.name))); };
+  const render=()=>{ grid.innerHTML=''; teams.forEach(t=>grid.appendChild(h('div',{class:t.id===sel?'sel':'',onclick:()=>{sel=t.id; picked=true; render(); info(); if(MUI){ if(elegir) elegir.classList.remove('dis'); requestAnimationFrame(()=>window.scrollTo({top:I.getBoundingClientRect().top+window.scrollY-64,behavior:'smooth'})); }}},h('img',{src:escImg(t.id,'ridi')}),t.name))); };
   const I=panel(360,70,270,340); s.appendChild(I);
   const info=()=>{ const t=team(sel); I.innerHTML=''; I.appendChild(h('div',{class:'hdr'},t.name.toUpperCase()));
     I.appendChild(at(h('img',{src:escImg(sel,'big'),style:{maxHeight:'80px',maxWidth:'80px'},onerror:function(){this.src=escImg(sel)}}),12,26));
@@ -35,10 +36,11 @@ function scrSelectTeam(state){
     const st=standingsAll(t);
     { const it=txt([t.full,'Estadio: '+t.stadium+' ('+fmtNum(t.capacity)+')','Fundado en '+t.founded,'Entrenador: '+t.coach.name,'Presidente: '+(t.president||'-'),'Media '+st.me+' · '+t.players.length+' jugadores · 95-96: '+(t.positions&&t.positions.length?posName(t):'-')].join('\n'),12,116,250,130,'f-p8'); it.style.lineHeight='12px'; it.style.overflow='hidden'; I.appendChild(it); }
     I.appendChild(at(h('img',{src:campoImg(t),style:{width:'108px',height:'76px'},onerror:function(){this.style.display='none'}}),12,250));
-    I.appendChild(btn('ELEGIR',150,300,110,()=>{ newGame(sel); scrOficina(); },'green'));
+    if(!MUI) I.appendChild(btn('ELEGIR',150,300,110,()=>{ newGame(sel); scrOficina(); },'green'));
   };
   render(); info();
-  LEAGUE_ORDER.forEach((k,i)=>s.appendChild(btn(LEAGUE_SHORT[k],10+i*104,420,100,()=>scrSelectTeam({lg:k}),k===lg?'green':'blue')));
+  if(!MUI) LEAGUE_ORDER.forEach((k,i)=>s.appendChild(btn(LEAGUE_SHORT[k],10+i*104,420,100,()=>scrSelectTeam({lg:k}),k===lg?'green':'blue')));
+  if(MUI){ elegir=btn('ELEGIR',200,446,120,()=>{ if(!picked) return; newGame(sel); scrOficina(); },'green'+(picked?'':' dis')); s.appendChild(elegir); }
   s.appendChild(btn('CREAR EQUIPO',10,446,140,()=>scrCrearEquipo({st:{name:'',league:lg,replaced:null,picked:[],filter:'POR',q:''}}),'green'));
   s.appendChild(btn('VOLVER',540,446,90,()=>go('menu'),'blue','ico_volver'));
 }
