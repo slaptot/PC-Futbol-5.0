@@ -63,9 +63,11 @@ function scrOficina(){
     } else P.appendChild(txt('Tu equipo no participa en esta ronda. Se simulará la eliminatoria del resto de equipos.',8,40,284,40,'f-p12'));
     P.appendChild(btn(ms?'JUGAR '+CUP_DEFS[ev.cup].rounds[ev.round]:(lineupHasInjured()?'LESIONADOS EN EL ONCE':'ALINEACIÓN INCOMPLETA'),40,230,220,()=>ms?playCupEvent(ev):scrAlineacion(),ms?'green':'red','icono_balon_de_la_b'));
   } else if(nm){ const hm=team(nm[0]), aw=team(nm[1]);
+    if(typeof UI!=='undefined'&&UI==='mobile'){ P.appendChild(h('div',{class:'nextm',style:{top:'30px'}},h('div',{class:'side'},h('img',{src:escImg(hm.id)}),h('div',{class:'nm'},hm.name)),h('div',{class:'vs f-e1'},'-'),h('div',{class:'side'},h('img',{src:escImg(aw.id)}),h('div',{class:'nm'},aw.name)))); }
+    else {
     P.appendChild(at(h('img',{src:escImg(hm.id),style:{height:'64px'}}),30,30)); P.appendChild(at(h('img',{src:escImg(aw.id),style:{height:'64px'}}),210,30));
     P.appendChild(txt(hm.name,8,100,110,16,'f-e5')); P.appendChild(txt(aw.name,190,100,110,16,'f-e5'));
-    P.appendChild(txt('-',140,56,20,20,'f-e1'));
+    P.appendChild(txt('-',140,56,20,20,'f-e1')); }
     P.appendChild(txt('Estadio: '+hm.stadium+'\nAforo: '+fmtNum(hm.capacity)+'\nÁrbitro: '+refName(refFor(hm)),8,124,284,50,'f-p12'));
     const st=standings(mgrIds(G.league),myResults()); const pos=st.findIndex(x=>x.id===G.team)+1; const rp=st.findIndex(x=>x.id===(nm[0]===G.team?nm[1]:nm[0]))+1;
     P.appendChild(txt('Tu equipo es '+pos+'º en la clasificación.\nEl rival es '+rp+'º.',8,178,284,30,'f-p12'));
