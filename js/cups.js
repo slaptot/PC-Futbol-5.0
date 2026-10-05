@@ -73,7 +73,7 @@ function simLeg(tie,leg,nlegs,live,after){
 }
 function playCupEvent(e,drawn){
   const c=G.cups[e.cup]; const fresh=!c.rounds[e.round]; const round=c.rounds[e.round]||drawRound(c,e.round);
-  if(fresh&&!drawn&&userInCup(e.cup)){ saveGame(); scrSorteo(e.cup,e.round,()=>playCupEvent(e,true)); return; }
+  if(fresh&&!drawn&&userInCup(e.cup)&&round.ties.length>1){ saveGame(); scrSorteo(e.cup,e.round,()=>playCupEvent(e,true)); return; } // la final no se sortea: solo quedan dos
   G.curCup=e.cup; G.curRound=e.round;
   const mine=round.ties.find(t=>t.a===G.team||t.b===G.team);
   // simular las eliminatorias de los demás

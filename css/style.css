@@ -347,4 +347,11 @@ body.mui .finalside{flex:1 1 46%}
 .award .sb{color:#9fb4e8}
 .award .dt{color:#cfd6ff;line-height:12px}
 .award .mn{color:#8dff8d}
-body.mui .award{flex:1 1 100%;width:auto!important;height:auto!important}
+body.mui .award{flex:1 1 100%;width:auto!important;height:auto!important;display:grid;grid-template-columns:72px 1fr;grid-template-areas:"ph at" "ph nm" "ph sb" "ph dt" "ph mn";column-gap:12px;row-gap:3px;align-items:center;text-align:left;padding:8px}
+body.mui .award .aph{grid-area:ph;width:66px;height:97px}
+body.mui .award .aph.gen{width:48px;height:48px;margin:24px 9px}
+body.mui .award .at{grid-area:at;font-size:14px}
+body.mui .award .nm{grid-area:nm;font-size:15px}
+body.mui .award .sb{grid-area:sb;font-size:13px}
+body.mui .award .dt{grid-area:dt;font-size:12px;line-height:14px}
+body.mui .award .mn{grid-area:mn}
