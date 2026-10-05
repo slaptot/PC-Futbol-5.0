@@ -22,14 +22,15 @@ function tvOffersInit(){
   const me=team(G.team); const lp=G.lastPos&&G.lastPos[me.id]; let pos=lp?lp.pos:(me.positions&&me.positions.length?me.positions[me.positions.length-1]:12); const d1=G.league.endsWith('1'); if(lp&&lp.lg!==G.league) pos=d1?10:3;
   const N=mgrIds(G.league).length; const q=1-(Math.min(pos,N)-1)/Math.max(1,N-1); // 1 = campeón
   const base=Math.round(d1?(500+1100*q):(120+260*q));
-  G.tvOffers=[{name:'Canal Plus',fixed:base,winBonus:0,perMatch:0},{name:'TVE',fixed:Math.round(base*0.7),winBonus:Math.round(base*0.03),perMatch:0},{name:'Antena 3',fixed:Math.round(base*0.45),winBonus:0,perMatch:Math.round(base*0.05)}];
+  G.tvOffers=[{name:'Canal Plus',kind:'Contrato fijo',fixed:base,winBonus:0,perMatch:0},{name:'TVE',kind:'Contrato con prima por victoria',fixed:Math.round(base*0.7),winBonus:Math.round(base*0.03),perMatch:0},{name:'Antena 3',kind:'Contrato con partidos televisados',fixed:Math.round(base*0.45),winBonus:0,perMatch:Math.round(base*0.05)}];
   G.tv=null;
 }
+function tvKind(o){ return o.kind||(o.perMatch?'Contrato con partidos televisados':o.winBonus?'Contrato con prima por victoria':'Contrato fijo'); }
 function tvIncome(hm,r){ const tv=G.tv; if(!tv) return 0; const N=Math.max(30,calOf(G.league).length); let v=tv.fixed/N; const isHome=hm.id===G.team; const my=isHome?[r.gh,r.ga]:[r.ga,r.gh]; if(my[0]>my[1]) v+=tv.winBonus; if(isHome&&tv.perMatch&&Math.random()<0.5) v+=tv.perMatch; return Math.round(v); }
 function scrTvOffers(after){
   const me=team(G.team); const body=h('div',{});
   body.appendChild(h('div',{style:{marginBottom:'6px'}},'Las televisiones presentan sus ofertas por los derechos del '+me.name+' para esta temporada. Elige una:'));
-  G.tvOffers.forEach(o=>{ const txtl=o.name+': '+fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); body.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'4px 0'},onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},txtl)); });
+  G.tvOffers.forEach(o=>{ const txtl=o.name+' ('+tvKind(o).toLowerCase()+'): '+fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); body.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'4px 0'},onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},txtl)); });
   dialog('OFERTAS DE TELEVISIÓN',body,[]);
 }
 // ---- balance semanal: taquilla, televisión y sueldos
@@ -47,16 +48,18 @@ function scrFinanzas(){
   const L=panel(10,68,300,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'TAQUILLA'));
   const LS=at(h('div',{class:'scroll'}),0,18,296,352); L.appendChild(LS);
   const nm=nextMatch(); const home=nm&&nm[0]===G.team; const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;
+  const blk=(cls,text)=>{ const e=h('div',{class:cls,style:{position:'static',display:'block',margin:'0 10px 6px'}},text); return e; };
   const render=()=>{ LS.innerHTML=''; const price=ticketPrice();
-    LS.appendChild(lbl('PRECIO DE LA ENTRADA',10,8));
-    const row=at(h('div',{class:'navrow'}),0,24,296,30); row.appendChild(btn('−',10,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); row.appendChild(txt(fmtNum(price)+' ptas',56,4,180,16,'f-e4')).style.textAlign='center'; row.appendChild(btn('+',246,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); LS.appendChild(row);
+    LS.appendChild(blk('lbl','PRECIO DE LA ENTRADA')).style.marginTop='8px';
+    const row=h('div',{class:'navrow',style:{position:'static',display:'flex',alignItems:'center',justifyContent:'space-between',margin:'4px 10px 10px'}}); row.appendChild(btn('−',0,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); const pv=h('div',{class:'f-e4',style:{flex:'1',textAlign:'center'}},fmtNum(price)+' ptas'); row.appendChild(pv); row.appendChild(btn('+',0,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); row.querySelectorAll('.btn').forEach(b=>{ b.style.position='static'; b.style.width='40px'; b.style.flex='0 0 40px'; }); LS.appendChild(row);
     const d=attendanceModel(me,rival||me,price,true); const lines=['Aforo: '+fmtNum(d.cap)];
     if(rival){ lines.push('Próximo partido: '+(home?'en casa vs ':'fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att)+(d.full?' · ¡LLENO!':''),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price,d.cap))+' millones'+(d.full?' (+10 % por lleno)':'')); }
-    const tx=txt(lines.join('\n'),10,62,280,76,'f-p8'); tx.style.lineHeight='13px'; LS.appendChild(tx);
-    LS.appendChild(lbl('TELEVISIÓN',10,146)); const tv=G.tv; const tvt=txt(tv?tv.name+': '+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M por victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M por partido televisado':''):'Sin contrato de televisión.',10,162,280,40,'f-p8'); tvt.style.lineHeight='13px'; LS.appendChild(tvt);
-    if(G.tvOffers&&!G.tv) LS.appendChild(btn('VER OFERTAS DE TV',10,204,200,()=>scrTvOffers(()=>scrFinanzas()),'green'));
+    const tx=blk('txt f-p8',lines.join('\n')); tx.style.lineHeight='13px'; LS.appendChild(tx);
+    LS.appendChild(blk('lbl','TELEVISIÓN')).style.marginTop='10px'; const tv=G.tv;
+    const tvt=blk('txt f-p8',tv?tv.name+' · '+tvKind(tv)+'\n'+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M por victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M por partido televisado en casa':''):'Sin contrato de televisión.'); tvt.style.lineHeight='13px'; LS.appendChild(tvt);
+    if(G.tvOffers&&!G.tv){ const b=btn('VER OFERTAS DE TV',0,0,200,()=>scrTvOffers(()=>scrFinanzas()),'green'); b.style.position='static'; b.style.display='block'; b.style.margin='0 10px 8px'; LS.appendChild(b); }
     const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
-    LS.appendChild(lbl('SUELDOS',10,236)); LS.appendChild(txt(fmtNum(wages)+' M por jornada ('+fmtNum(wages*N)+' M por temporada).',10,252,280,30,'f-p8')); };
+    LS.appendChild(blk('lbl','SUELDOS')).style.marginTop='10px'; LS.appendChild(blk('txt f-p8',fmtNum(wages)+' M por jornada ('+fmtNum(wages*N)+' M por temporada).')); };
   render();
   const R=panel(320,68,310,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'BALANCE POR JORNADA'));
   const sc=at(h('div',{class:'scroll'}),0,18,306,350); R.appendChild(sc);
