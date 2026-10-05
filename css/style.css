@@ -238,3 +238,5 @@ body.mui .mlmsg{flex-basis:100%;text-align:center;color:#8dff8d;margin-top:4px}
 body.mui .scroll.mlev{height:36vh!important;max-height:36vh;overflow:auto}
 body.mui .scroll.mlev .txt{margin:3px 4px}
 body.mui .topbar .teambox .n1,body.mui .topbar .teambox .n2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mact .btn .ico{display:none}
+#mact .btn{font-size:13px;padding:0 4px}
