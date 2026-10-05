@@ -49,7 +49,7 @@ function drawRound(c,ri){
   const d=CUP_DEFS[c.key]; const ids=shuffle(c.alive.slice()); const ties=[];
   for(let i=0;i+1<ids.length;i+=2) ties.push({a:ids[i],b:ids[i+1],legs:[],winner:null});
   if(ids.length%2) ties.push({a:ids[ids.length-1],b:null,legs:[],winner:ids[ids.length-1]});
-  c.rounds[ri]={name:d.rounds[ri],nlegs:d.legs[ri],ties}; return c.rounds[ri];
+  c.rounds[ri]={name:d.rounds[ri],nlegs:d.legs[ri],ties}; if(ri===d.rounds.length-1&&ties.length===1&&ties[0].b){ const v=finalVenue(c.key,ids); if(v){ c.rounds[ri].venue=v.id; c.rounds[ri].price=finalPrice(ids); } } return c.rounds[ri];
 }
 function tieLeg(tie,leg,nlegs){ // devuelve [home,away]
   if(nlegs===1) return [tie.a,tie.b];
@@ -68,7 +68,8 @@ function resolveTie(tie){
 function simLeg(tie,leg,nlegs,live,after){
   const [hid,aid]=tieLeg(tie,leg,nlegs); const hm=team(hid), aw=team(aid);
   const lh=hid===G.team?G.lineup:bestLineup(hm,'4-4-2'), la=aid===G.team?G.lineup:bestLineup(aw,'4-4-2');
-  if(live){ scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+hm.stadium,att:hid===G.team?attendanceModel(hm,aw):null,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
+  if(live){ const round=G.cups[G.curCup].rounds[G.curRound]; const venue=round&&round.venue?team(round.venue):null;
+    scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+(venue?venue.stadium+' (campo neutral)':hm.stadium),att:venue?finalAttendance(venue,[hid,aid]):(hid===G.team?attendanceModel(hm,aw):null),neutral:!!venue,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); if(venue) finalFinance(G.curCup,round,r); else cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
   const r=simulateMatch(hm,aw,lh,la); applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();
 }
 function playCupEvent(e,drawn){
@@ -78,7 +79,7 @@ function playCupEvent(e,drawn){
   const mine=round.ties.find(t=>t.a===G.team||t.b===G.team);
   // simular las eliminatorias de los demás
   for(const t of round.ties){ if(t===mine||t.winner) continue; for(let l=0;l<round.nlegs;l++) simLeg(t,l,round.nlegs,false,()=>{}); resolveTie(t); }
-  const finishRound=()=>{ if(mine) resolveTie(mine); decInjuries(); c.alive=round.ties.map(t=>t.winner); if(c.alive.length===1){ c.winner=c.alive[0]; } if(mine&&!mine.awarded){ mine.awarded=true; awardCupRound(e.cup,e.round,c.winner===G.team); } G.step++; saveGame(); scrCupResult(e.cup,e.round); };
+  const finishRound=()=>{ if(mine) resolveTie(mine); decInjuries(); c.alive=round.ties.map(t=>t.winner); if(c.alive.length===1){ c.winner=c.alive[0]; } if(c.alive.length===2&&!c.rounds[e.round+1]&&e.round+1<CUP_DEFS[e.cup].rounds.length) drawRound(c,e.round+1); /* la final queda fijada (sede y entrada) al acabar las semifinales */ if(mine&&!mine.awarded){ mine.awarded=true; awardCupRound(e.cup,e.round,c.winner===G.team); } G.step++; saveGame(); scrCupResult(e.cup,e.round); };
   if(!mine||mine.winner){ finishRound(); return; }
   const playLeg=l=>{ if(l>=round.nlegs){ finishRound(); return; } simLeg(mine,l,round.nlegs,true,()=>playLeg(l+1)); };
   playLeg(0);
@@ -151,10 +152,16 @@ function scrFinalCopa(k,after){
     b.appendChild(h('div',{class:'f-e5 lab'},label)); b.appendChild(h('div',{class:'f-e4 nm'},team(id).name.toUpperCase()));
     if(id===G.team) b.appendChild(h('div',{class:'f-e5 mine'},'TU EQUIPO')); return b; };
   P.appendChild(side(champ,'CAMPEÓN',40,true)); P.appendChild(side(runner,'FINALISTA',380,false));
-  const res=tie.legs.map(l=>team(l.home).name+' '+l.gh+' - '+l.ga+' '+team(l.away).name).join('\n')+(tie.pen?'\n(decidida en los penaltis)':tie.away?'\n(valor doble de los goles fuera)':'');
+  const res=tie.legs.map(l=>team(l.home).name+' '+l.gh+' - '+l.ga+' '+team(l.away).name).join('\n')+(tie.pen?'\n(decidida en los penaltis)':tie.away?'\n(valor doble de los goles fuera)':'')+(fin.venue?'\nEstadio: '+team(fin.venue).stadium+' ('+team(fin.venue).name+')':'');
   const rt=txt(res,220,150,200,60,'f-p12'); rt.style.textAlign='center'; rt.style.lineHeight='15px'; P.appendChild(rt);
   const msg=champ===G.team?'¡¡Tu equipo gana '+cupName(k)+' y levanta el trofeo!!':runner===G.team?'Tu equipo cae en la final. ¡Cerca estuvo!':team(champ).name+' se proclama campeón de '+cupName(k)+' ante el '+team(runner).name+'.';
   const mt=txt(msg,20,286,580,40,'f-e4'); mt.style.textAlign='center'; mt.style.color=champ===G.team?'#8dff8d':'#ffe24a'; P.appendChild(mt);
   if(champ===G.team&&typeof playSfx==='function') playSfx('intro');
   P.appendChild(btn('CONTINUAR',245,330,130,after,'green'));
 }
+
+// ---- finales en campo neutral: sede al azar (no de un finalista), precio según los finalistas y taquilla al 50 %
+function finalVenue(k,ids){ const country=league(G.league).country; const cands=Object.values(DATA.teams).filter(t=>!ids.includes(t.id)&&t.id!==G.team&&(t.capacity||0)>=35000&&t.id<9000&&(k==='COPA'?(t.league&&league(t.league).country===country):(t.id<2800))); if(!cands.length) return null; return cands[Math.floor(Math.random()*cands.length)]; }
+function finalPrice(ids){ const me=ids.reduce((a,id)=>a+teamME(team(id)),0)/ids.length; return Math.max(2000,Math.round((3000+(me-70)*120)/100)*100); }
+function finalAttendance(venue,ids){ const me=ids.reduce((a,id)=>a+teamME(team(id)),0)/ids.length; const f=Math.min(1,0.8+(me-70)*0.012); return Math.round((venue.capacity||40000)*f*(0.95+Math.random()*0.05)); }
+function finalFinance(k,round,r){ const v=team(round.venue); const tie=round.ties[0]; if(tie.a!==G.team&&tie.b!==G.team) return; const gate=Math.round(r.att*(round.price||3000)/1e6*0.5); const rival=team(tie.a===G.team?tie.b:tie.a); G.budget=(G.budget||0)+gate; G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:'Final '+cupName(k)+' vs '+rival.name+' ('+v.stadium+', 50 %)',home:true,att:r.att,full:r.att>=(v.capacity||0),gate,tv:0,wages:0,budget:G.budget}]).slice(-40); }

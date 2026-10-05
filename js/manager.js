@@ -58,7 +58,7 @@ function scrOficina(){
   if(ev&&ev.type==='cup'){ const c=G.cups[ev.cup]; const inCup=userInCup(ev.cup); const round=c.rounds[ev.round];
     const mine=round&&round.ties.find(x=>x.a===G.team||x.b===G.team);
     if(inCup){ P.appendChild(txt(CUP_DEFS[ev.cup].rounds[ev.round]+(mine?'':' · SORTEO PENDIENTE'),8,30,284,16,'f-e5'));
-      if(mine){ const riv=mine.a===G.team?mine.b:mine.a; const rt=team(riv); P.appendChild(at(h('img',{src:escImg(rt.id),style:{height:'64px'}}),120,52)); P.appendChild(txt('Rival: '+rt.name+'\n'+(round.nlegs>1?'Eliminatoria a doble partido':'Partido único'),8,124,284,30,'f-p12')); }
+      if(mine){ const riv=mine.a===G.team?mine.b:mine.a; const rt=team(riv); P.appendChild(at(h('img',{src:escImg(rt.id),style:{height:'64px'}}),120,52)); P.appendChild(txt('Rival: '+rt.name+'\n'+(round.venue?'FINAL en el '+team(round.venue).stadium+' (campo neutral)\nEntrada: '+fmtNum(round.price)+' ptas · taquilla al 50 %':(round.nlegs>1?'Eliminatoria a doble partido':'Partido único')),8,124,284,44,'f-p12')); }
       else P.appendChild(txt('Tu equipo sigue en la competición. El sorteo se hará al jugar la ronda.',8,60,284,40,'f-p12'));
     } else P.appendChild(txt('Tu equipo no participa en esta ronda. Se simulará la eliminatoria del resto de equipos.',8,40,284,40,'f-p12'));
     P.appendChild(btn(ms?'JUGAR '+CUP_DEFS[ev.cup].rounds[ev.round]:(lineupHasInjured()?'LESIONADOS EN EL ONCE':'ALINEACIÓN INCOMPLETA'),40,230,220,()=>ms?playCupEvent(ev):scrAlineacion(),ms?'green':'red','icono_balon_de_la_b'));
@@ -285,7 +285,7 @@ function playJornadaAI(lg, j){
   return res;
 }
 function scrMatchLive(hm,aw,lh,la,opts){
-  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la,{full:opts.att?isFull(hm,opts.att):false}); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la,{full:opts.att&&!opts.neutral?isFull(hm,opts.att):false,neutral:!!opts.neutral}); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   setBg('fondo8'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:opts.title||'PARTIDO',date:gameDate(),sub:opts.sub||''}));
   const pl=[...lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})];
@@ -295,7 +295,7 @@ function scrMatchLive(hm,aw,lh,la,opts){
     score=h('div',{class:'f-e1 mlsc'},'0 - 0'); clock=h('div',{class:'f-e4 mlck'},"0'");
     H.appendChild(h('div',{class:'mlh'},h('img',{src:escImg(hm.id)}),h('div',{class:'mln'},hm.name),h('div',{class:'mls'},score,clock),h('div',{class:'mln'},aw.name),h('img',{src:escImg(aw.id)})));
     const F=panel(10,160,620,230); s.appendChild(F); F.appendChild(pitch(0,0,330,200,pl));
-    const E=panel(10,400,620,200); s.appendChild(E); E.appendChild(h('div',{class:'hdr'},'EL PARTIDO · '+fmtNum(r.att)+' espectadores'+(isFull(hm,r.att)?' · ¡LLENO!':'')+' · Árbitro: '+refName(refFor(hm))));
+    const E=panel(10,400,620,200); s.appendChild(E); E.appendChild(h('div',{class:'hdr'},'EL PARTIDO · '+fmtNum(r.att)+' espectadores'+(!opts.neutral&&isFull(hm,r.att)?' · ¡LLENO!':'')+' · Árbitro: '+refName(refFor(hm))));
     ev=h('div',{class:'scroll mlev'}); E.appendChild(ev);
   } else {
     P=panel(10,68,620,372); s.appendChild(P);
@@ -307,7 +307,7 @@ function scrMatchLive(hm,aw,lh,la,opts){
     P.appendChild(at(h('img',{src:'img/cam/'+aw.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),447,44));
     ev=at(h('div',{class:'scroll'}),20,96,360,250); P.appendChild(ev);
     P.appendChild(pitch(392,96,218,140,pl));
-    P.appendChild(txt('Espectadores: '+fmtNum(r.att)+(isFull(hm,r.att)?' (¡lleno!)':'')+'\nÁrbitro: '+refName(refFor(hm)),392,244,218,40,'f-p8'));
+    P.appendChild(txt('Espectadores: '+fmtNum(r.att)+(!opts.neutral&&isFull(hm,r.att)?' (¡lleno!)':'')+'\nÁrbitro: '+refName(refFor(hm)),392,244,218,40,'f-p8'));
   }
   let min=0, gh=0, ga=0, ei=0, timer=null, speed=60, finished=false;
   const finish=()=>{ if(finished) return; finished=true; clearInterval(timer); timer=null; min=90; clock.textContent="90'"; score.textContent=r.gh+' - '+r.ga; while(ei<r.events.length){ ev.appendChild(eventLine(r.events[ei++],hm,aw)); } ev.scrollTop=1e6;

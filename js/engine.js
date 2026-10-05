@@ -45,8 +45,8 @@ function injuryCost(kind,weeks){ const x=INJURIES.find(i=>i[0]===kind); if(!x) r
 function simulateMatch(home, away, lh, la, opts){
   opts=opts||{};
   const sh=squadStrength(home,lh), sa=squadStrength(away,la);
-  const expH = 1.5*Math.pow(sh.att/sa.def,2.4)*Math.pow(sh.mid/sa.mid,0.9)*Math.pow(72/sa.gk,0.8);
-  const expA = 1.15*Math.pow(sa.att/sh.def,2.4)*Math.pow(sa.mid/sh.mid,0.9)*Math.pow(72/sh.gk,0.8);
+  const expH = (opts.neutral?1.3:1.5)*Math.pow(sh.att/sa.def,2.4)*Math.pow(sh.mid/sa.mid,0.9)*Math.pow(72/sa.gk,0.8);
+  const expA = (opts.neutral?1.3:1.15)*Math.pow(sa.att/sh.def,2.4)*Math.pow(sa.mid/sh.mid,0.9)*Math.pow(72/sh.gk,0.8);
   const events=[]; let gh=0, ga=0;
   const scorers = (t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>{const p=t.players[x.idx]; const d=ROLE_DEM[x.role]; return (d==='DEL'?5:d==='MED'?2:0.6)*(p.attrs[6]+p.attrs[7])/100;}); return ()=>t.players[pick(c,w).idx]; };
   const scH=scorers(home,lh), scA=scorers(away,la);

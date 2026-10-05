@@ -21,7 +21,8 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   europeas (Copa de Europa, Recopa y UEFA) en eliminatorias a doble partido intercaladas con la
   liga a lo largo de toda la temporada (finales europeas en mayo y final de Copa en junio), con el
   sorteo de cada ronda animado con el bombo del juego original, y una pantalla de final con el
-  campeón y el finalista (`IMG.PKF`, `SORTEO.BMP`) y los
+  campeón y el finalista; las finales se juegan a partido único en un campo neutral elegido al azar,
+  con un precio de entrada según el cartel y la taquilla repartida al 50 % entre los finalistas (`IMG.PKF`, `SORTEO.BMP`) y los
   trofeos de cada competición; tu equipo entra en Europa según su puesto de la temporada 95-96 (campeón: Copa de Europa;
   2º-5º: UEFA). Hay mercado de fichajes variable: cada jornada caducan unos jugadores transferibles
   y aparecen otros de todas las ligas (España, Inglaterra, Italia, resto de Europa y América), y cada
