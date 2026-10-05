@@ -3,6 +3,14 @@
 Réplica web (HTML/CSS/JS sin dependencias) de PC Fútbol 5.0 (Dinamic Multimedia, 1996)
 con la estética del original y los datos reales extraídos de la carpeta `DBDAT` del juego.
 
+## Créditos y aviso
+
+Los datos, gráficos, fotografías, música y nombres pertenecen a **Dinamic Multimedia** y han sido
+obtenidos del juego original **PC Fútbol 5.0** y de su **Edición de Oro** (1996-1997). Esta web, que
+se inspira en la estética del juego original, es obra de **Alberto Muñoz Fuertes**
+(alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de
+su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
+
 ## Ejecutar
 
 Necesita servirse por HTTP (usa `fetch` para cargar los JSON):

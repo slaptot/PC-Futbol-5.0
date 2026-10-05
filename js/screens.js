@@ -1,4 +1,5 @@
 // Pantallas generales: menú, base de datos, historia, seguimiento, ficha de jugador
+const CREDITS_HTML='Los datos, gráficos, fotografías, música y nombres pertenecen a <b>Dinamic Multimedia</b> y han sido obtenidos del juego original <b>PC Fútbol 5.0</b> y de su <b>Edición de Oro</b> (1996-1997).<br><br>Esta web, que se inspira en la estética del juego original, es obra de <b>Alberto Muñoz Fuertes</b> (<a href="mailto:alberto.munoz.fuertes@proton.me" style="color:#8dff8d">alberto.munoz.fuertes@proton.me</a>). No busca beneficio alguno: nace de la nostalgia del juego de su infancia y del deseo de volver a jugarlo con sus ídolos futbolísticos del pasado.';
 const MENU_ITEMS=[
   ['INSTRUCCIONES',338,147,150,()=>go('instrucciones')],
   ['HISTORIA',352,168,90,()=>go('historia')],
@@ -17,7 +18,7 @@ function scrMenu(){
   for(const [name,x,y,w,f] of MENU_ITEMS){ const e=at(h('div',{class:'menu-item'+(f?'':' dis'),title:f?name:name+' (no disponible)'}),x,y,w,21); if(f) e.onclick=f; s.appendChild(e); }
   s.appendChild(btn('BUSCAR',20,404,120,()=>go('buscar'),'blue','lupa'));
   s.appendChild(at(h('div',{class:'hot',title:'Salir',onclick:()=>dialog('PC FÚTBOL 5.0','Réplica web del juego original (Dinamic Multimedia, 1996).<br>Datos y gráficos extraídos de la carpeta DBDAT del juego.')}),582,440,40,36));
-  s.appendChild(at(h('div',{class:'hot',title:'Acerca de',onclick:()=>dialog('PC FÚTBOL 5.0 WEB','260 equipos, '+Object.values(DATA.teams).reduce((a,t)=>a+t.players.length,0)+' jugadores, calendario 96-97, '+DATA.referees.length+' árbitros y '+DATA.liga.seasons.length+' temporadas de historia.')}),545,440,30,36));
+  s.appendChild(at(h('div',{class:'hot',title:'Acerca de',onclick:()=>dialog('ACERCA DE PC FÚTBOL 5.0 WEB',CREDITS_HTML)}),545,440,30,36));
 }
 function scrInstrucciones(){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   setBg('fondo4'); const s=clearScreen();
@@ -44,7 +45,9 @@ HISTORIA: todas las clasificaciones de la Liga desde 1928-29 hasta 1995-96 y tod
 
 OTROS: Partido amistoso entre dos equipos cualesquiera; impresión en PDF de fichas, plantillas, entrenadores, árbitros y crónicas; música y efectos originales (interruptores en la barra inferior). En el móvil puedes elegir entre la versión móvil en vertical y la de escritorio, y cambiar en cualquier momento.
 
-La partida de Liga Manager se guarda automáticamente en el navegador; en el móvil conviene exportarla a un archivo desde "Guardar partida".`);
+La partida de Liga Manager se guarda automáticamente en el navegador; en el móvil conviene exportarla a un archivo desde "Guardar partida".
+
+CRÉDITOS: los datos, gráficos, fotografías, música y nombres pertenecen a Dinamic Multimedia y han sido obtenidos del juego original PC Fútbol 5.0 y de su Edición de Oro. Esta web, que se inspira en la estética del juego original, es obra de Alberto Muñoz Fuertes (alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.`);
   sc.appendChild(body);
   s.appendChild(btn('VOLVER',540,446,90,()=>go('menu'),'blue','ico_volver'));
 }
