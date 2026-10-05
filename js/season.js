@@ -124,7 +124,7 @@ function seasonAwards(){
 function pagePremios(s){
   const a=seasonAwards(); const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'PREMIOS DE LA TEMPORADA · '+league(a.lg).long.toUpperCase()));
   const card=(x,title,imgSrc,name,sub,detail,mine)=>{ const b=at(h('div',{class:'award'+(mine?' mine':'')}),x,26,196,300);
-    b.appendChild(h('div',{class:'f-e5 at'},title)); b.appendChild(h('img',{class:'ph',src:imgSrc,onerror:function(){this.src='img/ui/foto_general.png';this.classList.add('gen');}}));
+    b.appendChild(h('div',{class:'f-e5 at'},title)); b.appendChild(h('img',{class:'aph',src:imgSrc,onerror:function(){this.src='img/ui/foto_general.png';this.classList.add('gen');}}));
     b.appendChild(h('div',{class:'f-e4 nm'},name)); b.appendChild(h('div',{class:'f-con8 sb'},sub)); b.appendChild(h('div',{class:'f-p8 dt'},detail)); if(mine) b.appendChild(h('div',{class:'f-e5 mn'},'¡TU EQUIPO! +50 M')); return b; };
   if(a.pichichi){ const t=team(a.pichichi.team), p=t.players[a.pichichi.idx]; P.appendChild(card(10,'PICHICHI','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.pichichi.goals+' goles · máximo goleador de la liga',t.id===G.team)); }
   if(a.zamora){ const t=team(a.zamora.team), p=t.players[a.zamora.idx]; P.appendChild(card(212,'ZAMORA','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.zamora.gc+' goles en contra en '+a.zamora.pj+' partidos ('+a.zamora.coef+' por partido)',t.id===G.team)); }

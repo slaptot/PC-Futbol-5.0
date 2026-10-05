@@ -341,8 +341,8 @@ body.mui .finalside{flex:1 1 46%}
 .award{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:6px;border:1px solid #1a2b70;background:rgba(0,0,0,.25)}
 .award.mine{border-color:#5ad05a}
 .award .at{color:#ffe24a;letter-spacing:2px}
-.award .ph{width:93px;height:136px;object-fit:cover;border:1px solid #000;background:#223}
-.award .ph.gen{width:64px;height:64px;margin:36px 0;object-fit:contain}
+.award .aph{width:93px;height:136px;object-fit:cover;border:1px solid #000;background:#223}
+.award .aph.gen{width:64px;height:64px;margin:36px 0;object-fit:contain}
 .award .nm{color:#fff}
 .award .sb{color:#9fb4e8}
 .award .dt{color:#cfd6ff;line-height:12px}
