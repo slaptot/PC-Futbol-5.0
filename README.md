@@ -20,7 +20,8 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   Incluye la Copa nacional (Copa del Rey, FA Cup o Coppa Italia, 32 equipos) y las competiciones
   europeas (Copa de Europa, Recopa y UEFA) en eliminatorias a doble partido intercaladas con la
   liga a lo largo de toda la temporada (finales europeas en mayo y final de Copa en junio), con el
-  sorteo de cada ronda animado con el bombo del juego original (`IMG.PKF`, `SORTEO.BMP`) y los
+  sorteo de cada ronda animado con el bombo del juego original, y una pantalla de final con el
+  campeón y el finalista (`IMG.PKF`, `SORTEO.BMP`) y los
   trofeos de cada competición; tu equipo entra en Europa según su puesto de la temporada 95-96 (campeón: Copa de Europa;
   2º-5º: UEFA). Hay mercado de fichajes variable: cada jornada caducan unos jugadores transferibles
   y aparecen otros de todas las ligas (España, Inglaterra, Italia, resto de Europa y América), y cada

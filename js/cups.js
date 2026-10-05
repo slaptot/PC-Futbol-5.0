@@ -84,7 +84,8 @@ function playCupEvent(e,drawn){
   playLeg(0);
 }
 function scrCupResult(k,ri){
-  const c=G.cups[k]; const round=c.rounds[ri]; const t=team(G.team); setBg('fondo3'); const s=clearScreen();
+  const c=G.cups[k]; const round=c.rounds[ri];
+  if(c.winner&&ri===c.rounds.length-1&&!c.finalShown){ c.finalShown=true; saveGame(); return scrFinalCopa(k,()=>scrCupResult(k,ri)); } const t=team(G.team); setBg('fondo3'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:cupName(k).toUpperCase(),date:gameDate(),sub:round.name}));
   const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},round.name+' · RESULTADOS'));
   const sc=at(h('div',{class:'scroll'}),0,20,616,312); P.appendChild(sc);
@@ -136,4 +137,24 @@ function scrSorteo(k,ri,after){
   const finish=()=>{ done=true; bombo.classList.remove('girando'); cont.classList.remove('dis'); skip.style.display='none'; bola.textContent=''; };
   timer=setInterval(()=>{ if(pos>=seq.length){ clearInterval(timer); finish(); return; } place(seq[pos++],true); },260);
   L.appendChild(h('div',{class:'f-m8 sorteo-nota'},'El bombo decide los emparejamientos de '+round.name.toLowerCase()+(round.nlegs>1?' (ida y vuelta)':' (partido único)')+'.'));
+}
+
+// ---- pantalla de la final: campeón y finalista
+function scrFinalCopa(k,after){
+  const c=G.cups[k]; const fin=c.rounds[c.rounds.length-1]; const tie=fin.ties[0]; const champ=c.winner; const runner=tie.a===champ?tie.b:tie.a;
+  const t=team(G.team); setBg('fondo3'); const s=clearScreen();
+  s.appendChild(topbar({team:t,title:'FINAL',date:gameDate(),sub:cupName(k).toUpperCase()+' '+seasonLabel(G.seasonIdx||0)}));
+  const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'FINAL DE '+cupName(k).toUpperCase()+' · '+(champ===G.team?'¡¡CAMPEONES!!':'CAMPEÓN: '+team(champ).name.toUpperCase())));
+  P.appendChild(at(h('img',{class:'trofeo final-trofeo',src:'img/sorteo/'+(SORTEO_IMG[k]||'copa')+'.png',onerror:function(){this.style.display='none'}}),274,26));
+  const side=(id,label,x,isChamp)=>{ const b=at(h('div',{class:'finalside'+(isChamp?' champ':'')}),x,40,200,230);
+    b.appendChild(h('img',{class:'esc',src:escImg(id,'big'),onerror:function(){this.src=escImg(id)}}));
+    b.appendChild(h('div',{class:'f-e5 lab'},label)); b.appendChild(h('div',{class:'f-e4 nm'},team(id).name.toUpperCase()));
+    if(id===G.team) b.appendChild(h('div',{class:'f-e5 mine'},'TU EQUIPO')); return b; };
+  P.appendChild(side(champ,'CAMPEÓN',40,true)); P.appendChild(side(runner,'FINALISTA',380,false));
+  const res=tie.legs.map(l=>team(l.home).name+' '+l.gh+' - '+l.ga+' '+team(l.away).name).join('\n')+(tie.pen?'\n(decidida en los penaltis)':tie.away?'\n(valor doble de los goles fuera)':'');
+  const rt=txt(res,220,150,200,60,'f-p12'); rt.style.textAlign='center'; rt.style.lineHeight='15px'; P.appendChild(rt);
+  const msg=champ===G.team?'¡¡Tu equipo gana '+cupName(k)+' y levanta el trofeo!!':runner===G.team?'Tu equipo cae en la final. ¡Cerca estuvo!':team(champ).name+' se proclama campeón de '+cupName(k)+' ante el '+team(runner).name+'.';
+  const mt=txt(msg,20,286,580,40,'f-e4'); mt.style.textAlign='center'; mt.style.color=champ===G.team?'#8dff8d':'#ffe24a'; P.appendChild(mt);
+  if(champ===G.team&&typeof playSfx==='function') playSfx('intro');
+  P.appendChild(btn('CONTINUAR',245,330,130,after,'green'));
 }
