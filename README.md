@@ -20,9 +20,15 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   Incluye la Copa nacional (Copa del Rey, FA Cup o Coppa Italia, 32 equipos) y las competiciones
   europeas (Copa de Europa, Recopa y UEFA) en eliminatorias a doble partido intercaladas con la
   liga; tu equipo entra en Europa según su puesto de la temporada 95-96 (campeón: Copa de Europa;
-  2º-5º: UEFA). Hay mercado de fichajes (presupuesto en millones de pesetas según aforo y socios,
-  valoración de cada jugador por media y edad, compras a cualquier club de la base de datos y
-  ventas con ofertas de otros clubes) y lesiones: se producen en los partidos, duran de 1 a 8
+  2º-5º: UEFA). Hay mercado de fichajes variable: cada jornada caducan unos jugadores transferibles
+  y aparecen otros de todas las ligas (España, Inglaterra, Italia, resto de Europa y América), y cada
+  pocas jornadas sale una figura de 80 a más de 90 de media. Al pulsar un jugador se abre el popup
+  "Hacer oferta" con los conceptos del juego original (`MANAGER.EXE`): oferta al equipo, ficha anual,
+  años de contrato, cláusula de rescisión, prima por gol, casa y coche, partidos para renovación y
+  libertad por descenso; el club acepta si la oferta cubre su precio y el jugador si la ficha y las
+  condiciones le convencen. El presupuesto (millones de pesetas según aforo y socios) recibe la
+  taquilla de los partidos en casa y paga cada jornada los sueldos de la plantilla. También se
+  venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
   semanas y el jugador no puede alinearse mientras tanto (lista de lesionados en la oficina y en
   la pantalla de alineación). Entrenamiento semanal por áreas (físico, fuerza, técnica, ataque,
   defensa, porteros) que hace evolucionar los atributos según la edad, con riesgo de lesión si se

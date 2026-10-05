@@ -6,7 +6,7 @@ function newGame(tid){
   const t=team(tid); const lg=t.league;
   G={team:tid,league:lg,jornada:1,formation:'4-4-2',lineup:bestLineup(t,'4-4-2'),results:{},season:'96-97'};
   LEAGUE_ORDER.forEach(k=>G.results[k]=[]);
-  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; snapshotBase();
+  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; snapshotBase(); marketInit();
   saveGame();
 }
 function gameDate(){ return eventDate(curEvent()); }
@@ -319,7 +319,7 @@ function scrPartido(){
   scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
     LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
-    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const log=applyTraining(); const j=G.jornada; G.jornada++; G.step++; saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
+    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const fin=weeklyFinance(hm,aw,r); const log=applyTraining(); if(fin.gate) log.unshift('Taquilla: +'+fmtNum(fin.gate)+' M · Sueldos: -'+fmtNum(fin.wages)+' M'); else log.unshift('Sueldos de la plantilla: -'+fmtNum(fin.wages)+' M'); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }
 // ---- amistoso

@@ -267,3 +267,18 @@ body.mui .clubstrip{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;width
 body.mui .clubstrip::-webkit-scrollbar{display:none}
 body.mui .clubstrip div{flex:0 0 auto;padding:7px 12px!important;border:1px solid #3a4f9f;border-radius:4px;font-size:13px!important;background:#0a1240}
 body.mui .clubstrip div.on{border-color:#ffe24a}
+/* popup de oferta de fichaje */
+.dlg.offer{left:80px;top:28px;width:480px}
+.offinfo{white-space:pre-wrap;line-height:12px;margin-bottom:6px;color:#cfd6ff}
+.offrows{display:flex;flex-direction:column;gap:3px}
+.offrow{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #1a2b70;padding:2px 0}
+.offlbl{font-family:'euroh5';font-size:12px;color:#ffe24a;letter-spacing:1px}
+.offctl{display:flex;align-items:center;gap:6px}
+.offval{min-width:72px;text-align:right;font-family:'futcon12';font-size:16px;color:#fff}
+.dlg .btn.offb{position:relative;display:inline-flex;align-items:center;justify-content:center;width:26px;height:20px;margin:0;padding:0;min-width:0}
+.dlg .btn.offt{position:relative;display:inline-block;width:64px;margin:0}
+.offtot{margin-top:6px;color:#8dff8d}
+body.mui .dlg.offer{top:4vh!important}
+body.mui .dlg .btn.offb{width:42px;height:36px!important;font-size:20px}
+body.mui .dlg .btn.offt{width:80px;height:34px!important}
+body.mui .offval{font-size:18px}
