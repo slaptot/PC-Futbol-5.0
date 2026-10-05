@@ -4,7 +4,7 @@ const CUP_DEFS={
   COPA:{rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,1],at:[0.14,0.30,0.48,0.70,0.96],size:32},
   CE:{name:'Copa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],at:[0.10,0.38,0.64,0.88],size:16},
   RECOPA:{name:'Recopa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],at:[0.12,0.41,0.67,0.86],size:16},
-  UEFA:{name:'Copa de la UEFA',rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,2],at:[0.07,0.22,0.43,0.62,0.90],size:32},
+  UEFA:{name:'Copa de la UEFA',rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,1],at:[0.07,0.22,0.43,0.62,0.90],size:32},
 };
 function cupAfter(k){ const N=calOf(G.league).length; const d=CUP_DEFS[k]; const out=[]; let last=0; d.at.forEach(f=>{ let j=Math.max(last+1,Math.round(f*N)); if(j>N) j=N; out.push(j); last=j; }); return out; }
 const CUP_NAMES={22:'Copa del Rey',30:'FA Cup',36:'Coppa Italia'};
