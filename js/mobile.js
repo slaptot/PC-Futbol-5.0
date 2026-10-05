@@ -19,7 +19,7 @@ function mobileInit(){
   let lastTouch=0; document.addEventListener('touchend',e=>{ const n=Date.now(); if(n-lastTouch<300&&e.target.closest('#stage')&&!e.target.closest('tr.clk')) e.preventDefault(); lastTouch=n; },{passive:false});
   // intentar fijar el apaisado cuando la app está instalada / a pantalla completa
   const lock=()=>{ try{ if(screen.orientation&&screen.orientation.lock) screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} };
-  document.addEventListener('touchend',lock,{once:true});
+  document.addEventListener('touchend',()=>{ if(!document.body.classList.contains('mui')) lock(); },{once:true});
   // reajustar el escenario con el visor visual (barras del navegador en iOS)
   if(window.visualViewport) window.visualViewport.addEventListener('resize',fitStage);
   window.addEventListener('orientationchange',()=>setTimeout(fitStage,250));
