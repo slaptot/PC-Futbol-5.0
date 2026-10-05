@@ -48,9 +48,10 @@ function simulateMatch(home, away, lh, la, opts){
   const scH=scorers(home,lh), scA=scorers(away,la);
   const cardable = (t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>t.players[x.idx].attrs[2]/100); return ()=>t.players[pick(c,w).idx]; };
   const cdH=cardable(home,lh), cdA=cardable(away,la);
-  const yellows=new Set();
+  const yellows=new Set(); const full=!!opts.full; // con el estadio lleno, el público empuja al local si no gana en los últimos 10 minutos
   for(let m=1;m<=90;m++){
-    if(rnd()<expH/90){ gh++; events.push({min:m,type:'goal',side:'H',player:scH(),score:[gh,ga]}); }
+    const boost=(full&&m>80&&gh<=ga)?1.5:1;
+    if(rnd()<expH*boost/90){ gh++; events.push({min:m,type:'goal',side:'H',player:scH(),score:[gh,ga]}); }
     if(rnd()<expA/90){ ga++; events.push({min:m,type:'goal',side:'A',player:scA(),score:[gh,ga]}); }
     if(rnd()<0.035){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); const k=side+p.idx;
       if(yellows.has(k)){ events.push({min:m,type:'red',side,player:p}); yellows.delete(k);} else { yellows.add(k); events.push({min:m,type:'yellow',side,player:p}); } }

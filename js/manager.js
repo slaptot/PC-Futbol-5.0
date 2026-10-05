@@ -285,7 +285,7 @@ function playJornadaAI(lg, j){
   return res;
 }
 function scrMatchLive(hm,aw,lh,la,opts){
-  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la,{full:opts.att?isFull(hm,opts.att):false}); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   setBg('fondo8'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:opts.title||'PARTIDO',date:gameDate(),sub:opts.sub||''}));
   const pl=[...lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})];

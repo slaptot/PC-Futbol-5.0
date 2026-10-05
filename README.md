@@ -29,7 +29,8 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   condiciones le convencen. El presupuesto (millones de pesetas según aforo y socios) recibe la
   taquilla de los partidos en casa (pantalla Finanzas: el precio de la entrada se fija a voluntad y la
   asistencia depende de la posición en la liga, la racha, el precio y el rival, con lleno casi seguro
-  en los derbis), los derechos de televisión (al empezar cada liga tres cadenas ofrecen contratos
+  en los derbis; con el estadio lleno el público empuja al equipo local en los últimos diez minutos si
+  no va ganando), los derechos de televisión (al empezar cada liga tres cadenas ofrecen contratos
   según la posición del año anterior: fijo, fijo más prima por victoria, o fijo más partidos
   televisados) y paga cada jornada los sueldos de la plantilla (la ficha anual de cada jugador es el
   8 % de su valor de mercado, salvo la pactada en su contrato al ficharlo); el balance jornada a jornada se
