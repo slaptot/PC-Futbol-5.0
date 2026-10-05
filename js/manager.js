@@ -177,7 +177,7 @@ function scrAlineacion(state){
     let nb=sbench.filter(x=>x!==a&&x!==b);
     if(sa.type==='bench') nb.push(b); if(sb.type==='bench') nb.push(a);
     G.bench=nb.slice(0,7); G.benchSet=true; return true; };
-  const MUI=(typeof UI!=='undefined'&&UI==='mobile'); let T=null, subBtn=null; if(MUI){ T=panel(6,66,452,240); s.appendChild(T); }
+  const MUI=(typeof UI!=='undefined'&&UI==='mobile'); let T=null, subBtn=null, ctxBtn=null; if(MUI){ T=panel(6,66,452,240); s.appendChild(T); }
   const P=panel(6,MUI?320:66,452,374); s.appendChild(P);
   const sc=at(h('div',{class:'scroll'}),0,0,448,370); P.appendChild(sc);
   const order=(a,b)=>(['POR','DEF','MED','DEL'].indexOf(a.dem)-['POR','DEF','MED','DEL'].indexOf(b.dem))||b.me-a.me;
@@ -207,6 +207,13 @@ function scrAlineacion(state){
     T.appendChild(btn('TÁCTICA',0,200,140,()=>scrTactica(),'blue','ico_terreno'));
     T.appendChild(btn('LESIONADOS',150,200,140,()=>scrLesionados(()=>scrAlineacion({sel})),'blue','ico_incidencias'));
     if(subBtn) subBtn.textContent=pend!==null?'CANCELAR CAMBIO':'SUSTITUIR';
+    if(ctxBtn){ const l=inL(sel), inB=G.bench.includes(sel), inj=isInjured(G.team,sel); let label, cls='blue', f=null;
+      if(l>=0){ label='QUITAR DEL ONCE'; cls='red'; f=()=>{ G.lineup.splice(l,1); if(G.bench.length<7) G.bench.push(sel); G.benchSet=true; refresh(); }; }
+      else if(inj){ label='LESIONADO'; cls='dis'; }
+      else if(G.lineup.length<11){ label='PONER TITULAR'; cls='green'; f=()=>{ const r0=p.roles[0]; G.lineup.push({idx:sel,role:r0,x:ROLE_POS[r0][0],y:ROLE_POS[r0][1]}); G.bench=G.bench.filter(i=>i!==sel); refresh(); }; }
+      else if(inB){ label='DESCONVOCAR'; cls='red'; f=()=>{ G.bench=G.bench.filter(i=>i!==sel); G.benchSet=true; refresh(); }; }
+      else { label='CONVOCAR'; f=()=>{ if(G.bench.length>=7) return dialog('CONVOCATORIA','Ya hay 7 convocados. Desconvoca a otro primero.'); G.bench.push(sel); G.benchSet=true; refresh(); }; }
+      ctxBtn.textContent=label; ctxBtn.className='btn '+cls; ctxBtn.onclick=f; }
   };
   const pickDialog=(title,cands,f)=>{ const b=h('div',{class:'scroll',style:{maxHeight:'250px'}}); cands.forEach(p=>b.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'2px 0'},onclick:()=>{closeDialog(); f(p);}},(p.dorsal?p.dorsal+' ':'')+p.name+' ('+ROLES_SHORT[p.roles[0]]+')'))); dialog(title,b,[{t:'CANCELAR'}]); };
   const side=()=>{ if(MUI){ sideM(); return; } R.innerHTML=''; const p=t.players[sel]; const l=inL(sel); const inB=G.bench.includes(sel); const inj=isInjured(G.team,sel);
@@ -233,7 +240,8 @@ function scrAlineacion(state){
   if(MUI){
     s.appendChild(btn('VOLVER',10,446,90,()=>scrOficina(),'blue','ico_volver'));
     subBtn=btn('SUSTITUIR',110,446,120,()=>{ if(pend!==null){ pend=null; build(); side(); return; } const p=t.players[sel]; if(!p) return; if(isInjured(G.team,sel)) return dialog('CAMBIO','Un lesionado no puede ser titular ni convocado.'); markPend(p); },'green'); s.appendChild(subBtn);
-    s.appendChild(btn('AUTOMÁTICA',240,446,120,()=>{G.lineup=bestLineup(t,G.formation); G.bench=null; G.benchSet=false; refresh();},'blue','ico_alineacion'));
+    ctxBtn=btn('QUITAR DEL ONCE',240,446,120,null,'red'); s.appendChild(ctxBtn);
+    s.appendChild(btn('AUTOMÁTICA',370,446,120,()=>{G.lineup=bestLineup(t,G.formation); G.bench=null; G.benchSet=false; refresh();},'blue','ico_alineacion'));
   } else s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
   build(); side();
 }

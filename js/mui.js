@@ -17,7 +17,7 @@ function muiInit(){ // se llama tras audioInit cuando UI==='mobile'
   const ab=document.getElementById('audiobar'); if(ab) row.appendChild(ab);
   row.appendChild(h('div',{class:'abtn',onclick:()=>setUI('desktop')},'⇄ ESCRITORIO'));
   const scr=document.getElementById('screen'); let pend=false;
-  new MutationObserver(()=>{ if(pend) return; pend=true; requestAnimationFrame(()=>{ pend=false; muiReflow(scr); }); }).observe(scr,{childList:true,subtree:true});
+  new MutationObserver(()=>{ if(pend) return; pend=true; setTimeout(()=>{ pend=false; muiReflow(scr); },0); }).observe(scr,{childList:true,subtree:true});
   const _cs=clearScreen; clearScreen=function(){ const s=_cs(); const a=document.getElementById('mact'); if(a) a.innerHTML=''; window.scrollTo(0,0); return s; };
   fitStage();
 }
