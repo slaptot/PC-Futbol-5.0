@@ -41,6 +41,8 @@ function weeklyFinance(hm,aw,r){
   G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:isHome?aw.name:hm.name,home:isHome,att:isHome?r.att:0,full,gate,tv,wages,budget:G.budget}]).slice(-40);
   return G.lastFin;
 }
+function finOther(label,amount){ // apunte extraordinario (tratamientos, fichajes, ventas) en el balance
+  G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:label,home:false,att:0,gate:0,tv:0,wages:0,other:amount,budget:G.budget}]).slice(-40); }
 // ---- pantalla de finanzas
 function scrFinanzas(){
   const me=team(G.team); setBg('fondo6'); const s=clearScreen();
@@ -65,6 +67,9 @@ function scrFinanzas(){
   const sc=at(h('div',{class:'scroll'}),0,18,306,350); R.appendChild(sc);
   const log=(G.finLog||[]).slice().reverse();
   if(!log.length) sc.appendChild(txt('Todavía no se ha jugado ninguna jornada.',8,8,290,20,'f-p12'));
-  else sc.appendChild(table([{t:'J.',w:24,cls:'c',k:x=>x.j},{t:'RIVAL',k:x=>(x.home?'vs ':'en ')+x.rival},{t:'PÚBL.',w:52,cls:'r',k:x=>x.att?fmtNum(x.att)+(x.full?' ★':''):'-',cell:x=>x.full?'y':''},{t:'TAQ.',w:36,cls:'r',k:x=>x.gate?'+'+x.gate:'-',cell:()=>'g'},{t:'TV',w:32,cls:'r',k:x=>x.tv?'+'+x.tv:'-',cell:()=>'g'},{t:'SUEL.',w:36,cls:'r',k:x=>'-'+x.wages,cell:()=>'red'},{t:'CAJA',w:44,cls:'r',k:x=>fmtNum(x.budget),cell:()=>'y'}],log,{}));
+  else { const MUI=(typeof UI!=='undefined'&&UI==='mobile'); const concept=x=>x.other!==undefined&&!x.wages&&!x.gate&&!x.tv?x.rival:(x.home?'vs ':'en ')+x.rival; const net=x=>(x.gate||0)+(x.tv||0)-(x.wages||0)+(x.other||0);
+    const cols=[{t:'J.',w:24,cls:'c',k:x=>x.j},{t:'CONCEPTO',k:concept},{t:'PÚBL.',w:52,cls:'r',k:x=>x.att?fmtNum(x.att)+(x.full?' ★':''):'-',cell:x=>x.full?'y':''},{t:'TAQ.',w:36,cls:'r',k:x=>x.gate?'+'+x.gate:'-',cell:()=>'g'},{t:'TV',w:32,cls:'r',k:x=>x.tv?'+'+x.tv:'-',cell:()=>'g'},{t:'SUEL.',w:36,cls:'r',k:x=>x.wages?'-'+x.wages:'-',cell:()=>'red'},{t:'OTROS',w:44,cls:'r',k:x=>x.other?(x.other>0?'+':'')+fmtNum(x.other):'-',cell:x=>x.other>0?'g':x.other<0?'red':''},{t:'CAJA',w:44,cls:'r',k:x=>fmtNum(x.budget),cell:()=>'y'}];
+    const colsM=[cols[0],cols[1],cols[2],{t:'NETO',w:44,cls:'r',k:x=>(net(x)>0?'+':'')+fmtNum(net(x)),cell:x=>net(x)>=0?'g':'red'},cols[7]];
+    sc.appendChild(table(MUI?colsM:cols,log,{})); }
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }
