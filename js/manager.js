@@ -6,7 +6,7 @@ function newGame(tid){
   const t=team(tid); const lg=t.league;
   G={team:tid,league:lg,jornada:1,formation:'4-4-2',lineup:bestLineup(t,'4-4-2'),results:{},season:'96-97'};
   LEAGUE_ORDER.forEach(k=>G.results[k]=[]);
-  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; snapshotBase(); marketInit(); tvOffersInit();
+  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; G.schedVer=2; snapshotBase(); marketInit(); tvOffersInit();
   saveGame();
 }
 function gameDate(){ return eventDate(curEvent()); }

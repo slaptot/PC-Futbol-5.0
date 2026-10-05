@@ -9,9 +9,14 @@ function countryOrder(){ const [mine]=divKeys(); return [mine].concat(COUNTRY_D1
 function completeLeagues(){ // simula las jornadas que falten en todas las ligas (las de más jornadas que la del usuario)
   let n=0; LEAGUE_ORDER.forEach(k=>{ const N=calOf(k).length; G.results[k]=G.results[k]||[]; for(let j=1;j<=N;j++){ if(!G.results[k][j-1]||(k!==G.league&&!G.results[k][j-1].length)){ G.results[k][j-1]=playJornadaAI(k,j); n++; } } }); if(n) saveGame(); return n; }
 function finalTables(d1){ const [a,b]=divKeys(d1||G.league); return {d1:a,d2:b,s1:standings(mgrIds(a),myResults(a)),s2:standings(mgrIds(b),myResults(b))}; }
-function roundRobin(ids){ // liga a doble vuelta por el método del círculo
-  const a=shuffle(ids.slice()); if(a.length%2) a.push(null); const n=a.length; const rounds=[];
-  for(let r=0;r<n-1;r++){ const ms=[]; for(let i=0;i<n/2;i++){ let x=a[i], y=a[n-1-i]; if(x===null||y===null) continue; if(i===0&&r%2) [x,y]=[y,x]; ms.push([x,y,null,null,null]); } rounds.push(ms); a.splice(1,0,a.pop()); }
+function roundRobin(ids){ // liga a doble vuelta por el método del círculo, alternando casa y fuera
+  const a=shuffle(ids.slice()); if(a.length%2) a.push(null); const n=a.length; const rounds=[]; const last={}, homes={};
+  for(let r=0;r<n-1;r++){ const ms=[]; for(let i=0;i<n/2;i++){ let x=a[i], y=a[n-1-i]; if(x===null||y===null) continue;
+      // orientación que mejor alterna: el que jugó fuera la última jornada juega en casa
+      const sx=(last[x]==='A'?1:last[x]==='H'?-1:0)-(homes[x]||0)*0.01, sy=(last[y]==='A'?1:last[y]==='H'?-1:0)-(homes[y]||0)*0.01;
+      if(sy>sx||(sy===sx&&(i+r)%2)) [x,y]=[y,x];
+      ms.push([x,y,null,null,null]); last[x]='H'; last[y]='A'; homes[x]=(homes[x]||0)+1; }
+    rounds.push(ms); a.splice(1,0,a.pop()); }
   return rounds.concat(rounds.map(ms=>ms.map(m=>[m[1],m[0],null,null,null])));
 }
 function seasonOver(){ return !!(G&&G.sched&&!curEvent()); }

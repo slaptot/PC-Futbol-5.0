@@ -19,7 +19,7 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   Serie B, temporada 96-97) y un equipo, prepara alineación y táctica y juega jornada a jornada.
   Incluye la Copa nacional (Copa del Rey, FA Cup o Coppa Italia, 32 equipos) y las competiciones
   europeas (Copa de Europa, Recopa y UEFA) en eliminatorias a doble partido intercaladas con la
-  liga; tu equipo entra en Europa según su puesto de la temporada 95-96 (campeón: Copa de Europa;
+  liga a lo largo de toda la temporada (finales europeas en mayo y final de Copa en junio); tu equipo entra en Europa según su puesto de la temporada 95-96 (campeón: Copa de Europa;
   2º-5º: UEFA). Hay mercado de fichajes variable: cada jornada caducan unos jugadores transferibles
   y aparecen otros de todas las ligas (España, Inglaterra, Italia, resto de Europa y América), y cada
   pocas jornadas sale una figura de 80 a más de 90 de media. Al pulsar un jugador se abre el popup

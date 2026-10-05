@@ -1,10 +1,12 @@
 // Copas nacionales y competiciones europeas (Liga Manager)
+// 'at' son fracciones de la liga: la Copa termina a final de temporada (junio) y las europeas en mayo
 const CUP_DEFS={
-  COPA:{rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,1],after:[6,12,18,24,30],size:32},
-  CE:{name:'Copa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],after:[4,15,21,27],size:16},
-  RECOPA:{name:'Recopa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],after:[5,16,22,28],size:16},
-  UEFA:{name:'Copa de la UEFA',rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,2],after:[3,9,16,22,28],size:32},
+  COPA:{rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,1],at:[0.14,0.30,0.48,0.70,0.96],size:32},
+  CE:{name:'Copa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],at:[0.10,0.38,0.64,0.88],size:16},
+  RECOPA:{name:'Recopa de Europa',rounds:['OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,1],at:[0.12,0.41,0.67,0.86],size:16},
+  UEFA:{name:'Copa de la UEFA',rounds:['DIECISEISAVOS','OCTAVOS','CUARTOS','SEMIFINALES','FINAL'],legs:[2,2,2,2,2],at:[0.07,0.22,0.43,0.62,0.90],size:32},
 };
+function cupAfter(k){ const N=calOf(G.league).length; const d=CUP_DEFS[k]; const out=[]; let last=0; d.at.forEach(f=>{ let j=Math.max(last+1,Math.round(f*N)); if(j>N) j=N; out.push(j); last=j; }); return out; }
 const CUP_NAMES={22:'Copa del Rey',30:'FA Cup',36:'Coppa Italia'};
 function cupName(k){ return k==='COPA'?(CUP_NAMES[league(G.league).country]||'Copa'):CUP_DEFS[k].name; }
 function teamME(t){ if(t._me===undefined){ const l=bestLineup(t,'4-4-2'); t._me=l.length>=11?lineupME(t,l):0; } return t._me; }
@@ -35,13 +37,13 @@ function mkCup(k,ids){ return {key:k,teams:ids,rounds:[],alive:ids.slice(),winne
 function buildSchedule(){
   const N=calOf(G.league).length; const ev=[];
   for(let j=1;j<=N;j++){ ev.push({type:'liga',j});
-    for(const k of Object.keys(G.cups)){ const d=CUP_DEFS[k]; const ri=d.after.indexOf(j); if(ri>=0&&ri<d.rounds.length) ev.push({type:'cup',cup:k,round:ri}); } }
-  for(const k of Object.keys(G.cups)){ const d=CUP_DEFS[k]; d.after.forEach((j,ri)=>{ if(j>N&&ri<d.rounds.length) ev.push({type:'cup',cup:k,round:ri}); }); }
+    for(const k of Object.keys(G.cups)){ const d=CUP_DEFS[k]; const after=cupAfter(k); after.forEach((aj,ri)=>{ if(aj===j&&ri<d.rounds.length) ev.push({type:'cup',cup:k,round:ri}); }); } }
+  for(const k of Object.keys(G.cups)){ const d=CUP_DEFS[k]; cupAfter(k).forEach((j,ri)=>{ if(j>N&&ri<d.rounds.length) ev.push({type:'cup',cup:k,round:ri}); }); }
   return ev;
 }
 function curEvent(){ return G.sched&&G.sched[G.step]; }
 function eventLabel(e){ if(!e) return 'TEMPORADA FINALIZADA'; if(e.type==='liga') return 'JORNADA '+e.j; const d=CUP_DEFS[e.cup]; return cupName(e.cup).toUpperCase()+' · '+d.rounds[e.round]; }
-function eventDate(e){ if(!e) return mgrDate(G.league,calOf(G.league).length); if(e.type==='liga') return mgrDate(G.league,e.j); const j=Math.min(CUP_DEFS[e.cup].after[e.round],calOf(G.league).length); const d=new Date(mgrDate(G.league,j)); d.setDate(d.getDate()+3); return d; }
+function eventDate(e){ if(!e) return mgrDate(G.league,calOf(G.league).length); if(e.type==='liga') return mgrDate(G.league,e.j); const j=Math.min(cupAfter(e.cup)[e.round],calOf(G.league).length); const d=new Date(mgrDate(G.league,j)); d.setDate(d.getDate()+3); return d; }
 function userInCup(k){ const c=G.cups[k]; return c.alive.includes(G.team); }
 function drawRound(c,ri){
   const d=CUP_DEFS[c.key]; const ids=shuffle(c.alive.slice()); const ties=[];
@@ -107,6 +109,6 @@ function scrCopa(k){
   const R=panel(460,68,170,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'COMPETICIONES'));
   Object.keys(G.cups).forEach((kk,i)=>R.appendChild(btn(cupName(kk).toUpperCase(),10,26+i*26,150,()=>scrCopa(kk),kk===k?'green':'blue')));
   R.appendChild(txt('Participantes: '+c.teams.length+'\nEliminatorias a doble partido; la final a partido único (UEFA a doble).',10,140,150,80,'f-p8'));
-  const nxt=G.sched.slice(G.step).find(e=>e.type==='cup'&&e.cup===k); R.appendChild(txt(nxt?'Próxima ronda: '+CUP_DEFS[k].rounds[nxt.round]+' (tras la jornada '+CUP_DEFS[k].after[nxt.round]+')':'Competición finalizada.',10,230,150,60,'f-p8'));
+  const nxt=G.sched.slice(G.step).find(e=>e.type==='cup'&&e.cup===k); R.appendChild(txt(nxt?'Próxima ronda: '+CUP_DEFS[k].rounds[nxt.round]+' (tras la jornada '+cupAfter(k)[nxt.round]+')':'Competición finalizada.',10,230,150,60,'f-p8'));
   R.appendChild(btn('VOLVER',10,330,150,()=>scrOficina(),'blue','ico_volver'));
 }
