@@ -170,6 +170,11 @@ async function scrFicha(tid, idx, back){
   const data=[['NOMBRE',p.full||p.name],['FECHA NAC.',birthStr(p)+(p.birth[2]?' ('+playerAge(p)+' años)':'')],['LUGAR',p.birthplace||countryName(p.country)],['ALTURA / PESO',(p.height?p.height+' cm':'-')+' / '+(p.weight?p.weight+' kg':'-')],['PROCEDENCIA',p.prevclub||'-'],['INTERNACIONAL',p.intl!==undefined?(/^\d+$/.test(p.intl)?p.intl+' veces':p.intl):'-'],['DEMARCACIÓN',p.roles.map(r=>ROLES[r]).join(', ')]];
   const info=at(h('div',{class:'scroll'}),4,212,192,158); L.appendChild(info);
   data.forEach(d=>{ info.appendChild(h('div',{class:'f-m8',style:{color:'#ffe24a',letterSpacing:'1px',marginTop:'4px'}},d[0])); info.appendChild(h('div',{class:'f-p8',style:{whiteSpace:'normal',lineHeight:'12px',paddingRight:'4px'}},String(d[1]))); });
+  if(typeof UI!=='undefined'&&UI==='mobile'){ // móvil: foto a la izquierda, datos a la derecha
+    const kids=[...L.children].filter(e=>!e.classList.contains('hdr')); const ph0=kids[0], flag=kids[1], cn=kids[2], esc=kids[3], num=kids[4];
+    const top=h('div',{class:'fichatop'},h('div',{class:'fl'},ph0,h('div',{class:'row'},flag,cn),h('div',{class:'row'},esc,num)),h('div',{class:'fr'},info));
+    L.appendChild(top);
+  }
   // atributos
   const A=panel(218,66,180,374); s.appendChild(A); A.appendChild(h('div',{class:'hdr'},'ATRIBUTOS'));
   const names=['VELOCIDAD','RESISTENCIA','AGRESIVIDAD','CALIDAD','PASE','REGATE','REMATE','TIRO','ENTRADAS','PORTERO'];

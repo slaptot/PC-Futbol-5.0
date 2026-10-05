@@ -249,3 +249,12 @@ body.mui .attrcell .av{font-family:'futcon12';font-size:16px;color:#fff;letter-s
 body.mui .attrcell .av.big{font-family:'euroh4';font-size:18px;color:#ffe24a}
 body.mui .attrcell .bar{position:relative!important;height:10px;margin-top:3px;width:100%}
 body.mui .attrcell.sum{border-top:1px solid #1a2b70;padding-top:6px}
+body.mui .fichatop{display:flex;gap:10px;width:100%;flex-basis:100%;align-items:flex-start}
+body.mui .fichatop .fl{flex:0 0 128px;display:flex;flex-direction:column;gap:6px}
+body.mui .fichatop .fl .ph{position:relative!important;width:126px;height:184px;overflow:hidden}
+body.mui .fichatop .fl .row{display:flex;align-items:center;gap:6px}
+body.mui .fichatop .fl .row .txt{flex:1 1 auto;margin:0;font-size:11px!important;line-height:12px!important}
+body.mui .fichatop .fr{flex:1 1 0;min-width:0}
+body.mui .fichatop .fr .scroll{height:auto!important}
+body.mui .fichatop .fr .f-p8{font-size:13px;line-height:15px!important}
+body.mui .fichatop .fr .f-m8{font-size:11px}
