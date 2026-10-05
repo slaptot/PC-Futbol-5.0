@@ -144,7 +144,7 @@ function scrResumen(r, back){
 function eventLine(e,hm,aw){
   const tn=(e.side==='H'?hm:aw).name; const p=e.player.name||team(e.player.team).players[e.player.idx].name;
   if(e.type==='goal') return h('div',{class:'ev goal'},"⚽ "+e.min+"' GOL de "+p+" ("+tn+")  "+e.score[0]+"-"+e.score[1]);
-  if(e.type==='injury') return h('div',{class:'ev red'},"✚ "+e.min+"' Lesionado "+p+" ("+tn+") · "+e.weeks+(e.weeks===1?' semana':' semanas'));
+  if(e.type==='injury') return h('div',{class:'ev red'},"✚ "+e.min+"' Lesionado "+p+" ("+tn+")"+(e.kind?': '+e.kind.toLowerCase():'')+" · "+e.weeks+(e.weeks===1?' semana':' semanas'));
   if(e.type==='yellow') return h('div',{class:'ev card'},"▮ "+e.min+"' Tarjeta amarilla a "+p+" ("+tn+")");
   return h('div',{class:'ev red'},"▮ "+e.min+"' EXPULSADO "+p+" ("+tn+")");
 }
@@ -277,7 +277,7 @@ function scrTactica(){
   build(); draw();
 }
 // ---- partido
-function slimEvents(ev){ return ev.filter(e=>e.type==='goal'||e.type==='injury').map(e=>({min:e.min,type:e.type,side:e.side,score:e.score,weeks:e.weeks,player:{team:e.player.team,idx:e.player.idx}})); }
+function slimEvents(ev){ return ev.filter(e=>e.type==='goal'||e.type==='injury').map(e=>({min:e.min,type:e.type,side:e.side,score:e.score,weeks:e.weeks,kind:e.kind,player:{team:e.player.team,idx:e.player.idx}})); }
 function playJornadaAI(lg, j){
   const cal=calOf(lg); if(j>cal.length) return []; const res=[];
   for(const m of cal[j-1]){ const hm=team(m[0]), aw=team(m[1]); if(lg===G.league&&(m[0]===G.team||m[1]===G.team)){ res.push(null); continue; }

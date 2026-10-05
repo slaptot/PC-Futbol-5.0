@@ -35,8 +35,10 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   televisados) y paga cada jornada los sueldos de la plantilla (la ficha anual de cada jugador es el
   8 % de su valor de mercado, salvo la pactada en su contrato al ficharlo); el balance jornada a jornada se
   consulta en Finanzas. También se venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
-  semanas y el jugador no puede alinearse mientras tanto (lista de lesionados en la oficina y en
-  la pantalla de alineación). Entrenamiento semanal por áreas (físico, fuerza, técnica, ataque,
+  semanas y el jugador no puede alinearse mientras tanto; cada lesión es de uno de los 17 tipos del
+  juego original (gripe, sobrecarga, esguince de tobillo, rotura fibrilar, menisco, fractura de tibia
+  y peroné, rotura de ligamentos…), con su duración, y desde la lista de lesionados se puede pagar
+  el tratamiento médico (de 3 a 400 millones según la lesión) para recuperar al jugador de inmediato. Entrenamiento semanal por áreas (físico, fuerza, técnica, ataque,
   defensa, porteros) que hace evolucionar los atributos según la edad, con riesgo de lesión si se
   sobrecarga, y estadísticas de temporada (partidos, minutos, goles y tarjetas) de todos los
   jugadores de la partida, con rankings de goleadores y tarjetas. Los partidos se simulan con los atributos de los jugadores

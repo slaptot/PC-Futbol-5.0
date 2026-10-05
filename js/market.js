@@ -3,14 +3,20 @@
 function injKey(tid,idx){ return tid+':'+idx; }
 function isInjured(tid,idx){ return !!(G&&G.inj&&G.inj[injKey(tid,idx)]); }
 function injuredOf(tid){ if(!G||!G.inj) return []; const t=team(tid); return Object.entries(G.inj).filter(([k])=>k.split(':')[0]==String(tid)).map(([k,w])=>({p:t.players[+k.split(':')[1]],weeks:w})).filter(x=>x.p); }
-function applyInjuries(r){ if(!G.inj) G.inj={}; for(const e of r.events){ if(e.type!=='injury') continue; const k=injKey(e.player.team,e.player.idx); G.inj[k]=Math.max(G.inj[k]||0,e.weeks); } }
-function decInjuries(){ if(!G.inj) return; for(const k of Object.keys(G.inj)){ G.inj[k]--; if(G.inj[k]<=0) delete G.inj[k]; } }
+function applyInjuries(r){ if(!G.inj) G.inj={}; G.injKind=G.injKind||{}; for(const e of r.events){ if(e.type!=='injury') continue; const k=injKey(e.player.team,e.player.idx); if((e.weeks||0)>=(G.inj[k]||0)){ G.inj[k]=e.weeks; if(e.kind) G.injKind[k]=e.kind; } } }
+function decInjuries(){ if(!G.inj) return; for(const k of Object.keys(G.inj)){ G.inj[k]--; if(G.inj[k]<=0){ delete G.inj[k]; if(G.injKind) delete G.injKind[k]; } } }
+function injKindOf(k){ return (G.injKind&&G.injKind[k])||'Lesión'; }
+function cureInjury(tid,idx,back){ const k=injKey(tid,idx); const w=G.inj&&G.inj[k]; if(!w) return; const p=team(tid).players[idx]; const kind=injKindOf(k); const cost=injuryCost(kind,w);
+  dialog('CURAR A '+p.name.toUpperCase(),kind+' · '+w+(w===1?' semana':' semanas')+' de baja.\nEl tratamiento médico cuesta '+fmtNum(cost)+' millones y el jugador queda disponible para el próximo partido.\nPresupuesto: '+fmtNum(G.budget)+' M.',[{t:'PAGAR '+fmtNum(cost)+' M',cls:'green',f:()=>{ if(cost>G.budget) return dialog('CURAR','No tienes presupuesto suficiente.',[{t:'ACEPTAR',f:back}]); G.budget-=cost; delete G.inj[k]; if(G.injKind) delete G.injKind[k]; saveGame(); dialog('CURADO','¡'+p.name+' se ha recuperado de su '+kind.toLowerCase()+'!',[{t:'ACEPTAR',f:back}]); }},{t:'CANCELAR',f:back}]); }
 function lineupHasInjured(){ return G.lineup.some(l=>isInjured(G.team,l.idx)); }
 function scrLesionados(back){
   const t=team(G.team); const list=injuredOf(G.team);
   const b=h('div',{});
   if(!list.length) b.appendChild(h('div',{},'No hay jugadores lesionados.'));
-  list.sort((x,y)=>y.weeks-x.weeks).forEach(x=>b.appendChild(h('div',{class:'f-con',style:{margin:'2px 0'}},h('img',{src:'img/ui/nuevo_fichaje.png',style:{display:'none'}}),'✚ '+x.p.name+' ('+ROLES_SHORT[x.p.roles[0]]+') · '+x.weeks+(x.weeks===1?' semana':' semanas'))));
+  const again=()=>scrLesionados(back);
+  list.sort((x,y)=>y.weeks-x.weeks).forEach(x=>{ const k=injKey(G.team,x.p.idx); const kind=injKindOf(k); const cost=injuryCost(kind,x.weeks);
+    b.appendChild(h('div',{class:'injrow'},h('div',{class:'f-con injtxt'},'✚ '+x.p.name+' ('+ROLES_SHORT[x.p.roles[0]]+')',h('div',{class:'f-m8',style:{color:'#ff8a60'}},kind+' · '+x.weeks+(x.weeks===1?' semana':' semanas'))),h('div',{class:'btn green injbtn',onclick:()=>{ closeDialog(); cureInjury(G.team,x.p.idx,again); }},'CURAR '+fmtNum(cost)+' M'))); });
+  if(list.length) b.appendChild(h('div',{class:'f-m8',style:{color:'#9fb4e8',marginTop:'6px'}},'El coste del tratamiento depende del tipo de lesión. Presupuesto: '+fmtNum(G.budget)+' M.'));
   dialog('LESIONADOS · '+t.name.toUpperCase(),b,[{t:'ACEPTAR',f:back}]);
 }
 // ---- fichajes
@@ -26,9 +32,9 @@ function doTransfer(fromTid,idx,toTid,price,record){
   const from=team(fromTid), to=team(toTid); const p=from.players[idx]; if(!p) return null;
   // conservar alineación del usuario por identidad
   const myT=team(G.team); const keep=(fromTid===G.team||toTid===G.team)?G.lineup.map(l=>({pl:myT.players[l.idx],role:l.role,x:l.x,y:l.y})):null; const keepB=(keep&&G.bench)?G.bench.map(i=>myT.players[i]).filter(Boolean):null;
-  const injList=injuredOf(fromTid).map(x=>({pl:x.p,w:x.weeks})); if(G.inj) Object.keys(G.inj).filter(k=>k.split(':')[0]==String(fromTid)).forEach(k=>delete G.inj[k]);
+  const injList=injuredOf(fromTid).map(x=>({pl:x.p,w:x.weeks,kind:G.injKind&&G.injKind[injKey(fromTid,x.p.idx)]})); if(G.inj) Object.keys(G.inj).filter(k=>k.split(':')[0]==String(fromTid)).forEach(k=>{ delete G.inj[k]; if(G.injKind) delete G.injKind[k]; });
   from.players.splice(idx,1); to.players.push(p); reindex(from); reindex(to);
-  injList.forEach(x=>{ if(G.inj) G.inj[injKey(x.pl.team,x.pl.idx)]=x.w; });
+  injList.forEach(x=>{ if(G.inj){ G.inj[injKey(x.pl.team,x.pl.idx)]=x.w; if(x.kind){ G.injKind=G.injKind||{}; G.injKind[injKey(x.pl.team,x.pl.idx)]=x.kind; } } });
   if(keep){ G.lineup=keep.filter(k=>k.pl.team===G.team).map(k=>({idx:k.pl.idx,role:k.role,x:k.x,y:k.y})); if(keepB) G.bench=keepB.filter(q=>q.team===G.team).map(q=>q.idx); }
   if(record!==false){ G.transfers=G.transfers||[]; G.transfers.push({from:fromTid,idx,to:toTid,price,name:p.name,j:G.jornada}); }
   return p;

@@ -283,3 +283,7 @@ body.mui .dlg .btn.offb{width:42px;height:36px!important;font-size:20px}
 body.mui .dlg .btn.offt{width:80px;height:34px!important}
 body.mui .offval{font-size:18px}
 body.mui .navrow{margin:4px 0 10px}
+.injrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:3px 0;border-bottom:1px solid #1a2b70;padding-bottom:3px}
+.injtxt{flex:1 1 auto;min-width:0}
+.dlg .btn.injbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;margin:0;flex:0 0 auto;min-width:96px;padding:0 6px}
+body.mui .dlg .btn.injbtn{height:34px!important;min-width:110px}

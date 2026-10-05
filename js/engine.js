@@ -38,6 +38,10 @@ function squadStrength(t, lineup){
   const avg = x=>x.length?x.reduce((a,b)=>a+b,0)/x.length:50;
   return {gk:avg(gk), def:avg(def)*(0.85+0.03*def.length), mid:avg(mid)*(0.85+0.03*mid.length), att:avg(att)*(0.8+0.07*att.length)};
 }
+// Lesiones del juego original (MANAGER.EXE): [nombre, semanas mín, semanas máx, peso, coste de curación en millones]
+const INJURIES=[['Gripe',1,1,14,3],['Gastroenteritis',1,1,8,3],['Sobrecarga muscular',1,2,14,6],['Sobrecarga gemelos',1,2,8,6],['Contractura cervicales',1,2,6,8],['Estiramiento abductor',2,3,7,12],['Esguince de tobillo',2,3,10,15],['Conmoción cerebral',1,2,3,10],['Rotura fibrilar',3,4,8,25],['Desgarro muscular',3,5,6,35],['Fractura huesos de la nariz',3,4,3,30],['Distensión de ligamentos',4,6,5,45],['Esguince de rodilla',4,6,4,50],['Rotura de menisco',8,12,2,120],['Fractura tibia y peroné',16,24,1,250],['Rotura tendón de Aquiles',20,28,1,300],['Rotura de ligamentos',24,32,1,400]];
+function randomInjury(){ const tot=INJURIES.reduce((a,x)=>a+x[3],0); let r=Math.random()*tot; for(const x of INJURIES){ r-=x[3]; if(r<=0) return {kind:x[0],weeks:x[1]+Math.floor(Math.random()*(x[2]-x[1]+1))}; } const x=INJURIES[0]; return {kind:x[0],weeks:x[1]}; }
+function injuryCost(kind,weeks){ const x=INJURIES.find(i=>i[0]===kind); if(!x) return Math.max(5,(weeks||1)*10); return x[4]; }
 function simulateMatch(home, away, lh, la, opts){
   opts=opts||{};
   const sh=squadStrength(home,lh), sa=squadStrength(away,la);
@@ -56,7 +60,7 @@ function simulateMatch(home, away, lh, la, opts){
     if(rnd()<0.035){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); const k=side+p.idx;
       if(yellows.has(k)){ events.push({min:m,type:'red',side,player:p}); yellows.delete(k);} else { yellows.add(k); events.push({min:m,type:'yellow',side,player:p}); } }
     if(rnd()<0.0007){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); events.push({min:m,type:'red',side,player:p}); }
-    if(rnd()<0.0018){ const side=rnd()<0.5?'H':'A'; const l=side==='H'?lh:la; const x=l[Math.floor(rnd()*l.length)]; const p=(side==='H'?home:away).players[x.idx]; const w=rnd()<0.55?1:rnd()<0.6?2:rnd()<0.6?3:3+Math.floor(rnd()*6); if(!events.some(e=>e.type==='injury'&&e.player===p)) events.push({min:m,type:'injury',side,player:p,weeks:w}); }
+    if(rnd()<0.0018){ const side=rnd()<0.5?'H':'A'; const l=side==='H'?lh:la; const x=l[Math.floor(rnd()*l.length)]; const p=(side==='H'?home:away).players[x.idx]; const inj=randomInjury(); if(!events.some(e=>e.type==='injury'&&e.player===p)) events.push({min:m,type:'injury',side,player:p,weeks:inj.weeks,kind:inj.kind}); }
   }
   return {home:home.id, away:away.id, gh, ga, events, att:Math.min(home.capacity||20000, Math.round((home.capacity||20000)*(0.45+rnd()*0.5)))};
 }
