@@ -23,10 +23,10 @@ function seasonOver(){ return !!(G&&G.sched&&!curEvent()); }
 // ---- pantallas
 function scrFinTemporada(i){
   i=i||0; const t=team(G.team); setMusic('manager'); if(i===0) completeLeagues();
-  const pages=countryOrder().map(k=>'LIGA:'+k).concat(['COPA','CE','RECOPA','UEFA','NUEVA']); const k=pages[i]; const isLiga=k.startsWith('LIGA:');
-  setBg(isLiga?'fondo0':k==='NUEVA'?'fondo5':'fondo3'); const s=clearScreen(); const ft=finalTables(isLiga?k.slice(5):G.league);
-  s.appendChild(topbar({team:t,title:'FIN DE TEMPORADA',date:gameDate(),sub:'TEMPORADA '+seasonLabel(G.seasonIdx||0)+' · '+(isLiga?'LIGA '+countryName(league(ft.d1).country).toUpperCase():k==='NUEVA'?'NUEVA TEMPORADA':cupName(k).toUpperCase())}));
-  if(isLiga) pageLiga(s,ft); else if(k==='NUEVA') pageNueva(s,ft); else pageCup(s,k);
+  const pages=countryOrder().map(k=>'LIGA:'+k).concat(['PREMIOS','COPA','CE','RECOPA','UEFA','NUEVA']); const k=pages[i]; const isLiga=k.startsWith('LIGA:');
+  setBg(isLiga?'fondo0':k==='NUEVA'?'fondo5':k==='PREMIOS'?'fondo4':'fondo3'); const s=clearScreen(); const ft=finalTables(isLiga?k.slice(5):G.league);
+  s.appendChild(topbar({team:t,title:'FIN DE TEMPORADA',date:gameDate(),sub:'TEMPORADA '+seasonLabel(G.seasonIdx||0)+' · '+(isLiga?'LIGA '+countryName(league(ft.d1).country).toUpperCase():k==='NUEVA'?'NUEVA TEMPORADA':k==='PREMIOS'?'PICHICHI · ZAMORA · MEJOR ENTRENADOR':cupName(k).toUpperCase())}));
+  if(isLiga) pageLiga(s,ft); else if(k==='NUEVA') pageNueva(s,ft); else if(k==='PREMIOS') pagePremios(s); else pageCup(s,k);
   s.appendChild(btn(i<pages.length-1?'SIGUIENTE':'EMPEZAR TEMPORADA '+seasonLabel((G.seasonIdx||0)+1),380,446,250,()=>{ if(i<pages.length-1) scrFinTemporada(i+1); else { startNextSeason(); scrOficina(); } },'green'));
   if(i>0) s.appendChild(btn('ANTERIOR',10,446,100,()=>scrFinTemporada(i-1),'blue','ico_volver'));
 }
@@ -92,7 +92,7 @@ function startNextSeason(){
     f.s1.forEach((x,i)=>G.lastPos[x.id]={lg:f.d1,pos:i+1}); f.s2.forEach((x,i)=>G.lastPos[x.id]={lg:f.d2,pos:i+1});
     champions[f.d1]=f.s1[0].id; champions[f.d2]=f.s2[0].id; });
   G.lastCups={}; Object.keys(G.cups).forEach(k=>G.lastCups[k]=G.cups[k].winner);
-  G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups)});
+  G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups),awards:G.awards||null});
   G.budget=(G.budget||0)+p.bonus; finOther('Premio de liga · '+p.pos+'º puesto',p.bonus); G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
   G.cal=G.cal||{}; LEAGUE_ORDER.forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
   G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit();
@@ -103,4 +103,31 @@ function applySeasonState(){ // al cargar: ascensos/descensos de temporadas ante
   if(!G) return; if(G.seasonIdx===undefined) G.seasonIdx=0;
   if(G.leagueMoves) for(const id in G.leagueMoves){ const tt=team(+id); if(tt) tt.league=G.leagueMoves[id]; }
   CAL_CACHE={};
+}
+
+// ---- premios individuales de la temporada: Pichichi, Zamora y mejor entrenador (liga del usuario)
+function seasonAwards(){
+  if(G.awards&&G.awards.season===(G.seasonIdx||0)) return G.awards;
+  const lg=G.league; const ids=mgrIds(lg); const res=myResults(lg); const st=standings(ids,res);
+  const top=topScorers(res,1)[0]; const pichichi=top?{team:top.team,idx:top.idx,goals:top.goals}:null;
+  // Zamora: portero más utilizado del equipo menos goleado (mín. 60 % de los partidos)
+  let zamora=null; const N=calOf(lg).length; const byGc=st.filter(r=>r.pj>=N*0.6).sort((a,b)=>a.gc/Math.max(1,a.pj)-b.gc/Math.max(1,b.pj)||b.pts-a.pts);
+  for(const row of byGc){ const t=team(row.id); const gks=t.players.filter(p=>p.dem==='POR').map(p=>({p,s:G.stats&&G.stats[pkey(p)]})).filter(x=>x.s&&x.s.pj>=row.pj*0.6).sort((a,b)=>b.s.pj-a.s.pj); if(gks.length){ zamora={team:t.id,idx:gks[0].p.idx,gc:row.gc,pj:gks[0].s.pj,coef:(row.gc/Math.max(1,row.pj)).toFixed(2)}; break; } }
+  // Mejor entrenador: mayor mejora respecto a la posición esperada por la media de la plantilla
+  const exp=ids.map(id=>({id,me:teamME(team(id))})).sort((a,b)=>b.me-a.me); let coach=null;
+  st.forEach((row,i)=>{ const e=exp.findIndex(x=>x.id===row.id); const gain=e-i; if(!coach||gain>coach.gain||(gain===coach.gain&&i<coach.pos)) coach={team:row.id,gain,pos:i+1,exp:e+1}; });
+  G.awards={season:G.seasonIdx||0,lg,pichichi,zamora,coach};
+  // prima de 50 M por cada premio que gane tu club
+  let bonus=0; [pichichi,zamora,coach].forEach(a=>{ if(a&&a.team===G.team) bonus+=50; }); if(bonus){ G.budget=(G.budget||0)+bonus; finOther('Premios individuales',bonus); }
+  saveGame(); return G.awards;
+}
+function pagePremios(s){
+  const a=seasonAwards(); const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'PREMIOS DE LA TEMPORADA · '+league(a.lg).long.toUpperCase()));
+  const card=(x,title,imgSrc,name,sub,detail,mine)=>{ const b=at(h('div',{class:'award'+(mine?' mine':'')}),x,26,196,300);
+    b.appendChild(h('div',{class:'f-e5 at'},title)); b.appendChild(h('img',{class:'ph',src:imgSrc,onerror:function(){this.src='img/ui/foto_general.png';this.classList.add('gen');}}));
+    b.appendChild(h('div',{class:'f-e4 nm'},name)); b.appendChild(h('div',{class:'f-con8 sb'},sub)); b.appendChild(h('div',{class:'f-p8 dt'},detail)); if(mine) b.appendChild(h('div',{class:'f-e5 mn'},'¡TU EQUIPO! +50 M')); return b; };
+  if(a.pichichi){ const t=team(a.pichichi.team), p=t.players[a.pichichi.idx]; P.appendChild(card(10,'PICHICHI','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.pichichi.goals+' goles · máximo goleador de la liga',t.id===G.team)); }
+  if(a.zamora){ const t=team(a.zamora.team), p=t.players[a.zamora.idx]; P.appendChild(card(212,'ZAMORA','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.zamora.gc+' goles en contra en '+a.zamora.pj+' partidos ('+a.zamora.coef+' por partido)',t.id===G.team)); }
+  if(a.coach){ const t=team(a.coach.team); P.appendChild(card(414,'MEJOR ENTRENADOR',coachImg(t),t.coach.name,t.name,a.coach.pos+'º en la liga con la '+a.coach.exp+'ª mejor plantilla',t.id===G.team)); }
+  if(!a.pichichi&&!a.zamora) P.appendChild(txt('Sin datos suficientes esta temporada.',10,40,400,20,'f-p12'));
 }

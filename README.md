@@ -54,7 +54,10 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   la oficina ofrece "Fin de temporada": pantallas con los campeones de las dos divisiones (con la
   clasificación final, descensos en rojo y ascensos en verde), de la Copa nacional, Copa de Europa,
   Recopa y UEFA (final y semifinales, y hasta dónde llegó tu equipo) y un balance con la posición, los
-  títulos, el ascenso o descenso, la competición europea del año siguiente y los ingresos. Al empezar
+  títulos, el ascenso o descenso, la competición europea del año siguiente y los ingresos, además de
+  los premios individuales de la liga: Pichichi (máximo goleador), Zamora (portero del equipo menos
+  goleado) y mejor entrenador (mayor mejora sobre la posición esperada por la plantilla), con 50 M
+  de prima por cada uno que gane tu club. Al empezar
   la nueva temporada bajan los 3 últimos de 1ª (4 en Italia) y suben los primeros de 2ª, se genera un
   calendario nuevo a doble vuelta para las dos divisiones del país, los jugadores cumplen un año más y
   tu equipo entra en la Copa de Europa (campeón de liga o vigente campeón), la Recopa (campeón de copa)
