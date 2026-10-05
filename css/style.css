@@ -287,3 +287,8 @@ body.mui .navrow{margin:4px 0 10px}
 .injtxt{flex:1 1 auto;min-width:0}
 .dlg .btn.injbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;margin:0;flex:0 0 auto;min-width:96px;padding:0 6px}
 body.mui .dlg .btn.injbtn{height:34px!important;min-width:110px}
+table.t.fin td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.t.fin tr.fint td{padding-top:5px;border-top:1px solid #1a2b70;background:none}
+table.t.fin tr.find td{padding-bottom:5px;background:none}
+body.mui .fincol{flex-basis:100%;width:auto!important;height:auto!important}
+body.mui table.t.fin{table-layout:fixed}

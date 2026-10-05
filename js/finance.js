@@ -45,31 +45,40 @@ function finOther(label,amount){ // apunte extraordinario (tratamientos, fichaje
   G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:label,home:false,att:0,gate:0,tv:0,wages:0,other:amount,budget:G.budget}]).slice(-40); }
 // ---- pantalla de finanzas
 function scrFinanzas(){
-  const me=team(G.team); setBg('fondo6'); const s=clearScreen();
+  const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:me,title:'FINANZAS',date:gameDate(),sub:'PRESUPUESTO: '+fmtNum(G.budget)+' MILLONES'}));
-  const L=panel(10,68,300,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'TAQUILLA'));
-  const LS=at(h('div',{class:'scroll'}),0,18,296,352); L.appendChild(LS);
+  // arriba: taquilla, televisión y sueldos en tres columnas
+  const T=panel(10,68,620,130); s.appendChild(T); T.appendChild(h('div',{class:'hdr'},'TAQUILLA · TELEVISIÓN · SUELDOS'));
+  const colA=at(h('div',{class:'fincol'}),0,20,206,108), colB=at(h('div',{class:'fincol'}),206,20,214,108), colC=at(h('div',{class:'fincol'}),420,20,200,108); T.appendChild(colA); T.appendChild(colB); T.appendChild(colC);
+  const blk=(cls,text)=>h('div',{class:cls,style:{position:'static',display:'block',margin:'0 8px 4px'}},text); const small=e=>{ if(!MUI){ e.classList.remove('f-p8'); e.classList.add('f-m8'); e.style.fontSize='10px'; e.style.lineHeight='12px'; } return e; };
   const nm=nextMatch(); const home=nm&&nm[0]===G.team; const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;
-  const blk=(cls,text)=>{ const e=h('div',{class:cls,style:{position:'static',display:'block',margin:'0 10px 6px'}},text); return e; };
-  const render=()=>{ LS.innerHTML=''; const price=ticketPrice();
-    LS.appendChild(blk('lbl','PRECIO DE LA ENTRADA')).style.marginTop='8px';
-    const row=h('div',{class:'navrow',style:{position:'static',display:'flex',alignItems:'center',justifyContent:'space-between',margin:'4px 10px 10px'}}); row.appendChild(btn('−',0,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); const pv=h('div',{class:'f-e4',style:{flex:'1',textAlign:'center'}},fmtNum(price)+' ptas'); row.appendChild(pv); row.appendChild(btn('+',0,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); row.querySelectorAll('.btn').forEach(b=>{ b.style.position='static'; b.style.width='40px'; b.style.flex='0 0 40px'; }); LS.appendChild(row);
+  const render=()=>{ colA.innerHTML=''; colB.innerHTML=''; const price=ticketPrice();
+    colA.appendChild(blk('lbl','PRECIO DE LA ENTRADA')).style.marginTop='6px';
+    const row=h('div',{class:'navrow',style:{position:'static',display:'flex',alignItems:'center',justifyContent:'space-between',margin:'4px 8px 6px'}}); row.appendChild(btn('−',0,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); row.appendChild(h('div',{class:'f-e4',style:{flex:'1',textAlign:'center'}},fmtNum(price)+' ptas')); row.appendChild(btn('+',0,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); row.querySelectorAll('.btn').forEach(b=>{ b.style.position='static'; b.style.width='40px'; b.style.flex='0 0 40px'; }); colA.appendChild(row);
     const d=attendanceModel(me,rival||me,price,true); const lines=['Aforo: '+fmtNum(d.cap)];
-    if(rival){ lines.push('Próximo partido: '+(home?'en casa vs ':'fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att)+(d.full?' · ¡LLENO!':''),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price,d.cap))+' millones'+(d.full?' (+10 % por lleno)':'')); }
-    const tx=blk('txt f-p8',lines.join('\n')); tx.style.lineHeight='13px'; LS.appendChild(tx);
-    LS.appendChild(blk('lbl','TELEVISIÓN')).style.marginTop='10px'; const tv=G.tv;
-    const tvt=blk('txt f-p8',tv?tv.name+' · '+tvKind(tv)+'\n'+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M por victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M por partido televisado en casa':''):'Sin contrato de televisión.'); tvt.style.lineHeight='13px'; LS.appendChild(tvt);
-    if(G.tvOffers&&!G.tv){ const b=btn('VER OFERTAS DE TV',0,0,200,()=>scrTvOffers(()=>scrFinanzas()),'green'); b.style.position='static'; b.style.display='block'; b.style.margin='0 10px 8px'; LS.appendChild(b); }
-    const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
-    LS.appendChild(blk('lbl','SUELDOS')).style.marginTop='10px'; LS.appendChild(blk('txt f-p8',fmtNum(wages)+' M por jornada ('+fmtNum(wages*N)+' M por temporada).')); };
+    if(rival){ lines.push((home?'En casa vs ':'Fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att)+(d.full?' · ¡LLENO!':''),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price,d.cap))+' M'+(d.full?' (+10 % por lleno)':'')); }
+    colB.appendChild(blk('lbl','PRÓXIMO PARTIDO')).style.marginTop='6px'; const tx=small(blk('txt f-p8',lines.join('\n'))); colB.appendChild(tx); };
   render();
-  const R=panel(320,68,310,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'BALANCE POR JORNADA'));
-  const sc=at(h('div',{class:'scroll'}),0,18,306,350); R.appendChild(sc);
+  const tv=G.tv; colC.appendChild(blk('lbl','TELEVISIÓN')).style.marginTop='6px';
+  const tvt=small(blk('txt f-p8',tv?tv.name+' · '+tvKind(tv).replace('Contrato ','')+'\n'+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M/victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M/partido TV':''):'Sin contrato de televisión.')); colC.appendChild(tvt);
+  if(G.tvOffers&&!G.tv){ const b=btn('VER OFERTAS DE TV',0,0,180,()=>scrTvOffers(()=>scrFinanzas()),'green'); b.style.position='static'; b.style.display='block'; b.style.margin='0 8px 4px'; colC.appendChild(b); }
+  const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
+  colC.appendChild(blk('lbl','SUELDOS')); colC.appendChild(small(blk('txt f-p8',fmtNum(wages)+' M por jornada · '+fmtNum(wages*N)+' M por temporada')));
+  // abajo: balance por jornada con scroll
+  const B=panel(10,204,620,236); s.appendChild(B); B.appendChild(h('div',{class:'hdr'},'BALANCE POR JORNADA'));
+  const sc=at(h('div',{class:'scroll'}),0,18,616,214); B.appendChild(sc);
   const log=(G.finLog||[]).slice().reverse();
-  if(!log.length) sc.appendChild(txt('Todavía no se ha jugado ninguna jornada.',8,8,290,20,'f-p12'));
-  else { const MUI=(typeof UI!=='undefined'&&UI==='mobile'); const concept=x=>x.other!==undefined&&!x.wages&&!x.gate&&!x.tv?x.rival:(x.home?'vs ':'en ')+x.rival; const net=x=>(x.gate||0)+(x.tv||0)-(x.wages||0)+(x.other||0);
-    const cols=[{t:'J.',w:24,cls:'c',k:x=>x.j},{t:'CONCEPTO',k:concept},{t:'PÚBL.',w:52,cls:'r',k:x=>x.att?fmtNum(x.att)+(x.full?' ★':''):'-',cell:x=>x.full?'y':''},{t:'TAQ.',w:36,cls:'r',k:x=>x.gate?'+'+x.gate:'-',cell:()=>'g'},{t:'TV',w:32,cls:'r',k:x=>x.tv?'+'+x.tv:'-',cell:()=>'g'},{t:'SUEL.',w:36,cls:'r',k:x=>x.wages?'-'+x.wages:'-',cell:()=>'red'},{t:'OTROS',w:44,cls:'r',k:x=>x.other?(x.other>0?'+':'')+fmtNum(x.other):'-',cell:x=>x.other>0?'g':x.other<0?'red':''},{t:'CAJA',w:44,cls:'r',k:x=>fmtNum(x.budget),cell:()=>'y'}];
-    const colsM=[cols[0],cols[1],cols[2],{t:'NETO',w:44,cls:'r',k:x=>(net(x)>0?'+':'')+fmtNum(net(x)),cell:x=>net(x)>=0?'g':'red'},cols[7]];
-    sc.appendChild(table(MUI?colsM:cols,log,{})); }
+  if(!log.length) sc.appendChild(txt('Todavía no se ha jugado ninguna jornada.',8,8,590,20,'f-p12'));
+  else {
+    const concept=x=>x.other!==undefined&&!x.wages&&!x.gate&&!x.tv?x.rival:(x.home?'En casa vs ':'Fuera vs ')+x.rival; const net=x=>(x.gate||0)+(x.tv||0)-(x.wages||0)+(x.other||0);
+    const num=(v,sign,cls)=>h('td',{class:'r '+cls},v?((sign&&v>0?'+':'')+fmtNum(v)):'-');
+    const tbl=h('table',{class:'t fin'}); const thead=h('tr',{},h('th',{class:'c',style:{width:'28px'}},'J.'),h('th',{},'CONCEPTO'),h('th',{class:'r',style:{width:'60px'}},'PÚBL.'),h('th',{class:'r',style:{width:'46px'}},'TAQ.'),h('th',{class:'r',style:{width:'40px'}},'TV'),h('th',{class:'r',style:{width:'46px'}},'SUEL.'),h('th',{class:'r',style:{width:'52px'}},'OTROS'),h('th',{class:'r',style:{width:'54px'}},'CAJA')); tbl.appendChild(thead);
+    log.forEach((x,i)=>{ const pub=x.att?fmtNum(x.att)+(x.full?' ★':''):'-';
+      if(MUI){ // móvil: título de la fila y los datos debajo
+        tbl.appendChild(h('tr',{class:'fint'},h('td',{colspan:8},h('span',{class:'f-con8',style:{color:'#ffe24a'}},'J.'+x.j+' · '),h('span',{},concept(x)),x.att?h('span',{class:'f-con8',style:{color:x.full?'#ffe24a':'#9fb4e8',marginLeft:'6px'}},pub+' espect.'):null)));
+        tbl.appendChild(h('tr',{class:'find'},h('td',{colspan:2,class:'f-con8 grey'},'Taq. '+(x.gate?'+'+fmtNum(x.gate):'-')),h('td',{colspan:2,class:'f-con8 grey'},'TV '+(x.tv?'+'+fmtNum(x.tv):'-')),h('td',{colspan:2,class:'f-con8 grey'},'Sueldos '+(x.wages?'-'+fmtNum(x.wages):'-')),h('td',{class:'r f-con8 '+(net(x)>=0?'g':'red')},(net(x)>0?'+':'')+fmtNum(net(x))),h('td',{class:'r y'},fmtNum(x.budget))));
+      } else {
+        tbl.appendChild(h('tr',{},h('td',{class:'c'},String(x.j)),h('td',{},concept(x)),h('td',{class:'r '+(x.full?'y':'')},pub),num(x.gate,true,'g'),num(x.tv,true,'g'),num(x.wages?-x.wages:0,false,'red'),num(x.other,true,x.other>0?'g':'red'),h('td',{class:'r y'},fmtNum(x.budget)))); } });
+    sc.appendChild(tbl); }
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }
