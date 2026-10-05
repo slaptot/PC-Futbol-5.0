@@ -31,7 +31,8 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   asistencia depende de la posición en la liga, la racha, el precio y el rival, con lleno casi seguro
   en los derbis), los derechos de televisión (al empezar cada liga tres cadenas ofrecen contratos
   según la posición del año anterior: fijo, fijo más prima por victoria, o fijo más partidos
-  televisados) y paga cada jornada los sueldos de la plantilla; el balance jornada a jornada se
+  televisados) y paga cada jornada los sueldos de la plantilla (la ficha anual de cada jugador es el
+  8 % de su valor de mercado, salvo la pactada en su contrato al ficharlo); el balance jornada a jornada se
   consulta en Finanzas. También se venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
   semanas y el jugador no puede alinearse mientras tanto (lista de lesionados en la oficina y en
   la pantalla de alineación). Entrenamiento semanal por áreas (físico, fuerza, técnica, ataque,

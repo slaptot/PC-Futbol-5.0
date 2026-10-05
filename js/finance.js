@@ -57,7 +57,7 @@ function scrFinanzas(){
   L.appendChild(lbl('TELEVISIÓN',10,226)); const tv=G.tv; const tvt=txt(tv?tv.name+': '+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M por victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M por partido televisado':''):'Sin contrato de televisión.',10,242,280,40,'f-p8'); tvt.style.lineHeight='12px'; L.appendChild(tvt);
   if(G.tvOffers&&!G.tv) L.appendChild(btn('VER OFERTAS DE TV',10,282,200,()=>scrTvOffers(()=>scrFinanzas()),'green'));
   const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
-  L.appendChild(lbl('SUELDOS',10,314)); L.appendChild(txt(fmtNum(wages)+' M por jornada ('+fmtNum(wages*N)+' M por temporada, '+me.players.length+' jugadores).',10,330,280,30,'f-p8'));
+  L.appendChild(lbl('SUELDOS',10,314)); L.appendChild(txt(fmtNum(wages)+' M por jornada ('+fmtNum(wages*N)+' M por temporada, '+me.players.length+' jugadores). Cada ficha es el 8 % del valor de mercado del jugador al año; los fichados cobran lo pactado en su contrato (ver Vender).',10,330,280,40,'f-m8'));
   const R=panel(320,68,310,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'BALANCE POR JORNADA'));
   const sc=at(h('div',{class:'scroll'}),0,18,306,350); R.appendChild(sc);
   const log=(G.finLog||[]).slice().reverse();
