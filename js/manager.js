@@ -173,7 +173,8 @@ function scrAlineacion(state){
     let nb=sbench.filter(x=>x!==a&&x!==b);
     if(sa.type==='bench') nb.push(b); if(sb.type==='bench') nb.push(a);
     G.bench=nb.slice(0,7); G.benchSet=true; return true; };
-  const P=panel(6,66,452,374); s.appendChild(P);
+  const MUI=(typeof UI!=='undefined'&&UI==='mobile'); let T=null, subBtn=null; if(MUI){ T=panel(6,66,452,240); s.appendChild(T); }
+  const P=panel(6,MUI?320:66,452,374); s.appendChild(P);
   const sc=at(h('div',{class:'scroll'}),0,0,448,370); P.appendChild(sc);
   const order=(a,b)=>(['POR','DEF','MED','DEL'].indexOf(a.dem)-['POR','DEF','MED','DEL'].indexOf(b.dem))||b.me-a.me;
   const markPend=p=>{ if(isInjured(G.team,p.idx)) return; pend=(pend===p.idx)?null:p.idx; sel=p.idx; build(); side(); };
@@ -182,16 +183,29 @@ function scrAlineacion(state){
     const les=t.players.filter(p=>inL(p.idx)<0&&!G.bench.includes(p.idx)&&isInjured(G.team,p.idx));
     const noconv=t.players.filter(p=>inL(p.idx)<0&&!G.bench.includes(p.idx)&&!isInjured(G.team,p.idx)).sort(order);
     const rows=[{__group:'TITULARES ('+tit.length+'/11)'},...tit,{__group:'JUGADORES CONVOCADOS ('+conv.length+'/7)'},...conv,{__group:'JUGADORES NO CONVOCADOS'},...noconv,...(les.length?[{__group:'LESIONADOS'},...les]:[])];
-    sc.appendChild(table([{t:'Nº',w:18,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',w:80,k:p=>p.name},{t:'EN',w:18,cls:'r',k:p=>isInjured(G.team,p.idx)?'LES':99,cell:p=>isInjured(G.team,p.idx)?'grey':'g'},{t:'VE',w:20,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:20,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:20,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:20,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:22,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'ROL',w:76,k:p=>h('span',{class:'f-con8'},ROLES_SHORT[p.roles[0]]+(p.roles.length>1?' +':''))},{t:'POS',w:76,k:p=>{const l=inL(p.idx); const w=G.inj&&G.inj[injKey(G.team,p.idx)]; if(w) return h('span',{class:'f-con8',style:{color:'#ff8a60'}},'✚ '+w+(w===1?' SEMANA':' SEMANAS')); if(l<0) return h('span',{class:'f-con8 grey'},'-'); const bad=rolePenalty(p,G.lineup[l].role); return h('span',{class:'f-con8',style:bad?{color:'#ff8a60'}:{color:'#8dff8d'}},ROLES_SHORT[G.lineup[l].role]+(bad?' ↓':''));}},{t:'DEM',w:32,cls:'c',k:p=>p.dem}],rows,{rowClass:p=>(p.idx===pend?'pend ':'')+(p.idx===sel?'sel':''),onRow:p=>{ const now=Date.now(); const dbl=(lastClk.idx===p.idx&&now-lastClk.t<450); lastClk={idx:p.idx,t:now};
+    const colsFull=[{t:'Nº',w:18,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',w:80,k:p=>p.name},{t:'EN',w:18,cls:'r',k:p=>isInjured(G.team,p.idx)?'LES':99,cell:p=>isInjured(G.team,p.idx)?'grey':'g'},{t:'VE',w:20,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:20,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:20,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:20,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:22,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'ROL',w:76,k:p=>h('span',{class:'f-con8'},ROLES_SHORT[p.roles[0]]+(p.roles.length>1?' +':''))},{t:'POS',w:76,k:p=>{const l=inL(p.idx); const w=G.inj&&G.inj[injKey(G.team,p.idx)]; if(w) return h('span',{class:'f-con8',style:{color:'#ff8a60'}},'✚ '+w+(w===1?' SEMANA':' SEMANAS')); if(l<0) return h('span',{class:'f-con8 grey'},'-'); const bad=rolePenalty(p,G.lineup[l].role); return h('span',{class:'f-con8',style:bad?{color:'#ff8a60'}:{color:'#8dff8d'}},ROLES_SHORT[G.lineup[l].role]+(bad?' ↓':''));}},{t:'DEM',w:32,cls:'c',k:p=>p.dem}];
+    const colsM=[colsFull[0],colsFull[1],colsFull[7],colsFull[9],colsFull[10]];
+    sc.appendChild(table(MUI?colsM:colsFull,rows,{rowClass:p=>(p.idx===pend?'pend ':'')+(p.idx===sel?'sel':''),onRow:p=>{ const now=Date.now(); const dbl=(lastClk.idx===p.idx&&now-lastClk.t<450); lastClk={idx:p.idx,t:now};
       if(dbl){ lastClk={idx:null,t:0}; markPend(p); return; }
       if(pend!==null&&p.idx!==pend){ if(swapPlayers(pend,p.idx)){ sel=p.idx; } pend=null; saveGame(); build(); side(); return; }
       sel=p.idx; build(); side(); },onRowDbl:markPend})); sc.scrollTop=st0;
     if(pend!==null) sc.prepend(h('div',{class:'f-e5',style:{position:'sticky',top:0,background:'#9a5a10',color:'#fff',padding:'2px 6px',letterSpacing:'1px',zIndex:2}},'CAMBIO: '+t.players[pend].name.toUpperCase()+' · pulsa su destino'));
   };
-  const R=panel(464,66,170,374); s.appendChild(R);
+  const R=MUI?null:panel(464,66,170,374); if(R) s.appendChild(R);
   const refresh=()=>{ saveGame(); build(); side(); };
+  const dotClick=x=>()=>{ if(pend!==null&&x.idx!==pend){ if(swapPlayers(pend,x.idx)) sel=x.idx; pend=null; saveGame(); build(); side(); return; } sel=x.idx; build(); side(); };
+  const sideM=()=>{ // versión móvil: campo pequeño arriba, lista debajo, botones fijos abajo
+    T.innerHTML=''; const p=t.players[sel];
+    T.appendChild(h('div',{class:'hdr'},'TÁCTICA '+G.formation+' · MEDIA '+lineupME(t,G.lineup)));
+    const pl=G.lineup.map(x=>{const rp=slotPos(x); const q=t.players[x.idx]; return {x:rp[0],y:rp[1],n:q.dorsal||'',title:q.name,cls:(rolePenalty(q,x.role)?'bad ':'')+(x.idx===sel?'sel':''),onclick:dotClick(x)};});
+    const pc=pitch(0,20,230,140,pl); pc.querySelectorAll('.dot').forEach(d=>{d.style.transform='translate(-7px,-7px)';}); T.appendChild(pc);
+    const info=txt((p?(p.dorsal?p.dorsal+' ':'')+p.name+' · ME '+p.me+' · '+ROLES_SHORT[p.roles[0]]:'')+'\n'+(pend!==null?'CAMBIO: '+t.players[pend].name+' · pulsa su destino en la lista o en el campo':'Doble toque o pulsación larga en un jugador para cambiarlo'),0,166,440,30,'f-p8'); info.style.color=pend!==null?'#ffd080':'#9fb4e8'; T.appendChild(info);
+    T.appendChild(btn('TÁCTICA',0,200,140,()=>scrTactica(),'blue','ico_terreno'));
+    T.appendChild(btn('LESIONADOS',150,200,140,()=>scrLesionados(()=>scrAlineacion({sel})),'blue','ico_incidencias'));
+    if(subBtn) subBtn.textContent=pend!==null?'CANCELAR CAMBIO':'SUSTITUIR';
+  };
   const pickDialog=(title,cands,f)=>{ const b=h('div',{class:'scroll',style:{maxHeight:'250px'}}); cands.forEach(p=>b.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'2px 0'},onclick:()=>{closeDialog(); f(p);}},(p.dorsal?p.dorsal+' ':'')+p.name+' ('+ROLES_SHORT[p.roles[0]]+')'))); dialog(title,b,[{t:'CANCELAR'}]); };
-  const side=()=>{ R.innerHTML=''; const p=t.players[sel]; const l=inL(sel); const inB=G.bench.includes(sel); const inj=isInjured(G.team,sel);
+  const side=()=>{ if(MUI){ sideM(); return; } R.innerHTML=''; const p=t.players[sel]; const l=inL(sel); const inB=G.bench.includes(sel); const inj=isInjured(G.team,sel);
     R.appendChild(btn('PARÁMETROS',10,8,150,null,'green')); R.appendChild(btn('ESTADÍSTICAS',10,30,150,()=>scrEstadisticas(),'blue'));
     R.appendChild(lbl('MEDIA EQUIPO',10,58)); R.appendChild(txt(String(lineupME(t,G.lineup)),130,56,30,16,'f-e4'));
     { const nm=txt(p.name,10,76,150,14,'f-e5'); nm.style.whiteSpace='nowrap'; nm.style.overflow='hidden'; nm.style.textOverflow='ellipsis'; R.appendChild(nm); }
@@ -212,7 +226,11 @@ function scrAlineacion(state){
     R.appendChild(btn('AUTOMÁTICA',10,326,150,()=>{G.lineup=bestLineup(t,G.formation); G.bench=null; G.benchSet=false; refresh();},'blue','ico_alineacion'));
     [['LESIONADOS',10,()=>scrLesionados(()=>scrAlineacion({sel}))],['TÁCTICA',86,()=>scrTactica()]].forEach(b=>{ const e=btn(b[0],b[1],348,74,b[2],'blue'); R.appendChild(e); });
   };
-  s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
+  if(MUI){
+    s.appendChild(btn('VOLVER',10,446,90,()=>scrOficina(),'blue','ico_volver'));
+    subBtn=btn('SUSTITUIR',110,446,120,()=>{ if(pend!==null){ pend=null; build(); side(); return; } const p=t.players[sel]; if(!p) return; if(isInjured(G.team,sel)) return dialog('CAMBIO','Un lesionado no puede ser titular ni convocado.'); markPend(p); },'green'); s.appendChild(subBtn);
+    s.appendChild(btn('AUTOMÁTICA',240,446,120,()=>{G.lineup=bestLineup(t,G.formation); G.bench=null; G.benchSet=false; refresh();},'blue','ico_alineacion'));
+  } else s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
   build(); side();
 }
 // ---- táctica

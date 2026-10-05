@@ -177,7 +177,7 @@ body.mui #stage{position:relative;left:auto;top:auto;width:auto;height:auto;tran
 body.mui #screen{position:relative!important;z-index:2}
 body.mui #screen{position:static;display:flex;flex-direction:column}
 body.mui #screen *{position:static!important}
-body.mui #screen .pitch{position:relative!important;margin:6px auto;flex:0 0 auto}
+body.mui #screen .pitch{position:relative!important;top:auto!important;left:auto!important;margin:6px auto;flex:0 0 auto}
 body.mui #screen .pitch *{position:absolute!important}
 body.mui #screen img{max-width:100%}
 body.mui #rotate{display:none!important}
