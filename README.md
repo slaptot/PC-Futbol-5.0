@@ -5,7 +5,7 @@ con la estética del original y los datos reales extraídos de la carpeta `DBDAT
 
 ## Créditos y aviso
 
-Los datos, gráficos, fotografías, música y nombres pertenecen a **Dinamic Multimedia** y han sido
+Los datos, gráficos, fotografías, música y nombres pertenecen a **[Dinamic Multimedia](https://dinamicmultimedia.es/)** y han sido
 obtenidos del juego original **PC Fútbol 5.0** y de su **Edición de Oro** (1996-1997). Esta web, que
 se inspira en la estética del juego original, es obra de **Alberto Muñoz Fuertes**
 (alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de

@@ -1,5 +1,5 @@
 // Pantallas generales: menú, base de datos, historia, seguimiento, ficha de jugador
-const CREDITS_HTML='Los datos, gráficos, fotografías, música y nombres pertenecen a <b>Dinamic Multimedia</b> y han sido obtenidos del juego original <b>PC Fútbol 5.0</b> y de su <b>Edición de Oro</b> (1996-1997).<br><br>Esta web, que se inspira en la estética del juego original, es obra de <b>Alberto Muñoz Fuertes</b> (<a href="mailto:alberto.munoz.fuertes@proton.me" style="color:#8dff8d">alberto.munoz.fuertes@proton.me</a>). No busca beneficio alguno: nace de la nostalgia del juego de su infancia y del deseo de volver a jugarlo con sus ídolos futbolísticos del pasado.';
+const CREDITS_HTML='Los datos, gráficos, fotografías, música y nombres pertenecen a <b><a href="https://dinamicmultimedia.es/" target="_blank" rel="noopener" style="color:#ffe24a">Dinamic Multimedia</a></b> y han sido obtenidos del juego original <b>PC Fútbol 5.0</b> y de su <b>Edición de Oro</b> (1996-1997).<br><br>Esta web, que se inspira en la estética del juego original, es obra de <b>Alberto Muñoz Fuertes</b> (<a href="mailto:alberto.munoz.fuertes@proton.me" style="color:#8dff8d">alberto.munoz.fuertes@proton.me</a>). No busca beneficio alguno: nace de la nostalgia del juego de su infancia y del deseo de volver a jugarlo con sus ídolos futbolísticos del pasado.';
 const MENU_ITEMS=[
   ['INSTRUCCIONES',338,147,150,()=>go('instrucciones')],
   ['HISTORIA',352,168,90,()=>go('historia')],
@@ -47,7 +47,7 @@ OTROS: Partido amistoso entre dos equipos cualesquiera; impresión en PDF de fic
 
 La partida de Liga Manager se guarda automáticamente en el navegador; en el móvil conviene exportarla a un archivo desde "Guardar partida".
 
-CRÉDITOS: los datos, gráficos, fotografías, música y nombres pertenecen a Dinamic Multimedia y han sido obtenidos del juego original PC Fútbol 5.0 y de su Edición de Oro. Esta web, que se inspira en la estética del juego original, es obra de Alberto Muñoz Fuertes (alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.`);
+CRÉDITOS: los datos, gráficos, fotografías, música y nombres pertenecen a Dinamic Multimedia (https://dinamicmultimedia.es/) y han sido obtenidos del juego original PC Fútbol 5.0 y de su Edición de Oro. Esta web, que se inspira en la estética del juego original, es obra de Alberto Muñoz Fuertes (alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.`);
   sc.appendChild(body);
   s.appendChild(btn('VOLVER',540,446,90,()=>go('menu'),'blue','ico_volver'));
 }
