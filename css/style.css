@@ -312,3 +312,8 @@ body.mui .sorteo-izq{flex-basis:100%;width:auto!important;height:auto!important;
 body.mui .sorteo-der{height:auto!important}
 .sorteo-nota{color:#9fb4e8;text-align:center;padding:0 10px;line-height:11px}
 body.mui .sorteo-nota{flex-basis:100%}
+.prizes{display:flex;flex-wrap:wrap;gap:4px 6px}
+.prize{font-family:'proman8';font-size:11px;line-height:12px;color:#fff;background:#0a1240;border:1px solid #3a4f9f;border-radius:3px;padding:2px 6px;white-space:nowrap}
+.prize b{color:#ffe24a;font-weight:normal}
+.prize.champ{border-color:#5ad05a;color:#8dff8d}
+body.mui .prize{font-size:13px;line-height:15px;padding:4px 8px}

@@ -100,10 +100,12 @@ function awardCupRound(k,ri,champion){ const d=CUP_DEFS[k]; const v=cupPrize(k,r
 function cupMatchFinance(hm,aw,r){ if(hm.id!==G.team) return; const gate=gateIncome(r.att,null,hm.capacity); G.budget=(G.budget||0)+gate; G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:aw.name+' (copa)',home:true,att:r.att,full:isFull(hm,r.att),gate,tv:0,wages:0,budget:G.budget}]).slice(-40); }
 function scrPremios(back){
   const lg=G.league; const d1=lg.endsWith('1'); const t=d1?PRIZES.liga1:PRIZES.liga2; const rest=d1?PRIZES.liga1rest:PRIZES.liga2rest;
-  const body=h('div',{class:'scroll',style:{maxHeight:'300px'}});
-  const sec=(title,lines)=>{ body.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'6px 0 2px',letterSpacing:'1px'}},title)); lines.forEach(l=>body.appendChild(h('div',{class:'f-p8',style:{lineHeight:'12px'}},l))); };
-  sec('LIGA · '+league(lg).name.toUpperCase()+' (al final de la temporada)',t.map((v,i)=>(i+1)+'º: '+fmtNum(v)+' M').concat(['Resto: '+fmtNum(rest)+' M']));
-  Object.keys(G.cups).forEach(k=>{ const p=PRIZES[k]; const d=CUP_DEFS[k]; if(!p) return; sec(cupName(k).toUpperCase()+' (por ronda jugada)',d.rounds.map((r,i)=>r.charAt(0)+r.slice(1).toLowerCase()+': '+fmtNum(p.rounds[i]||0)+' M').concat(['Campeón: +'+fmtNum(p.champion)+' M'])); });
-  sec('ADEMÁS',['Taquilla de los partidos en casa (liga y copas), contrato de televisión y primas por victoria según el contrato.']);
+  const MUI=(typeof UI!=='undefined'&&UI==='mobile'); const body=h('div',{class:'scroll',style:{maxHeight:MUI?'62vh':'300px'}});
+  const sec=(title,items)=>{ body.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'6px 0 3px',letterSpacing:'1px'}},title)); const row=h('div',{class:'prizes'}); items.forEach(x=>row.appendChild(h('span',{class:'prize'+(x[2]?' champ':'')},h('b',{},x[0]),' '+x[1]))); body.appendChild(row); };
+  // posiciones con el mismo premio agrupadas en rangos (4º-5º)
+  const ranges=[]; t.forEach((v,i)=>{ const last=ranges[ranges.length-1]; if(last&&last.v===v) last.to=i+1; else ranges.push({from:i+1,to:i+1,v}); });
+  sec('LIGA · '+league(lg).name.toUpperCase()+' · AL FINAL DE LA TEMPORADA',ranges.map(r=>[(r.from===r.to?r.from+'º':r.from+'º-'+r.to+'º'),fmtNum(r.v)+' M']).concat([['Resto',fmtNum(rest)+' M']]));
+  Object.keys(G.cups).forEach(k=>{ const p=PRIZES[k]; const d=CUP_DEFS[k]; if(!p) return; sec(cupName(k).toUpperCase()+' · POR RONDA JUGADA',d.rounds.map((r,i)=>[r.charAt(0)+r.slice(1).toLowerCase(),fmtNum(p.rounds[i]||0)+' M']).concat([['Campeón','+'+fmtNum(p.champion)+' M',true]])); });
+  body.appendChild(h('div',{class:'f-m8',style:{color:'#9fb4e8',marginTop:'8px',lineHeight:'11px'}},'Además: taquilla de los partidos en casa (liga y copas), contrato de televisión y primas por victoria según el contrato.'));
   dialog('PREMIOS EN JUEGO',body,[{t:'ACEPTAR',f:back}]);
 }
