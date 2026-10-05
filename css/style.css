@@ -172,7 +172,7 @@ body.mobile #audiobar .abtn{font-size:11px;line-height:14px;padding:1px 7px}
 html.mui{overflow:auto;height:auto}
 body.mui{overflow:auto;height:auto;touch-action:auto;background:#06102e}
 body.mui #viewport{position:static;padding:0}
-body.mui #bg{position:fixed;inset:0;background-size:cover;background-position:center;opacity:.2;z-index:0}
+body.mui #bg{position:fixed;inset:0;background-size:cover;background-position:center;opacity:.12;z-index:0}
 body.mui #stage{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none!important;overflow:visible;background:transparent;min-height:100vh;padding:0 0 120px;z-index:1}
 body.mui #screen{position:static;display:flex;flex-direction:column}
 body.mui #screen *{position:static!important}
