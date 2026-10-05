@@ -101,7 +101,7 @@ function scrClasif(state){
   LEAGUE_ORDER.forEach((k,i)=>R.appendChild(btn(LEAGUE_SHORT[k],14,118+i*22,140,()=>scrClasif({lg:k}),lg===k?'green':'blue')));
   R.appendChild(btn('GOLEADORES',14,258,140,()=>scrGoleadores(),'blue','ico_golea'));
   R.appendChild(btn('CALENDARIO',14,282,140,()=>scrCalendario({lg}),'blue','calendario'));
-  const me=st.find(x=>x.id===G.team); if(me&&lg===G.league) { const pt=txt((st.indexOf(me)+1)+'º · '+me.pts+' ptos · '+me.gf+'-'+me.gc,14,308,140,14,'f-m8'); pt.style.whiteSpace='nowrap'; pt.style.overflow='hidden'; pt.style.textAlign='center'; pt.style.color='#ffe24a'; R.appendChild(pt); }
+  const me=st.find(x=>x.id===G.team); if(me&&lg===G.league) { const pt=txt((st.indexOf(me)+1)+'º · '+me.pts+' ptos · '+me.gf+'-'+me.gc,14,308,140,14,'f-m8'); pt.style.whiteSpace='nowrap'; pt.style.overflow='hidden'; pt.style.textAlign='center'; pt.style.color='#ffe24a'; pt.style.fontFamily='micro8'; pt.style.fontSize='10px'; pt.style.lineHeight='12px'; R.appendChild(pt); }
   R.appendChild(btn('VOLVER',14,338,140,()=>scrOficina(),'blue','ico_volver'));
 }
 function scrGoleadores(){
