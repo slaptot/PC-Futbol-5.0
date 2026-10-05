@@ -71,8 +71,9 @@ function simLeg(tie,leg,nlegs,live,after){
   if(live){ scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+hm.stadium,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
   const r=simulateMatch(hm,aw,lh,la); applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();
 }
-function playCupEvent(e){
-  const c=G.cups[e.cup]; const round=c.rounds[e.round]||drawRound(c,e.round);
+function playCupEvent(e,drawn){
+  const c=G.cups[e.cup]; const fresh=!c.rounds[e.round]; const round=c.rounds[e.round]||drawRound(c,e.round);
+  if(fresh&&!drawn&&userInCup(e.cup)){ saveGame(); scrSorteo(e.cup,e.round,()=>playCupEvent(e,true)); return; }
   G.curCup=e.cup; G.curRound=e.round;
   const mine=round.ties.find(t=>t.a===G.team||t.b===G.team);
   // simular las eliminatorias de los demás
@@ -111,4 +112,28 @@ function scrCopa(k){
   R.appendChild(txt('Participantes: '+c.teams.length+'\nEliminatorias a doble partido; la final a partido único (UEFA a doble).',10,140,150,80,'f-p8'));
   const nxt=G.sched.slice(G.step).find(e=>e.type==='cup'&&e.cup===k); R.appendChild(txt(nxt?'Próxima ronda: '+CUP_DEFS[k].rounds[nxt.round]+' (tras la jornada '+cupAfter(k)[nxt.round]+')':'Competición finalizada.',10,230,150,60,'f-p8'));
   R.appendChild(btn('VOLVER',10,330,150,()=>scrOficina(),'blue','ico_volver'));
+}
+
+// ---- sorteo de una ronda con el bombo del juego
+const SORTEO_IMG={COPA:'copa',CE:'ce',RECOPA:'recopa',UEFA:'uefa'};
+function scrSorteo(k,ri,after){
+  const c=G.cups[k]; const round=c.rounds[ri]; const t=team(G.team); setBg('fondo5'); const s=clearScreen();
+  s.appendChild(topbar({team:t,title:'SORTEO',date:gameDate(),sub:cupName(k).toUpperCase()+' · '+round.name}));
+  const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'SORTEO DE '+round.name+' · '+cupName(k).toUpperCase()));
+  const L=at(h('div',{class:'sorteo-izq'}),0,20,200,350); P.appendChild(L);
+  const bombo=h('img',{class:'bombo girando',src:'img/sorteo/bombo_big.png'}); L.appendChild(bombo);
+  const bola=h('div',{class:'bola'},''); L.appendChild(bola);
+  const trofeo=h('img',{class:'trofeo',src:'img/sorteo/'+(SORTEO_IMG[k]||'copa')+'.png',onerror:function(){this.style.display='none'}}); L.appendChild(trofeo);
+  const R=at(h('div',{class:'scroll sorteo-der'}),200,20,416,310); P.appendChild(R);
+  const list=h('div',{class:'sorteo-lista'}); R.appendChild(list);
+  const ties=round.ties; const seq=[]; ties.forEach((tie,i)=>{ seq.push({i,id:tie.a,side:0}); if(tie.b) seq.push({i,id:tie.b,side:1}); });
+  const rows=ties.map((tie,i)=>{ const me=tie.a===G.team||tie.b===G.team; const r=h('div',{class:'sorteo-tie'+(me?' me':'')},h('span',{class:'sa'},'…'),h('span',{class:'vs'},'-'),h('span',{class:'sb'},tie.b?'…':'(exento)')); list.appendChild(r); return r; });
+  let pos=0, timer=null, done=false;
+  const cont=btn('CONTINUAR',480,338,130,()=>{ if(!done) return; after(); },'green'); cont.classList.add('dis'); P.appendChild(cont);
+  const skip=btn('SALTAR',340,338,130,()=>{ finishAll(); },'blue'); P.appendChild(skip);
+  const place=(x,anim)=>{ const tm=team(x.id); const r=rows[x.i]; const cell=r.querySelector(x.side?'.sb':'.sa'); cell.innerHTML=''; cell.appendChild(h('img',{src:escImg(x.id,'ridi'),style:{height:'14px',marginRight:'4px'}})); cell.appendChild(document.createTextNode(tm.name)); if(anim){ bola.textContent=tm.name; bola.classList.remove('pop'); void bola.offsetWidth; bola.classList.add('pop'); if(typeof playSfx==='function') playSfx('bote'); } r.scrollIntoView({block:'nearest'}); };
+  const finishAll=()=>{ if(done) return; clearInterval(timer); timer=null; while(pos<seq.length){ place(seq[pos++],false); } finish(); };
+  const finish=()=>{ done=true; bombo.classList.remove('girando'); cont.classList.remove('dis'); skip.style.display='none'; bola.textContent=''; };
+  timer=setInterval(()=>{ if(pos>=seq.length){ clearInterval(timer); finish(); return; } place(seq[pos++],true); },260);
+  L.appendChild(h('div',{class:'f-m8 sorteo-nota'},'El bombo decide los emparejamientos de '+round.name.toLowerCase()+(round.nlegs>1?' (ida y vuelta)':' (partido único)')+'.'));
 }

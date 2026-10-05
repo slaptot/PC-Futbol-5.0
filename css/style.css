@@ -293,3 +293,22 @@ table.t.fin tr.find td{padding-bottom:5px;background:none}
 body.mui .fincol{flex-basis:100%;width:auto!important;height:auto!important}
 body.mui table.t.fin{table-layout:fixed}
 body.mui #screen .panel.finfix{position:sticky!important;z-index:40;background:#0d1a4e}
+/* sorteo de copa */
+.sorteo-izq{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:10px}
+.bombo{width:124px;height:124px;image-rendering:pixelated;transform-origin:50% 60%}
+.bombo.girando{animation:bombo 0.9s ease-in-out infinite}
+@keyframes bombo{0%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}100%{transform:rotate(-10deg)}}
+.bola{min-height:22px;font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:1px;text-shadow:1px 1px 0 #000;text-align:center}
+.bola.pop{animation:bola 0.26s ease-out}
+@keyframes bola{0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.trofeo{height:108px;image-rendering:pixelated}
+.sorteo-lista{padding:4px 8px}
+.sorteo-tie{display:flex;align-items:center;gap:8px;padding:3px 4px;border-bottom:1px solid #1a2b70;font-family:'futcon12';font-size:15px;color:#fff}
+.sorteo-tie .sa,.sorteo-tie .sb{flex:1 1 0;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sorteo-tie .sb{justify-content:flex-end}
+.sorteo-tie .vs{flex:0 0 14px;text-align:center;color:#ffe24a}
+.sorteo-tie.me{background:#1d2f80;color:#8dff8d}
+body.mui .sorteo-izq{flex-basis:100%;width:auto!important;height:auto!important;flex-direction:row;justify-content:center;flex-wrap:wrap}
+body.mui .sorteo-der{height:auto!important}
+.sorteo-nota{color:#9fb4e8;text-align:center;padding:0 10px;line-height:11px}
+body.mui .sorteo-nota{flex-basis:100%}
