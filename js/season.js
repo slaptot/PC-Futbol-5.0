@@ -27,7 +27,7 @@ function scrFinTemporada(i){
 }
 function champBox(P,id,label,x,y){
   P.appendChild(at(h('img',{src:escImg(id,'big'),style:{maxHeight:'80px',maxWidth:'80px'},onerror:function(){this.src=escImg(id)}}),x,y));
-  P.appendChild(txt(label,x+90,y+6,200,16,'f-e5')); const nm=txt(team(id).name.toUpperCase(),x+90,y+26,200,40,'f-e4'); nm.style.color='#ffe24a'; P.appendChild(nm);
+  const lb=txt(label,x+90,y+6,400,16,'f-e5'); lb.style.whiteSpace='nowrap'; P.appendChild(lb); const nm=txt(team(id).name.toUpperCase(),x+90,y+28,400,24,'f-e4'); nm.style.color='#ffe24a'; nm.style.whiteSpace='nowrap'; P.appendChild(nm);
   if(id===G.team){ const w=txt('¡¡TU EQUIPO!!',x+90,y+58,200,16,'f-e5'); w.style.color='#8dff8d'; P.appendChild(w); }
 }
 function miniStandings(st,n,opts){ opts=opts||{}; const rows=st.slice(0,n).map((x,i)=>({pos:i+1,x}));
