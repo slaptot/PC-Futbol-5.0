@@ -266,29 +266,41 @@ function playJornadaAI(lg, j){
   return res;
 }
 function scrMatchLive(hm,aw,lh,la,opts){
-  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la);
+  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   setBg('fondo8'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:opts.title||'PARTIDO',date:gameDate(),sub:opts.sub||''}));
-  const P=panel(10,68,620,372); s.appendChild(P);
-  P.appendChild(at(h('img',{src:escImg(hm.id),style:{height:'64px'}}),30,14)); P.appendChild(at(h('img',{src:escImg(aw.id),style:{height:'64px'}}),530,14));
-  P.appendChild(txt(hm.name,100,20,160,18,'f-e4')); P.appendChild(txt(aw.name,360,20,160,18,'f-e4')).style.textAlign='right';
-  const score=txt('0 - 0',260,10,100,30,'f-e1'); score.style.textAlign='center'; score.style.color='#ffe24a'; P.appendChild(score);
-  const clock=txt("0'",280,44,60,16,'f-e4'); clock.style.textAlign='center'; P.appendChild(clock);
-  P.appendChild(at(h('img',{src:'img/cam/'+hm.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),100,44));
-  P.appendChild(at(h('img',{src:'img/cam/'+aw.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),447,44));
-  const ev=at(h('div',{class:'scroll'}),20,96,360,250); P.appendChild(ev);
   const pl=[...lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})];
-  P.appendChild(pitch(392,96,218,140,pl));
-  P.appendChild(txt('Espectadores: '+fmtNum(r.att)+'\nÁrbitro: '+refName(refFor(hm)),392,244,218,40,'f-p8'));
+  let score, clock, ev, P, H;
+  if(MUI){ // móvil: equipos y marcador arriba, campo, y debajo el relato del partido
+    H=panel(10,68,620,80); s.appendChild(H);
+    score=h('div',{class:'f-e1 mlsc'},'0 - 0'); clock=h('div',{class:'f-e4 mlck'},"0'");
+    H.appendChild(h('div',{class:'mlh'},h('img',{src:escImg(hm.id)}),h('div',{class:'mln'},hm.name),h('div',{class:'mls'},score,clock),h('div',{class:'mln'},aw.name),h('img',{src:escImg(aw.id)})));
+    const F=panel(10,160,620,230); s.appendChild(F); F.appendChild(pitch(0,0,330,200,pl));
+    const E=panel(10,400,620,200); s.appendChild(E); E.appendChild(h('div',{class:'hdr'},'EL PARTIDO · '+fmtNum(r.att)+' espectadores · Árbitro: '+refName(refFor(hm))));
+    ev=h('div',{class:'scroll mlev'}); E.appendChild(ev);
+  } else {
+    P=panel(10,68,620,372); s.appendChild(P);
+    P.appendChild(at(h('img',{src:escImg(hm.id),style:{height:'64px'}}),30,14)); P.appendChild(at(h('img',{src:escImg(aw.id),style:{height:'64px'}}),530,14));
+    P.appendChild(txt(hm.name,100,20,160,18,'f-e4')); P.appendChild(txt(aw.name,360,20,160,18,'f-e4')).style.textAlign='right';
+    score=txt('0 - 0',260,10,100,30,'f-e1'); score.style.textAlign='center'; score.style.color='#ffe24a'; P.appendChild(score);
+    clock=txt("0'",280,44,60,16,'f-e4'); clock.style.textAlign='center'; P.appendChild(clock);
+    P.appendChild(at(h('img',{src:'img/cam/'+hm.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),100,44));
+    P.appendChild(at(h('img',{src:'img/cam/'+aw.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),447,44));
+    ev=at(h('div',{class:'scroll'}),20,96,360,250); P.appendChild(ev);
+    P.appendChild(pitch(392,96,218,140,pl));
+    P.appendChild(txt('Espectadores: '+fmtNum(r.att)+'\nÁrbitro: '+refName(refFor(hm)),392,244,218,40,'f-p8'));
+  }
   let min=0, gh=0, ga=0, ei=0, timer=null, speed=60, finished=false;
   const finish=()=>{ if(finished) return; finished=true; clearInterval(timer); timer=null; min=90; clock.textContent="90'"; score.textContent=r.gh+' - '+r.ga; while(ei<r.events.length){ ev.appendChild(eventLine(r.events[ei++],hm,aw)); } ev.scrollTop=1e6;
-    const isHome=hm.id===G.team; const my=isHome?[r.gh,r.ga]:[r.ga,r.gh]; const msg=my[0]>my[1]?'¡VICTORIA!':my[0]<my[1]?'DERROTA':'EMPATE'; P.appendChild(txt(msg,392,356,218,16,'f-e4')).style.textAlign='center';
-    P.appendChild(btn('CONTINUAR',392,300,218,()=>opts.after(r),'green'));
+    const isHome=hm.id===G.team; const my=isHome?[r.gh,r.ga]:[r.ga,r.gh]; const msg=my[0]>my[1]?'¡VICTORIA!':my[0]<my[1]?'DERROTA':'EMPATE';
+    if(MUI){ const m=h('div',{class:'f-e4 mlmsg'},msg); H.appendChild(m); s.appendChild(btn('CONTINUAR',240,446,120,()=>opts.after(r),'green')); }
+    else { P.appendChild(txt(msg,392,356,218,16,'f-e4')).style.textAlign='center'; P.appendChild(btn('CONTINUAR',392,300,218,()=>opts.after(r),'green')); }
   };
   const tick=()=>{ if(finished) return; min++; clock.textContent=min+"'"; while(ei<r.events.length&&r.events[ei].min<=min){ const e=r.events[ei++]; if(e.type==='goal'){ if(e.side==='H') gh++; else ga++; score.textContent=gh+' - '+ga; } ev.appendChild(eventLine(e,hm,aw)); ev.scrollTop=1e6; } if(min>=90) finish(); };
   timer=setInterval(tick,speed);
-  P.appendChild(btn('RÁPIDO',20,350,100,()=>{clearInterval(timer); timer=setInterval(tick,8);},'blue'));
-  P.appendChild(btn('FINALIZAR',130,350,100,()=>{ if(timer) finish(); },'red'));
+  const host=MUI?s:P;
+  host.appendChild(btn('RÁPIDO',20,350,100,()=>{clearInterval(timer); timer=setInterval(tick,8);},'blue'));
+  host.appendChild(btn('FINALIZAR',130,350,100,()=>{ if(timer) finish(); },'red'));
 }
 function scrPartido(){
   const nm=nextMatch(); if(!nm) return scrOficina();

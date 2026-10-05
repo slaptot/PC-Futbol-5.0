@@ -227,3 +227,13 @@ body.mui .trc{display:flex;align-items:center;gap:10px}
 body.mui .trc .btn{flex:0 0 52px;min-width:52px;height:40px!important;font-size:22px}
 body.mui .trc .bar{flex:1;height:16px;position:relative!important}
 body.mui .trv{min-width:28px;text-align:center;font-family:'euroh4';font-size:20px;color:#ffe24a}
+body.mui #screen .topbar{position:sticky!important;top:0;z-index:50}
+body.mui .mlh{display:flex;align-items:center;gap:6px;width:100%}
+body.mui .mlh img{height:44px;flex:0 0 auto}
+body.mui .mln{flex:1 1 0;font-family:'euroh5';font-size:12px;color:#fff;text-align:center;letter-spacing:0;line-height:14px}
+body.mui .mls{flex:0 0 auto;text-align:center;min-width:90px}
+body.mui .mlsc{color:#ffe24a;font-size:26px;line-height:28px}
+body.mui .mlck{font-size:13px;color:#fff}
+body.mui .mlmsg{flex-basis:100%;text-align:center;color:#8dff8d;margin-top:4px}
+body.mui .scroll.mlev{height:36vh!important;max-height:36vh;overflow:auto}
+body.mui .scroll.mlev .txt{margin:3px 4px}
