@@ -90,10 +90,6 @@ function marketTick(){ // tras cada jornada: caducan unos, entran otros y, cada 
 }
 function marketPlayer(m){ const t=team(m.t); if(!t||t.id===G.team) return null; const p=t.players.find(q=>q.id===m.id); return p?{p,t,m}:null; }
 function marketList(filter){ return (G.market||[]).map(marketPlayer).filter(Boolean).filter(r=>!filter||filter==='ALL'||marketGroup(r.t)===filter); }
-function weeklyFinance(hm,aw,r){ // taquilla del partido en casa y sueldos de la plantilla (ficha anual / jornadas)
-  const me=team(G.team); const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
-  const gate=(hm.id===G.team)?Math.round((r.att||0)*1200/1e6):0; G.budget=(G.budget||0)+gate-wages; G.lastFin={gate,wages}; return G.lastFin;
-}
 // ---- popup "HACER OFERTA", con los conceptos del juego original
 function scrOferta(r,state){
   const p=r.p, T=r.t, me=team(G.team); const v=playerValue(p); const age=playerAge(p);

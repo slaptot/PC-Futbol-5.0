@@ -27,8 +27,12 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   años de contrato, cláusula de rescisión, prima por gol, casa y coche, partidos para renovación y
   libertad por descenso; el club acepta si la oferta cubre su precio y el jugador si la ficha y las
   condiciones le convencen. El presupuesto (millones de pesetas según aforo y socios) recibe la
-  taquilla de los partidos en casa y paga cada jornada los sueldos de la plantilla. También se
-  venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
+  taquilla de los partidos en casa (pantalla Finanzas: el precio de la entrada se fija a voluntad y la
+  asistencia depende de la posición en la liga, la racha, el precio y el rival, con lleno casi seguro
+  en los derbis), los derechos de televisión (al empezar cada liga tres cadenas ofrecen contratos
+  según la posición del año anterior: fijo, fijo más prima por victoria, o fijo más partidos
+  televisados) y paga cada jornada los sueldos de la plantilla; el balance jornada a jornada se
+  consulta en Finanzas. También se venden jugadores con ofertas de otros clubes. Y lesiones: se producen en los partidos, duran de 1 a 8
   semanas y el jugador no puede alinearse mientras tanto (lista de lesionados en la oficina y en
   la pantalla de alineación). Entrenamiento semanal por áreas (físico, fuerza, técnica, ataque,
   defensa, porteros) que hace evolucionar los atributos según la edad, con riesgo de lesión si se

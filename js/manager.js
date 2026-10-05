@@ -6,7 +6,7 @@ function newGame(tid){
   const t=team(tid); const lg=t.league;
   G={team:tid,league:lg,jornada:1,formation:'4-4-2',lineup:bestLineup(t,'4-4-2'),results:{},season:'96-97'};
   LEAGUE_ORDER.forEach(k=>G.results[k]=[]);
-  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; snapshotBase(); marketInit();
+  G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; snapshotBase(); marketInit(); tvOffersInit();
   saveGame();
 }
 function gameDate(){ return eventDate(curEvent()); }
@@ -78,13 +78,14 @@ function scrOficina(){
   last.forEach((r,i)=>P.appendChild(txt(team(r.home).name+' '+r.gh+' - '+r.ga+' '+team(r.away).name,8,284+i*14,284,14,'f-con')));
   const M=panel(320,70,310,370); s.appendChild(M); M.appendChild(h('div',{class:'hdr'},'OFICINA'));
   const sib=SIBLING[G.league];
-  const items=[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['ALINEACIÓN',()=>scrAlineacion(),'ico_alineacion'],['TÁCTICA',()=>scrTactica(),'ico_terreno'],['ENTRENAR',()=>scrEntrenamiento(),'ico_terreno'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['CLUB',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio'],['GOLEADORES',()=>scrGoleadores(),'ico_golea'],[cupName('COPA').toUpperCase(),()=>scrCopa('COPA'),'ico_coparey'],['EUROPA',()=>scrCopa(userInCup('CE')?'CE':userInCup('UEFA')?'UEFA':'CE'),'ico_uefa'],['FICHAJES',()=>scrFichajes(),'nuevo_fichaje'],['LESIONADOS',()=>scrLesionados(()=>scrOficina()),'ico_incidencias']];
+  const items=[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['ALINEACIÓN',()=>scrAlineacion(),'ico_alineacion'],['TÁCTICA',()=>scrTactica(),'ico_terreno'],['ENTRENAR',()=>scrEntrenamiento(),'ico_terreno'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['CLUB',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio'],['GOLEADORES',()=>scrGoleadores(),'ico_golea'],[cupName('COPA').toUpperCase(),()=>scrCopa('COPA'),'ico_coparey'],['EUROPA',()=>scrCopa(userInCup('CE')?'CE':userInCup('UEFA')?'UEFA':'CE'),'ico_uefa'],['FICHAJES',()=>scrFichajes(),'nuevo_fichaje'],['LESIONADOS',()=>scrLesionados(()=>scrOficina()),'ico_incidencias'],['FINANZAS',()=>scrFinanzas(),'ico_entrada']];
   items.forEach((it,i)=>M.appendChild(btn(it[0],20+(i%2)*140,24+Math.floor(i/2)*27,130,it[1],'blue',it[2])));
-  M.appendChild(btn(league(sib).name.toUpperCase()+' / VER RIVAL',20,192,270,()=>nm?scrDbTeam(nm[0]===G.team?nm[1]:nm[0],{back:()=>scrOficina()}):scrClasif({lg:sib}),'blue','lupa'));
+  M.appendChild(btn(league(sib).name.toUpperCase()+' / VER RIVAL',160,186,130,()=>nm?scrDbTeam(nm[0]===G.team?nm[1]:nm[0],{back:()=>scrOficina()}):scrClasif({lg:sib}),'blue','lupa'));
   M.appendChild(btn('GUARDAR PARTIDA',20,216,270,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
   M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
   M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
+  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.'+(G.lastFin?'\nÚltima jornada: taquilla +'+fmtNum(G.lastFin.gate||0)+' · TV +'+fmtNum(G.lastFin.tv||0)+' · sueldos -'+fmtNum(G.lastFin.wages||0)+' M':''),20,292,270,70,'f-p8'));
+  if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación
 function scrClasif(state){
@@ -284,7 +285,7 @@ function playJornadaAI(lg, j){
   return res;
 }
 function scrMatchLive(hm,aw,lh,la,opts){
-  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   setBg('fondo8'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:opts.title||'PARTIDO',date:gameDate(),sub:opts.sub||''}));
   const pl=[...lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})];
@@ -324,10 +325,10 @@ function scrPartido(){
   const nm=nextMatch(); if(!nm) return scrOficina();
   const hm=team(nm[0]), aw=team(nm[1]); const isHome=nm[0]===G.team;
   const lh=isHome?G.lineup:bestLineup(hm,'4-4-2'), la=isHome?bestLineup(aw,'4-4-2'):G.lineup;
-  scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,after:r=>{
+  scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,att:isHome?attendanceModel(hm,aw):null,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
     LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
-    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const fin=weeklyFinance(hm,aw,r); const log=applyTraining(); if(fin.gate) log.unshift('Taquilla: +'+fmtNum(fin.gate)+' M · Sueldos: -'+fmtNum(fin.wages)+' M'); else log.unshift('Sueldos de la plantilla: -'+fmtNum(fin.wages)+' M'); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
+    applyInjuries(r); statsRecord(hm,aw,lh,la,r); decInjuries(); const fin=weeklyFinance(hm,aw,r); const log=applyTraining(); log.unshift((fin.gate?'Taquilla ('+fmtNum(fin.att)+' espectadores): +'+fmtNum(fin.gate)+' M · ':'')+'TV: +'+fmtNum(fin.tv)+' M · Sueldos: -'+fmtNum(fin.wages)+' M'); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog('ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }
 // ---- amistoso
