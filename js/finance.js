@@ -12,10 +12,11 @@ function attendanceModel(hm,aw,price,detail){ // asistencia estimada a un partid
   const derby=isDerby(hm,aw); const rivalF=1+(rv.pos<=4?0.15:rv.pos<=8?0.05:0)+(derby?0.30:0);
   const priceF=Math.min(1.3,Math.max(0.35,Math.pow(ticketRef()/price,0.7)));
   const f=recentForm(hm.id); const formF=1+0.03*f.w-0.03*f.l;
-  const exp=cap*0.85*pop*rivalF*priceF*formF; const att=Math.min(cap,Math.round(exp*(detail?1:0.92+Math.random()*0.16)));
-  return detail?{att,pop,rivalF,priceF,formF,derby,cap}:att;
+  const exp=cap*0.9*pop*rivalF*priceF*formF; const att=Math.min(cap,Math.round(exp*(detail?1:0.92+Math.random()*0.16)));
+  return detail?{att,pop,rivalF,priceF,formF,derby,cap,full:att>=cap}:att;
 }
-function gateIncome(att,price){ return Math.round(att*(price||ticketPrice())/1e6); }
+function gateIncome(att,price,cap){ const g=att*(price||ticketPrice())/1e6; return Math.round(cap&&att>=cap?g*1.1:g); } // con lleno, un 10 % más (bar, tienda)
+function isFull(hm,att){ return !!(hm&&att>=(hm.capacity||20000)); }
 // ---- televisión: ofertas al empezar la liga según la posición del año anterior
 function tvOffersInit(){
   const me=team(G.team); const lp=G.lastPos&&G.lastPos[me.id]; let pos=lp?lp.pos:(me.positions&&me.positions.length?me.positions[me.positions.length-1]:12); const d1=G.league.endsWith('1'); if(lp&&lp.lg!==G.league) pos=d1?10:3;
@@ -34,9 +35,9 @@ function scrTvOffers(after){
 // ---- balance semanal: taquilla, televisión y sueldos
 function weeklyFinance(hm,aw,r){
   const me=team(G.team); const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
-  const isHome=hm.id===G.team; const gate=isHome?gateIncome(r.att):0; const tv=tvIncome(hm,r);
-  G.budget=(G.budget||0)+gate+tv-wages; G.lastFin={gate,tv,wages,att:isHome?r.att:0};
-  G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:isHome?aw.name:hm.name,home:isHome,att:isHome?r.att:0,gate,tv,wages,budget:G.budget}]).slice(-40);
+  const isHome=hm.id===G.team; const full=isHome&&isFull(hm,r.att); const gate=isHome?gateIncome(r.att,null,hm.capacity):0; const tv=tvIncome(hm,r);
+  G.budget=(G.budget||0)+gate+tv-wages; G.lastFin={gate,tv,wages,att:isHome?r.att:0,full};
+  G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:isHome?aw.name:hm.name,home:isHome,att:isHome?r.att:0,full,gate,tv,wages,budget:G.budget}]).slice(-40);
   return G.lastFin;
 }
 // ---- pantalla de finanzas
@@ -50,7 +51,7 @@ function scrFinanzas(){
     LS.appendChild(lbl('PRECIO DE LA ENTRADA',10,8));
     const row=at(h('div',{class:'navrow'}),0,24,296,30); row.appendChild(btn('−',10,0,40,()=>{ G.ticket=Math.max(300,price-100); saveGame(); render(); },'blue')); row.appendChild(txt(fmtNum(price)+' ptas',56,4,180,16,'f-e4')).style.textAlign='center'; row.appendChild(btn('+',246,0,40,()=>{ G.ticket=Math.min(15000,price+100); saveGame(); render(); },'blue')); LS.appendChild(row);
     const d=attendanceModel(me,rival||me,price,true); const lines=['Aforo: '+fmtNum(d.cap)];
-    if(rival){ lines.push('Próximo partido: '+(home?'en casa vs ':'fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price))+' millones'); }
+    if(rival){ lines.push('Próximo partido: '+(home?'en casa vs ':'fuera vs ')+rival.name+(d.derby&&home?' · ¡MÁXIMO RIVAL!':'')); if(home) lines.push('Asistencia prevista: '+fmtNum(d.att)+(d.full?' · ¡LLENO!':''),'Taquilla prevista: '+fmtNum(gateIncome(d.att,price,d.cap))+' millones'+(d.full?' (+10 % por lleno)':'')); }
     const tx=txt(lines.join('\n'),10,62,280,76,'f-p8'); tx.style.lineHeight='13px'; LS.appendChild(tx);
     LS.appendChild(lbl('TELEVISIÓN',10,146)); const tv=G.tv; const tvt=txt(tv?tv.name+': '+fmtNum(tv.fixed)+' M fijos'+(tv.winBonus?' + '+fmtNum(tv.winBonus)+' M por victoria':'')+(tv.perMatch?' + '+fmtNum(tv.perMatch)+' M por partido televisado':''):'Sin contrato de televisión.',10,162,280,40,'f-p8'); tvt.style.lineHeight='13px'; LS.appendChild(tvt);
     if(G.tvOffers&&!G.tv) LS.appendChild(btn('VER OFERTAS DE TV',10,204,200,()=>scrTvOffers(()=>scrFinanzas()),'green'));
@@ -61,6 +62,6 @@ function scrFinanzas(){
   const sc=at(h('div',{class:'scroll'}),0,18,306,350); R.appendChild(sc);
   const log=(G.finLog||[]).slice().reverse();
   if(!log.length) sc.appendChild(txt('Todavía no se ha jugado ninguna jornada.',8,8,290,20,'f-p12'));
-  else sc.appendChild(table([{t:'J.',w:24,cls:'c',k:x=>x.j},{t:'RIVAL',k:x=>(x.home?'vs ':'en ')+x.rival},{t:'PÚBL.',w:46,cls:'r',k:x=>x.att?fmtNum(x.att):'-'},{t:'TAQ.',w:36,cls:'r',k:x=>x.gate?'+'+x.gate:'-',cell:()=>'g'},{t:'TV',w:32,cls:'r',k:x=>x.tv?'+'+x.tv:'-',cell:()=>'g'},{t:'SUEL.',w:36,cls:'r',k:x=>'-'+x.wages,cell:()=>'red'},{t:'CAJA',w:44,cls:'r',k:x=>fmtNum(x.budget),cell:()=>'y'}],log,{}));
+  else sc.appendChild(table([{t:'J.',w:24,cls:'c',k:x=>x.j},{t:'RIVAL',k:x=>(x.home?'vs ':'en ')+x.rival},{t:'PÚBL.',w:52,cls:'r',k:x=>x.att?fmtNum(x.att)+(x.full?' ★':''):'-',cell:x=>x.full?'y':''},{t:'TAQ.',w:36,cls:'r',k:x=>x.gate?'+'+x.gate:'-',cell:()=>'g'},{t:'TV',w:32,cls:'r',k:x=>x.tv?'+'+x.tv:'-',cell:()=>'g'},{t:'SUEL.',w:36,cls:'r',k:x=>'-'+x.wages,cell:()=>'red'},{t:'CAJA',w:44,cls:'r',k:x=>fmtNum(x.budget),cell:()=>'y'}],log,{}));
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }
