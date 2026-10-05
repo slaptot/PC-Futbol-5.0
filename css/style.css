@@ -169,8 +169,8 @@ body.mobile #audiobar .abtn{font-size:11px;line-height:14px;padding:1px 7px}
 @media (orientation:portrait){ body.mobile.rot #rotate{display:flex} }
 
 /* ---- versión móvil (html.mui / body.mui): maquetación vertical */
-html.mui{overflow:auto;height:auto}
-body.mui{overflow:auto;height:auto;touch-action:auto;background:#06102e}
+html.mui{overflow:visible;height:auto}
+body.mui{overflow:visible;height:auto;touch-action:auto;background:#06102e}
 body.mui #viewport{position:static;padding:0}
 body.mui #bg{position:fixed;inset:0;background-size:cover;background-position:center;opacity:.12;z-index:0;pointer-events:none}
 body.mui #stage{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none!important;overflow:visible;background:transparent;min-height:100vh;padding:0 0 120px;z-index:1}
@@ -237,3 +237,4 @@ body.mui .mlck{font-size:13px;color:#fff}
 body.mui .mlmsg{flex-basis:100%;text-align:center;color:#8dff8d;margin-top:4px}
 body.mui .scroll.mlev{height:36vh!important;max-height:36vh;overflow:auto}
 body.mui .scroll.mlev .txt{margin:3px 4px}
+body.mui .topbar .teambox .n1,body.mui .topbar .teambox .n2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
