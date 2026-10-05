@@ -360,3 +360,5 @@ body.mui .award .mn{grid-area:mn}
 .dlg .btn.tvoffer .l2{font-family:'proman8';font-size:11px;color:#fff;text-shadow:none;margin-top:2px}
 body.mui .dlg .btn.tvoffer{height:auto!important;line-height:16px;padding:6px 10px}
 body.mui .dlg .btn.tvoffer .l2{font-size:13px}
+.instr{line-height:15px}
+body.mui .instr{font-size:14px;line-height:18px}

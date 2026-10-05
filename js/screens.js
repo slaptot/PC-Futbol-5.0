@@ -22,18 +22,30 @@ function scrMenu(){
 function scrInstrucciones(){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   setBg('fondo4'); const s=clearScreen();
   s.appendChild(topbar({title:'INSTRUCCIONES'}));
-  const p=panel(30,75,580,360); s.appendChild(p);
-  p.appendChild(txt(`PC FÚTBOL 5.0 - Temporada 96-97
+  const p=panel(30,66,580,374); s.appendChild(p);
+  const sc=at(h('div',{class:'scroll'}),4,6,572,362); p.appendChild(sc);
+  const body=h('div',{class:'txt instr',style:{position:'static',padding:'8px 10px 8px 8px',whiteSpace:'pre-wrap'}},`PC FÚTBOL 5.0 · Temporada 96-97
 
-LIGA MANAGER: elige una liga (España, Inglaterra o Italia) y un equipo y dirige su temporada. Desde la oficina puedes consultar la CLASIFICACIÓN, el CALENDARIO, preparar la ALINEACIÓN (titulares, suplentes y roles), definir la TÁCTICA sobre el campo y JUGAR cada jornada. Los partidos se simulan con los atributos reales de los jugadores del juego original (velocidad, resistencia, agresividad, calidad, pase, regate, remate, tiro, entradas y portero).
+LIGA MANAGER: elige una liga (España, Inglaterra o Italia) y un equipo, o crea el tuyo propio con jugadores de toda la base de datos, y dirige su temporada. Desde la oficina puedes consultar la CLASIFICACIÓN de las seis ligas, el CALENDARIO, preparar la ALINEACIÓN (un click selecciona; doble click o pulsación larga marca a un jugador para cambiarlo por el siguiente que toques), definir la TÁCTICA sobre el campo (cada jugador domina unas demarcaciones; fuera de ellas baja su media), ENTRENAR por áreas y JUGAR cada jornada. Los partidos se simulan con los atributos reales de los jugadores del juego original (velocidad, resistencia, agresividad, calidad, pase, regate, remate, tiro, entradas y portero), con lesiones de los 17 tipos del juego, tarjetas y sanciones.
 
-BASE DE DATOS: consulta los 645 equipos de la Edición de Oro (España, Inglaterra, Italia, resto de Europa y Sudamérica), sus plantillas, fichas de jugadores con fotos, biografías y trayectorias, entrenadores, estadios y árbitros.
+COPAS: la Copa nacional (Copa del Rey, FA Cup o Coppa Italia) y las competiciones europeas (Copa de Europa, Recopa y UEFA) se juegan en eliminatorias a doble partido repartidas por toda la temporada, con sorteo de cada ronda en el bombo y finales a partido único en campo neutral. Entras en Europa según la posición del año anterior o como campeón de copa.
+
+FICHAJES: el mercado cambia cada jornada; cada pocas jornadas aparece una figura. Al pulsar un jugador se abre la oferta con los conceptos del juego: oferta al equipo, ficha anual, años de contrato, cláusula de rescisión, prima por gol, casa y coche, partidos para renovación y libertad por descenso. También puedes vender jugadores y curar a los lesionados pagando el tratamiento.
+
+FINANZAS: fija el precio de la entrada (la asistencia depende de tu posición, la racha, el precio y el rival; en los derbis y con lleno se ingresa más), elige una oferta de televisión al empezar cada liga, paga los sueldos cada jornada (el 8 % del valor de mercado de cada jugador) y cobra los premios estipulados por posición en la liga, por ronda de copa y por título. Todo queda en el balance por jornada.
+
+FIN DE TEMPORADA: pantallas de campeones de los tres países, premios Pichichi, Zamora y mejor entrenador, campeones de copa y balance. Después empieza la temporada siguiente con ascensos y descensos, calendarios nuevos y las competiciones europeas que hayas ganado.
+
+BASE DE DATOS: consulta los 645 equipos de la Edición de Oro (España, Inglaterra, Italia, resto de Europa y Sudamérica), sus plantillas, fichas de jugadores con fotos, biografías y trayectorias, entrenadores, estadios y árbitros. El BUSCADOR encuentra cualquier texto: jugadores, equipos, crónicas, declaraciones…
 
 SEGUIMIENTO MANUAL: resultados reales de la temporada 96-97 completa (1ª y 2ª División, Premier League, First Division, Serie A y Serie B) con clasificación por jornada y, en la Liga española, la crónica de cada partido: ficha, goles, tarjetas, alineaciones y declaraciones de los entrenadores.
 
-HISTORIA: todas las clasificaciones de la Liga desde 1928-29 hasta 1995-96, todas las finales de la Copa del Rey, Copa de Europa, Recopa, UEFA, Supercopas de España y Europa e Intercontinental, con palmarés y rankings históricos.\n\nLIGA MANAGER incluye además la Copa nacional (Copa del Rey, FA Cup o Coppa Italia) y las competiciones europeas (Copa de Europa, Recopa y UEFA) en eliminatorias a doble partido intercaladas con la liga, mercado de fichajes con presupuesto, lesiones que dejan a los jugadores varias semanas fuera, entrenamiento semanal por áreas que hace evolucionar los atributos y estadísticas de temporada de todos los jugadores.
+HISTORIA: todas las clasificaciones de la Liga desde 1928-29 hasta 1995-96 y todas las finales de la Copa del Rey, Copa de Europa, Recopa, UEFA, Supercopas de España y Europa e Intercontinental, con palmarés y rankings históricos.
 
-La partida de Liga Manager se guarda automáticamente en el navegador.`,12,26,556,320));
+OTROS: Partido amistoso entre dos equipos cualesquiera; impresión en PDF de fichas, plantillas, entrenadores, árbitros y crónicas; música y efectos originales (interruptores en la barra inferior). En el móvil puedes elegir entre la versión móvil en vertical y la de escritorio, y cambiar en cualquier momento.
+
+La partida de Liga Manager se guarda automáticamente en el navegador; en el móvil conviene exportarla a un archivo desde "Guardar partida".`);
+  sc.appendChild(body);
   s.appendChild(btn('VOLVER',540,446,90,()=>go('menu'),'blue','ico_volver'));
 }
 // ---------- HISTORIA ----------
