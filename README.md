@@ -29,6 +29,16 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   sobrecarga, y estadísticas de temporada (partidos, minutos, goles y tarjetas) de todos los
   jugadores de la partida, con rankings de goleadores y tarjetas. Los partidos se simulan con los atributos de los jugadores
   (VE, RE, AG, CA, pase, regate, remate, tiro, entradas, portero). La partida se guarda en `localStorage`.
+- **Fin de temporada y temporadas siguientes**: cuando se agotan las jornadas y las rondas de copa,
+  la oficina ofrece "Fin de temporada": pantallas con los campeones de las dos divisiones (con la
+  clasificación final, descensos en rojo y ascensos en verde), de la Copa nacional, Copa de Europa,
+  Recopa y UEFA (final y semifinales, y hasta dónde llegó tu equipo) y un balance con la posición, los
+  títulos, el ascenso o descenso, la competición europea del año siguiente y los ingresos. Al empezar
+  la nueva temporada bajan los 3 últimos de 1ª (4 en Italia) y suben los primeros de 2ª, se genera un
+  calendario nuevo a doble vuelta para las dos divisiones del país, los jugadores cumplen un año más y
+  tu equipo entra en la Copa de Europa (campeón de liga o vigente campeón), la Recopa (campeón de copa)
+  o la UEFA (2º a 5º o vigente campeón) según lo conseguido. Los ascensos y descensos y el historial
+  de temporadas se guardan con la partida.
 - **Alineación y táctica**: en Alineación un click selecciona un jugador y muestra sus parámetros;
   un doble click sobre un convocado o no convocado lo marca para cambiar (fila naranja) y el siguiente
   click sobre cualquier jugador (titular, convocado o no convocado) hace el intercambio; también hay
@@ -101,7 +111,8 @@ Para cambiar la contraseña: `python3 tools/setpass.py <nueva>` y subir `js/auth
   historia; `manager.js` el Liga Manager (oficina, alineación, táctica, partidos); `cups.js` copas;
   `market.js` fichajes y lesiones; `training.js` entrenamiento y estadísticas; `audio.js` música y
   efectos; `search.js` buscador; `print.js` PDFs; `custom.js` equipo propio y foto del entrenador; `mobile.js` modo móvil
-  (detección, apaisado, pulsación larga, PWA, exportar/importar partida).
+  (detección, apaisado, pulsación larga, PWA, exportar/importar partida); `season.js` fin de temporada,
+  ascensos y descensos, calendario generado y nueva temporada.
 - `data/`: JSON generados desde los `.DBC` (`teams.json`, `bio/<id>.json`, `leagues.json`,
   `cronicas/<liga>-<jornada>.json`, `cups.json`, `referees.json`, `liga_history.json`). Los datos salen de la
   carpeta *Edición de Oro* (`Eq022022/Eq030022/Eq036022.pkf`, `JORN*.DBC`, `PREMIER/FIRST/SERIEA/SERIEB.DBC`).

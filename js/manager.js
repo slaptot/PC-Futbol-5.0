@@ -10,14 +10,14 @@ function newGame(tid){
   saveGame();
 }
 function gameDate(){ return eventDate(curEvent()); }
-function calOf(k){ return calAliased(k); }
+function calOf(k){ return (G&&G.cal&&G.cal[k])?G.cal[k]:calAliased(k); }
 function myResults(k){ return (G.results[k||G.league]||[]).flat().filter(Boolean); }
 function nextMatch(){ const cal=calOf(G.league); if(G.jornada>cal.length) return null; return cal[G.jornada-1].find(m=>m[0]===G.team||m[1]===G.team); }
 function refFor(hm){ return DATA.referees[(G.jornada*7+hm.id)%DATA.referees.length]; }
 
 function scrLiga(){
   const saved=loadGame();
-  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; applyCustomTeam(); applyTransfers(); applyMods(); migrateGame(); saveGame(); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
+  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; applyCustomTeam(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
   scrSelectTeam();
 }
 function scrSelectTeam(state){
@@ -65,10 +65,10 @@ function scrOficina(){
     P.appendChild(txt(hm.name,8,100,110,16,'f-e5')); P.appendChild(txt(aw.name,190,100,110,16,'f-e5'));
     P.appendChild(txt('-',140,56,20,20,'f-e1'));
     P.appendChild(txt('Estadio: '+hm.stadium+'\nAforo: '+fmtNum(hm.capacity)+'\nÁrbitro: '+refName(refFor(hm)),8,124,284,50,'f-p12'));
-    const st=standings(leagueIds(G.league),myResults()); const pos=st.findIndex(x=>x.id===G.team)+1; const rp=st.findIndex(x=>x.id===(nm[0]===G.team?nm[1]:nm[0]))+1;
+    const st=standings(mgrIds(G.league),myResults()); const pos=st.findIndex(x=>x.id===G.team)+1; const rp=st.findIndex(x=>x.id===(nm[0]===G.team?nm[1]:nm[0]))+1;
     P.appendChild(txt('Tu equipo es '+pos+'º en la clasificación.\nEl rival es '+rp+'º.',8,178,284,30,'f-p12'));
     P.appendChild(btn(ms?'JUGAR JORNADA '+G.jornada:(lineupHasInjured()?'LESIONADOS EN EL ONCE':'ALINEACIÓN INCOMPLETA'),40,230,220,()=>ms?scrPartido():scrAlineacion(),ms?'green':'red','icono_balon_de_la_b'));
-  } else { P.appendChild(txt('La temporada ha terminado.',8,30,280,20,'f-p12')); }
+  } else { P.appendChild(txt('La temporada ha terminado. Repasa los campeones, los ascensos y descensos y empieza la siguiente.',8,30,284,60,'f-p12')); P.appendChild(btn('FIN DE TEMPORADA',40,230,220,()=>scrFinTemporada(0),'green','ico_liga')); }
   const last=(G.results[G.league]||[]).slice(-5).flat().filter(r=>r&&(r.home===G.team||r.away===G.team));
   P.appendChild(lbl('ÚLTIMOS RESULTADOS',8,268));
   last.forEach((r,i)=>P.appendChild(txt(team(r.home).name+' '+r.gh+' - '+r.ga+' '+team(r.away).name,8,284+i*14,284,14,'f-con')));
@@ -78,14 +78,14 @@ function scrOficina(){
   items.forEach((it,i)=>M.appendChild(btn(it[0],20+(i%2)*140,24+Math.floor(i/2)*27,130,it[1],'blue',it[2])));
   M.appendChild(btn(league(sib).name.toUpperCase()+' / VER RIVAL',20,192,270,()=>nm?scrDbTeam(nm[0]===G.team?nm[1]:nm[0],{back:()=>scrOficina()}):scrClasif({lg:sib}),'blue','lupa'));
   M.appendChild(btn('GUARDAR PARTIDA',20,216,270,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
-  M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
+  M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
   M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' 96-97.',20,292,270,60,'f-p8'));
+  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
 }
 // ---- clasificación
 function scrClasif(state){
   state=state||{}; const lg=state.lg||G.league; const t=team(G.team); setBg('fondo0'); const s=clearScreen();
-  const results=myResults(lg); const st=standings(leagueIds(lg),results);
+  const results=myResults(lg); const st=standings(mgrIds(lg),results);
   s.appendChild(topbar({team:t,title:'CLASIFICACIÓN',date:gameDate(),sub:league(lg).long.toUpperCase()+' · JORNADA '+Math.max(1,G.jornada-1)}));
   const P=panel(10,68,440,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},league(lg).long.toUpperCase()));
   const sc=at(h('div',{class:'scroll'}),0,18,436,352); P.appendChild(sc);
@@ -113,7 +113,7 @@ function scrGoleadores(){
 function scrCalendario(state){
   state=state||{}; const t=team(G.team); const lg=state.lg||G.league; const cal=calOf(lg); const j=state.j||Math.min(G.jornada,cal.length);
   setBg('fondo0'); const s=clearScreen();
-  s.appendChild(topbar({team:t,title:'CALENDARIO',date:roundDate(lg,j),sub:'JORNADA '+j+' · '+league(lg).long.toUpperCase()}));
+  s.appendChild(topbar({team:t,title:'CALENDARIO',date:mgrDate(lg,j),sub:'JORNADA '+j+' · '+league(lg).long.toUpperCase()}));
   const P=panel(10,68,440,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'JORNADA '+j+(j<G.jornada?' - RESULTADOS':' - PARTIDOS')));
   const res=(G.results[lg]||[])[j-1]||[];
   const rows=cal[j-1].map((m,i)=>{const r=res[i]; return {h:team(m[0]),a:team(m[1]),r};});

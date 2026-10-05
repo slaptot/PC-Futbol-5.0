@@ -22,11 +22,11 @@ function buildCups(){
   const byCountry={}; foreign.forEach(t=>{ (byCountry[t.nat]=byCountry[t.nat]||[]).push(t); });
   Object.values(byCountry).forEach(a=>a.sort((x,y)=>teamME(y)-teamME(x)));
   const pick=(rank)=>Object.values(byCountry).map(a=>a[rank]).filter(Boolean).sort((x,y)=>teamME(y)-teamME(x));
-  const pos=me.positions&&me.positions.length?me.positions[me.positions.length-1]:99;
-  const champ=pos===1, uefa=pos>=2&&pos<=5;
+  const lp=G.lastPos&&G.lastPos[me.id]; const pos=lp?(lp.lg===G.league&&G.league.endsWith('1')?lp.pos:99):(me.positions&&me.positions.length?me.positions[me.positions.length-1]:99);
+  const lc=G.lastCups||{}; const champ=pos===1||lc.CE===me.id, recopa=!champ&&lc.COPA===me.id, uefa=!champ&&!recopa&&((pos>=2&&pos<=5)||lc.UEFA===me.id);
   const own=teamsOfLeague(G.league).filter(t=>t.id!==me.id).sort((a,b)=>teamME(b)-teamME(a));
   let ce=pick(0).slice(0,15); ce.push(champ?me:own[0]); cups.CE=mkCup('CE',shuffle(ce.map(t=>t.id)));
-  let rc=pick(2).slice(0,16); cups.RECOPA=mkCup('RECOPA',shuffle(rc.map(t=>t.id)));
+  let rc=pick(2).slice(0,recopa?15:16); if(recopa) rc.push(me); cups.RECOPA=mkCup('RECOPA',shuffle(rc.map(t=>t.id)));
   let uf=pick(1).concat(pick(3)).slice(0,uefa?29:30); if(uefa) uf.push(me); uf=uf.concat(own.slice(1,3)); cups.UEFA=mkCup('UEFA',shuffle(uf.slice(0,32).map(t=>t.id)));
   return cups;
 }
@@ -40,7 +40,7 @@ function buildSchedule(){
 }
 function curEvent(){ return G.sched&&G.sched[G.step]; }
 function eventLabel(e){ if(!e) return 'TEMPORADA FINALIZADA'; if(e.type==='liga') return 'JORNADA '+e.j; const d=CUP_DEFS[e.cup]; return cupName(e.cup).toUpperCase()+' · '+d.rounds[e.round]; }
-function eventDate(e){ if(!e) return roundDate(G.league,calOf(G.league).length); if(e.type==='liga') return roundDate(G.league,e.j); const j=Math.min(CUP_DEFS[e.cup].after[e.round],calOf(G.league).length); const d=new Date(roundDate(G.league,j)); d.setDate(d.getDate()+3); return d; }
+function eventDate(e){ if(!e) return mgrDate(G.league,calOf(G.league).length); if(e.type==='liga') return mgrDate(G.league,e.j); const j=Math.min(CUP_DEFS[e.cup].after[e.round],calOf(G.league).length); const d=new Date(mgrDate(G.league,j)); d.setDate(d.getDate()+3); return d; }
 function userInCup(k){ const c=G.cups[k]; return c.alive.includes(G.team); }
 function drawRound(c,ri){
   const d=CUP_DEFS[c.key]; const ids=shuffle(c.alive.slice()); const ties=[];

@@ -54,7 +54,7 @@ function calcME(p){
 }
 function team(id){ return DATA.teams[id]; }
 function teamsOfDiv(d){ return Object.values(DATA.teams).filter(t=>t.div===d).sort((a,b)=>a.name.localeCompare(b.name)); }
-function playerAge(p, year){ year = year||1996; return p.birth[2]>1900 ? (year - p.birth[2] - ((p.birth[1]>8)?1:0)) : '-'; }
+function playerAge(p, year){ year = year||(1996+((typeof G!=='undefined'&&G&&G.seasonIdx)||0)); return p.birth[2]>1900 ? (year - p.birth[2] - ((p.birth[1]>8)?1:0)) : '-'; }
 function birthStr(p){ if(!p.birth[2]) return '-'; if(!p.birth[0]) return String(p.birth[2]); return p.birth[0]+'/'+p.birth[1]+'/'+p.birth[2]; }
 function countryName(c){ return COUNTRIES[c] || ('País '+c); }
 function imgOr(src, fallback){ return src; }
