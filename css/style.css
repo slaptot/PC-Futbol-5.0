@@ -1,0 +1,169 @@
+@font-face{font-family:'futcon12';src:url(../fonts/futcon12.ttf?v=3)}
+@font-face{font-family:'futcon8';src:url(../fonts/futcon8.ttf?v=3)}
+@font-face{font-family:'futcond8';src:url(../fonts/futcond8.ttf?v=3)}
+@font-face{font-family:'euroh1';src:url(../fonts/euroh1.ttf?v=3)}
+@font-face{font-family:'euroh32';src:url(../fonts/euroh32.ttf?v=3)}
+@font-face{font-family:'euroh4';src:url(../fonts/euroh4.ttf?v=3)}
+@font-face{font-family:'euroh5';src:url(../fonts/euroh5.ttf?v=3)}
+@font-face{font-family:'euro8';src:url(../fonts/euro8.ttf?v=3)}
+@font-face{font-family:'euro8bd';src:url(../fonts/euro8bd.ttf?v=3)}
+@font-face{font-family:'proman8';src:url(../fonts/proman8.ttf?v=3)}
+@font-face{font-family:'proman10';src:url(../fonts/proman10.ttf?v=3)}
+@font-face{font-family:'proman12';src:url(../fonts/proman12.ttf?v=3)}
+@font-face{font-family:'proman14';src:url(../fonts/proman14.ttf?v=3)}
+@font-face{font-family:'proman18';src:url(../fonts/proman18.ttf?v=3)}
+@font-face{font-family:'micro8';src:url(../fonts/micro8.ttf?v=3)}
+@font-face{font-family:'result';src:url(../fonts/result.ttf?v=3)}
+@font-face{font-family:'dock10';src:url(../fonts/dock10.ttf?v=3)}
+
+html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;font-family:'futcon12',sans-serif;color:#fff;-webkit-font-smoothing:none;font-smooth:never}
+#viewport{position:fixed;inset:0}
+#stage{position:absolute;left:50%;top:50%;width:640px;height:480px;overflow:hidden;transform-origin:center center;background:#102060;image-rendering:pixelated;image-rendering:crisp-edges}
+#bg{position:absolute;inset:0;background-size:640px 480px;background-repeat:no-repeat}
+#screen{position:absolute;inset:0}
+#modal{position:absolute;inset:0;display:none}
+#modal.on{display:block}
+img{image-rendering:pixelated}
+*{box-sizing:border-box;user-select:none}
+.abs{position:absolute}
+.hot{position:absolute;cursor:pointer}
+.hot:hover{outline:1px dotted rgba(255,255,0,.6)}
+
+/* fonts */
+.f-con{font-family:'futcon12';font-size:15px;line-height:15px}
+.f-con8{font-family:'futcon8';font-size:13px;line-height:13px}
+.f-cond8{font-family:'futcond8';font-size:15px;line-height:15px}
+.f-e1{font-family:'euroh1';font-size:26px;line-height:26px}
+.f-e32{font-family:'euroh32';font-size:19px;line-height:19px}
+.f-e4{font-family:'euroh4';font-size:15px;line-height:15px}
+.f-e5{font-family:'euroh5';font-size:13px;line-height:13px}
+.f-e8{font-family:'euro8';font-size:11px;line-height:11px}
+.f-e8b{font-family:'euro8bd';font-size:11px;line-height:11px}
+.f-p8{font-family:'proman8';font-size:11px;line-height:11px}
+.f-p10{font-family:'proman10';font-size:10px;line-height:10px}
+.f-p12{font-family:'proman12';font-size:13px;line-height:13px}
+.f-p14{font-family:'proman14';font-size:15px;line-height:15px}
+.f-p18{font-family:'proman18';font-size:19px;line-height:19px}
+.f-m8{font-family:'micro8';font-size:10px;line-height:10px}
+.f-res{font-family:'result';font-size:15px;line-height:15px}
+.f-dock{font-family:'dock10';font-size:18px;line-height:18px}
+
+/* top bar (manager) */
+.topbar{position:absolute;left:0;top:0;width:640px;height:62px;background:url(../img/ui/barra0.png) no-repeat}
+.topbar .teambox{position:absolute;left:4px;top:4px;width:118px;height:34px;background:#e8e8e8;border:2px solid #000;border-radius:2px;color:#000;padding:3px 4px;line-height:14px;overflow:hidden}
+.topbar .teambox .n1{font-family:'euroh5';font-size:13px;color:#102060}
+.topbar .teambox .n2{font-family:'proman8';font-size:11px;color:#333}
+.topbar .esc{position:absolute;left:126px;top:3px;width:36px;height:36px;background:#fff;border:1px solid #000;display:flex;align-items:center;justify-content:center}
+.topbar .esc img{height:36px}
+.topbar .title{position:absolute;left:190px;top:8px;width:260px;height:30px;text-align:center;font-family:'euroh1';font-size:26px;line-height:30px;color:#ffe24a;text-shadow:2px 2px 0 #000,0 0 6px #000;letter-spacing:1px}
+.topbar .datebox{position:absolute;right:6px;top:2px;width:112px;height:58px;background:#e8e8e8;border:2px solid #000;color:#000;text-align:center;padding:3px 0 4px;font-family:'proman8';font-size:11px;line-height:12px;overflow:hidden}
+.topbar .datebox b{display:block;font-family:'euroh5';font-size:13px;line-height:14px;color:#102060}
+.topbar .sub{position:absolute;left:0;top:44px;width:640px;text-align:center;font-family:'euroh5';font-size:13px;color:#fff;text-shadow:1px 1px 0 #000}
+
+/* panels */
+.panel{position:absolute;background:#0d1a4e;border:2px solid;border-color:#5f78c8 #060c2a #060c2a #5f78c8;box-shadow:inset 0 0 0 1px #1a2b70;color:#fff}
+.panel.light{background:#fff;color:#000;border-color:#fff #555 #555 #fff}
+.panel .hdr{position:absolute;left:0;top:0;right:0;height:16px;background:linear-gradient(#d8d8d8,#8c8c8c);color:#000;font-family:'euroh5';font-size:13px;line-height:16px;text-align:center;letter-spacing:1px}
+.bar-title{position:absolute;height:18px;background:linear-gradient(#fff2a0,#e0a800);color:#000;font-family:'euroh5';font-size:13px;line-height:18px;text-align:center;border:1px solid #000;letter-spacing:1px}
+.bar-blue{position:absolute;height:18px;background:linear-gradient(#5f7fe0,#1b2f88);color:#ffe24a;font-family:'euroh5';font-size:13px;line-height:18px;text-align:center;border:1px solid #000;letter-spacing:1px}
+
+/* buttons */
+.btn{position:absolute;height:20px;line-height:18px;text-align:center;font-family:'euroh5';font-size:13px;color:#000;background:linear-gradient(#e6e6e6,#9a9a9a);border:1px solid;border-color:#fff #333 #333 #fff;cursor:pointer;letter-spacing:1px;white-space:nowrap;padding:0 6px}
+.btn:hover{background:linear-gradient(#fff,#b0b0b0)}
+.btn:active{background:linear-gradient(#8a8a8a,#c0c0c0);border-color:#333 #fff #fff #333}
+.btn.blue{background:linear-gradient(#2a3f96,#0c1550);color:#ffe24a;border-color:#7f94e8 #040820 #040820 #7f94e8;text-shadow:1px 1px 0 #000}
+.btn.blue:hover{background:linear-gradient(#3a52b8,#15206a)}
+.btn.green{background:linear-gradient(#5ad05a,#167a16);color:#fff;border-color:#b8ffb8 #063806 #063806 #b8ffb8;text-shadow:1px 1px 0 #000}
+.btn.red{background:linear-gradient(#e05a5a,#8a1616);color:#fff;border-color:#ffb8b8 #380606 #380606 #ffb8b8;text-shadow:1px 1px 0 #000}
+.btn.dis{opacity:.45;pointer-events:none}
+.btn .ico{position:absolute;left:3px;top:2px;height:14px;max-width:18px;object-fit:contain}
+.btn.ib{padding-left:24px}
+
+/* tables */
+table.t{border-collapse:collapse;width:100%;table-layout:fixed;font-family:'futcon12';font-size:15px;line-height:15px;color:#fff}
+table.t th{color:#ffe24a;font-weight:normal;text-align:left;padding:1px 2px;background:#0a1240;border-bottom:1px solid #3a4f9f;white-space:nowrap}
+table.t td{padding:1px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.t th{overflow:hidden;text-overflow:ellipsis}
+table.t tr:nth-child(even) td{background:rgba(255,255,255,.06)}
+table.t tr.sel td{background:#2d49b8;color:#fff}
+table.t tr.me td{color:#7fff7f}
+table.t tr.pend td{background:#7a4a10;color:#ffd080}
+table.t tr.pend.sel td{background:#9a5a10;color:#fff}
+table.t tr.clk{cursor:pointer}
+table.t tr.clk:hover td{background:#1d2f80}
+table.t td.r,table.t th.r{text-align:right}
+table.t td.c,table.t th.c{text-align:center}
+table.t td.g{color:#8dff8d}
+table.t td.y{color:#ffe24a}
+table.t td.grey{color:#9fa8cf}
+table.t tr.grp td{background:#1a2a73;color:#ffe24a;font-family:'euroh5';font-size:13px;letter-spacing:1px;text-align:center;padding:2px}
+.scroll{overflow-y:auto;overflow-x:hidden}
+.scroll::-webkit-scrollbar{width:10px}
+.scroll::-webkit-scrollbar-thumb{background:#8da0e0;border:1px solid #000}
+.scroll::-webkit-scrollbar-track{background:#060c2a}
+
+/* misc */
+.pitch{position:absolute;background:#1f8a1f;border:2px solid #0a3a0a;overflow:hidden}
+.pitch .ln{position:absolute;border:1px solid rgba(255,255,255,.8)}
+.pitch .dot{position:absolute;width:14px;height:14px;border-radius:50%;background:#2ff02f;border:1px solid #063;color:#000;font-family:'micro8';font-size:10px;line-height:12px;text-align:center;cursor:pointer;transform:translate(-7px,-7px)}
+.pitch .dot.sel{background:#ffe24a}
+.pitch .dot.bad{background:#ff9a3c;border-color:#7a2a00}
+.pitch .dot.bad.sel{background:#ffe24a;box-shadow:0 0 0 2px #ff9a3c}
+select.select option.ok{color:#0a7a0a;font-weight:bold}
+select.select option.no{color:#777}
+table.t td.red{color:#ff8a60}
+.pitch .dot.rival{background:#f05050}
+.pitch .dot.ball{background:#fff}
+.bar{position:absolute;height:9px;background:#071030;border:1px solid #5f78c8}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#2e55e0,#8fb0ff)}
+.lbl{position:absolute;font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:1px;white-space:nowrap}
+.txt{position:absolute;font-family:'proman12';font-size:13px;line-height:14px;color:#fff;white-space:pre-wrap}
+.txt.k{color:#000}
+.box{position:absolute;background:#fff;border:1px solid #000;color:#000}
+.menu-item{position:absolute;height:21px;cursor:pointer}
+.menu-item:hover{background:rgba(255,255,0,.18)}
+.menu-item.dis{cursor:default}
+.menu-item.dis:hover{background:none}
+.fade{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.dlg{position:absolute;left:120px;top:140px;width:400px;background:#0d1a4e;border:2px solid;border-color:#5f78c8 #060c2a #060c2a #5f78c8;padding:12px;color:#fff;font-family:'proman12';font-size:13px;line-height:15px}
+.dlg h3{margin:0 0 8px;font-family:'euroh4';font-size:15px;color:#ffe24a;font-weight:normal;letter-spacing:1px}
+.dlg .btn{position:relative;display:inline-block;margin:8px 6px 0 0}
+.dlg .btn.dis{opacity:.45;cursor:default}
+.ev{font-family:'proman12';font-size:13px;line-height:14px;white-space:nowrap}
+.ev.goal{color:#ffe24a}
+.ev.card{color:#ffb060}
+.ev.red{color:#ff6060}
+.select{position:absolute;background:#fff;color:#000;border:1px solid #000;font-family:'futcon12';font-size:15px;height:18px;padding:0 2px}
+select.select{appearance:none;-webkit-appearance:none;border-radius:0}
+.cursor-hand{cursor:pointer}
+.teamlist{position:absolute;display:grid;grid-template-columns:repeat(2,1fr);gap:2px 6px;font-family:'futcon12';font-size:15px;line-height:16px}
+.teamlist div{display:flex;align-items:center;gap:4px;cursor:pointer;padding:0 3px;height:18px;color:#fff;border:1px solid transparent}
+.teamlist div:hover{background:#2d49b8;border-color:#7f94e8}
+.teamlist div.sel{background:#2d49b8;color:#ffe24a}
+.teamlist img{height:16px;width:12px;object-fit:contain}
+.ph{position:absolute;background:#444;border:1px solid #000}
+.ph img{display:block}
+.note{position:absolute;font-family:'proman8';font-size:11px;line-height:12px;color:#c8d0ff}
+
+#audiobar{position:absolute;left:50%;transform:translateX(-50%);bottom:1px;display:flex;gap:4px;z-index:50}
+#audiobar .abtn{font-family:'micro8';font-size:10px;line-height:11px;color:#9fa8cf;background:rgba(0,0,0,.7);border:1px solid #5f78c8;padding:0 5px;cursor:pointer;letter-spacing:1px}
+#audiobar .abtn.on{color:#ffe24a}
+#audiobar .abtn:hover{background:rgba(45,73,184,.8);color:#fff}
+
+.dlg input.ed{display:block;width:100%;box-sizing:border-box;background:#fff;color:#000;border:1px solid #000;font-family:'futcon12';font-size:15px;height:20px;padding:0 4px;outline:none;margin:2px 0 8px}
+
+/* ---- modo móvil (body.mobile): sólo se activa en teléfonos y tabletas */
+body.mobile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+body.mobile #viewport{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box}
+body.mobile #stage{left:50%;top:50%}
+body.mobile .scroll{-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain}
+body.mobile .scroll::-webkit-scrollbar{width:4px}
+body.mobile table.t td{padding:3px 2px}
+body.mobile table.t tr.grp td{padding:3px}
+body.mobile .teamlist div{padding:3px 2px}
+body.mobile .btn{min-height:16px}
+body.mobile #audiobar .abtn{font-size:11px;line-height:14px;padding:1px 7px}
+#rotate{display:none;position:fixed;inset:0;z-index:1000;background:#102060;color:#ffe24a;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:'euroh4';font-size:22px;letter-spacing:2px;text-align:center}
+#rotate .ico{font-size:64px;font-family:sans-serif;color:#fff}
+#rotate .f-p12{font-family:'proman12';font-size:13px;color:#fff;letter-spacing:0}
+@media (orientation:portrait){ body.mobile #rotate{display:flex} }

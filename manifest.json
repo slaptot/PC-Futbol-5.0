@@ -1,0 +1,16 @@
+{
+  "name": "PC Fútbol 5.0 Web",
+  "short_name": "PC Fútbol 5.0",
+  "description": "Réplica web de PC Fútbol 5.0 (Dinamic Multimedia, 1996)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#102060",
+  "lang": "es",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
