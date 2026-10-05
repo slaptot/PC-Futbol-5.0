@@ -210,7 +210,11 @@ body.mui .menu-item.dis{opacity:.4}
 body.mui .hot{display:inline-block;width:auto!important;height:auto!important;margin:8px 14px;padding:6px 10px;color:#9fa8cf;font-family:'micro8';font-size:11px;border:1px solid #5f78c8}
 body.mui #modal{position:fixed;inset:0;z-index:100}
 body.mui .fade{position:fixed}
-body.mui .dlg{position:fixed;left:8px!important;right:8px;top:8vh!important;width:auto!important;max-height:84vh;overflow:auto;box-sizing:border-box;font-size:15px;line-height:19px}
+body.mui .dlg{position:fixed;left:8px!important;right:8px;top:4vh!important;top:4dvh!important;width:auto!important;max-height:86vh;max-height:86dvh;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;font-size:15px;line-height:19px}
+body.mui .dlg>h3{flex:0 0 auto}
+body.mui .dlg>div{flex:0 1 auto;min-height:0;overflow:auto}
+body.mui .dlg>div:last-child{flex:0 0 auto;overflow:visible}
+body.mui .dlg .scroll{max-height:none!important}
 body.mui .dlg .btn{flex:none;display:inline-flex;min-width:0;height:34px!important}
 body.mui .dlg input.ed{height:34px;font-size:16px}
 body.mui .dlg video{width:100%!important;height:auto!important}
