@@ -84,18 +84,26 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
 
 ## Versión móvil
 
-La misma web detecta teléfonos y tabletas (user agent o pantalla táctil pequeña; se puede forzar con
-`?mobile=1` o desactivar con `?mobile=0`, y la elección se recuerda) y activa el modo móvil sin tocar
-la versión de escritorio: se juega en horizontal (en vertical aparece el aviso de girar el móvil), el
-escenario 640x480 se escala al visor completo respetando las zonas seguras, se bloquean el zoom y la
-selección de texto, las filas de las tablas son más altas para el dedo, no hay sonido de paso de ratón
-y el doble click de Alineación se sustituye por una pulsación larga (medio segundo, con vibración).
-Incluye `manifest.json` e iconos para añadirla a la pantalla de inicio como app a pantalla completa, y
-un `sw.js` (sólo se registra en modo móvil) que guarda en caché la aplicación y, bajo demanda, las
-imágenes, datos, fuentes y música ya vistos, para poder jugar sin conexión. Como el navegador móvil
-puede borrar el almacenamiento local, el diálogo "Guardar partida" permite exportar la partida a un
-archivo JSON e importarla después. Cámara, instalación y caché exigen servir la web por HTTPS (o
-`localhost`).
+Al abrir la web en un teléfono o tableta (user agent o pantalla táctil pequeña) se pregunta qué
+versión usar, y la elección se recuerda (`?ui=mobile` o `?ui=desktop` la fuerzan):
+
+- **Versión móvil** (`js/mui.js`): las mismas pantallas remaquetadas en vertical. Cada pantalla se
+  construye igual que en escritorio y un reflujo automático coloca la barra superior, los paneles,
+  textos, listas y botones en columna ordenados por su posición original, con botones y filas más
+  altos para el dedo, tablas con desplazamiento horizontal cuando no caben, el menú principal como
+  lista de botones, los diálogos a pantalla casi completa y una barra inferior fija con los botones de
+  acción de la pantalla (Volver, Imprimir…), los interruptores de audio y el cambio a escritorio.
+  El doble click de Alineación es una pulsación larga.
+- **Escritorio en el móvil**: el juego original a 640x480 escalado al visor en horizontal (en vertical
+  aparece el aviso de girar el móvil), con zoom y selección bloqueados y pulsación larga. Desde la
+  barra de audio se puede pasar a la versión móvil.
+
+La versión de escritorio en un ordenador no cambia. En ambos modos móviles hay `manifest.json` e
+iconos para añadir la web a la pantalla de inicio como app, y un `sw.js` (sólo se registra en móvil)
+que guarda en caché la aplicación y, bajo demanda, imágenes, datos, fuentes y música, para jugar sin
+conexión. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
+exportar la partida a un archivo JSON e importarla después. Cámara, instalación y caché exigen HTTPS
+(o `localhost`).
 
 ## Publicación en GitHub Pages con contraseña
 
@@ -112,8 +120,8 @@ Para cambiar la contraseña: `python3 tools/setpass.py <nueva>` y subir `js/auth
   widgets (botones, paneles, tablas, diálogos, campo); `screens.js` menú, base de datos, seguimiento e
   historia; `manager.js` el Liga Manager (oficina, alineación, táctica, partidos); `cups.js` copas;
   `market.js` fichajes y lesiones; `training.js` entrenamiento y estadísticas; `audio.js` música y
-  efectos; `search.js` buscador; `print.js` PDFs; `custom.js` equipo propio y foto del entrenador; `mobile.js` modo móvil
-  (detección, apaisado, pulsación larga, PWA, exportar/importar partida); `season.js` fin de temporada,
+  efectos; `search.js` buscador; `print.js` PDFs; `custom.js` equipo propio y foto del entrenador; `mobile.js` detección de móvil,
+  apaisado, pulsación larga, PWA y exportar/importar partida; `mui.js` la versión móvil en vertical; `season.js` fin de temporada,
   ascensos y descensos, calendario generado y nueva temporada.
 - `data/`: JSON generados desde los `.DBC` (`teams.json`, `bio/<id>.json`, `leagues.json`,
   `cronicas/<liga>-<jornada>.json`, `cups.json`, `referees.json`, `liga_history.json`). Los datos salen de la

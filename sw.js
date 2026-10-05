@@ -1,7 +1,7 @@
 // Service worker (solo se registra en modo móvil): caché del "shell" y de los recursos bajo demanda.
 const V='pcf5-v1';
 const SHELL=['./','./index.html','./css/style.css','./manifest.json',
-  './js/data.js','./js/engine.js','./js/ui.js','./js/screens.js','./js/manager.js','./js/cups.js','./js/market.js','./js/training.js','./js/audio.js','./js/search.js','./js/print.js','./js/custom.js','./js/season.js','./js/mobile.js','./js/auth.js','./js/app.js'];
+  './js/data.js','./js/engine.js','./js/ui.js','./js/screens.js','./js/manager.js','./js/cups.js','./js/market.js','./js/training.js','./js/audio.js','./js/search.js','./js/print.js','./js/custom.js','./js/season.js','./js/mobile.js','./js/auth.js','./js/mui.js','./js/app.js'];
 self.addEventListener('install',e=>{ self.skipWaiting(); e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL).catch(()=>{}))); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
 self.addEventListener('fetch',e=>{

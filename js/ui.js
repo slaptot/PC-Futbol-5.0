@@ -9,7 +9,7 @@ function h(tag, attrs, ...children){
 function px(n){ return n+'px'; }
 function at(el,x,y,w,hh){ el.style.position='absolute'; el.style.left=px(x); el.style.top=px(y); if(w!==undefined) el.style.width=px(w); if(hh!==undefined) el.style.height=px(hh); return el; }
 function fitStage(){
-  const s=$('#stage'); let W=window.innerWidth, H=window.innerHeight;
+  const s=$('#stage'); if(typeof UI!=='undefined'&&UI==='mobile'){ s.style.transform='none'; return; } let W=window.innerWidth, H=window.innerHeight;
   if(typeof MOBILE!=='undefined'&&MOBILE){ const vp=$('#viewport'); if(vp&&vp.clientWidth){ W=vp.clientWidth; H=vp.clientHeight; } if(window.visualViewport){ W=Math.min(W,window.visualViewport.width); H=Math.min(H,window.visualViewport.height); } }
   const k=Math.min(W/640, H/480);
   s.style.transform='translate(-50%,-50%) scale('+k+')';

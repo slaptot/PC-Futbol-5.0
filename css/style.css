@@ -166,4 +166,56 @@ body.mobile #audiobar .abtn{font-size:11px;line-height:14px;padding:1px 7px}
 #rotate{display:none;position:fixed;inset:0;z-index:1000;background:#102060;color:#ffe24a;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:'euroh4';font-size:22px;letter-spacing:2px;text-align:center}
 #rotate .ico{font-size:64px;font-family:sans-serif;color:#fff}
 #rotate .f-p12{font-family:'proman12';font-size:13px;color:#fff;letter-spacing:0}
-@media (orientation:portrait){ body.mobile #rotate{display:flex} }
+@media (orientation:portrait){ body.mobile.rot #rotate{display:flex} }
+
+/* ---- versión móvil (html.mui / body.mui): maquetación vertical */
+html.mui{overflow:auto;height:auto}
+body.mui{overflow:auto;height:auto;touch-action:auto;background:#06102e}
+body.mui #viewport{position:static;padding:0}
+body.mui #bg{position:fixed;inset:0;background-size:cover;background-position:center;opacity:.2;z-index:0}
+body.mui #stage{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none!important;overflow:visible;background:transparent;min-height:100vh;padding:0 0 120px;z-index:1}
+body.mui #screen{position:static;display:flex;flex-direction:column}
+body.mui #screen *{position:static!important}
+body.mui #screen .pitch{position:relative!important;margin:6px auto;flex:0 0 auto}
+body.mui #screen .pitch *{position:absolute!important}
+body.mui #screen img{max-width:100%}
+body.mui #rotate{display:none!important}
+body.mui .topbar{width:auto!important;height:auto!important;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px;background:#1a2b70 url(../img/ui/barra0.png) no-repeat center/cover;border-bottom:2px solid #5f78c8}
+body.mui .topbar .teambox{width:auto;max-width:34%;height:auto;flex:0 1 auto;padding:2px 4px}
+body.mui .topbar .esc{flex:0 0 36px}
+body.mui .topbar .title{flex:1 1 60px;width:auto;font-size:17px!important;line-height:24px;text-align:center;min-width:60px;overflow:hidden;font-family:'euroh32'!important}
+body.mui .topbar .datebox{width:84px;height:auto;flex:0 0 auto;padding:2px 0;font-size:10px;line-height:12px}
+body.mui .topbar .datebox b{font-size:12px;line-height:13px}
+body.mui .topbar .sub{flex-basis:100%;width:auto;font-size:12px}
+body.mui .panel{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;width:auto!important;height:auto!important;margin:6px 6px 0;padding:4px;overflow:visible;gap:2px 4px}
+body.mui .panel .hdr{flex-basis:100%;width:auto;height:auto;line-height:20px;font-size:14px;margin:-4px -4px 4px;right:auto}
+body.mui .btn{display:inline-flex;align-items:center;justify-content:center;height:36px!important;line-height:34px;font-size:14px;flex:1 1 42%;min-width:120px;width:auto!important;margin:2px;box-sizing:border-box;padding:0 6px}
+body.mui .btn.ib{padding-left:6px}
+body.mui .btn .ico{position:static!important;height:16px;margin-right:6px}
+body.mui .txt,body.mui .lbl{flex-basis:100%;width:auto!important;height:auto!important;margin:2px 3px;overflow:visible!important}
+body.mui .lbl{margin-top:8px}
+body.mui .txt{font-size:14px;line-height:17px}
+body.mui .f-m8,body.mui .f-p8{font-size:12px;line-height:14px}
+body.mui .scroll{flex-basis:100%;width:auto!important;height:auto!important;max-height:none;overflow:auto;-webkit-overflow-scrolling:touch}
+body.mui .scroll::-webkit-scrollbar{height:6px}
+body.mui table.t{table-layout:auto;width:100%;min-width:100%;font-size:15px}
+body.mui table.t td,body.mui table.t th{padding:6px 4px;white-space:nowrap}
+body.mui .teamlist{width:auto!important;height:auto!important;flex-basis:100%;grid-template-columns:repeat(2,1fr)}
+body.mui .teamlist div{height:30px;font-size:16px}
+body.mui .teamlist img{height:22px;width:18px}
+body.mui .select{width:100%!important;box-sizing:border-box;height:34px;font-size:16px;margin:3px 0;flex-basis:100%}
+body.mui .menu-item{display:block;height:auto!important;width:auto!important;margin:5px 14px;padding:12px 10px;background:linear-gradient(#2a3f96,#0c1550);color:#ffe24a;border:1px solid;border-color:#7f94e8 #040820 #040820 #7f94e8;font-family:'euroh5';font-size:15px;letter-spacing:1px;text-align:center;text-shadow:1px 1px 0 #000}
+body.mui .menu-item.dis{opacity:.4}
+body.mui .hot{display:inline-block;width:auto!important;height:auto!important;margin:8px 14px;padding:6px 10px;color:#9fa8cf;font-family:'micro8';font-size:11px;border:1px solid #5f78c8}
+body.mui #modal{position:fixed;inset:0;z-index:100}
+body.mui .fade{position:fixed}
+body.mui .dlg{position:fixed;left:8px!important;right:8px;top:8vh!important;width:auto!important;max-height:84vh;overflow:auto;box-sizing:border-box;font-size:15px;line-height:19px}
+body.mui .dlg .btn{flex:none;display:inline-flex;min-width:0;height:34px!important}
+body.mui .dlg input.ed{height:34px;font-size:16px}
+body.mui .dlg video{width:100%!important;height:auto!important}
+#mbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#0d1a4e;border-top:2px solid #5f78c8;padding:4px 6px calc(4px + env(safe-area-inset-bottom))}
+#mact{display:flex;flex-wrap:wrap;gap:4px}
+#mact .btn{position:static!important;flex:1 1 30%;min-width:90px;margin:0}
+#mbar .mrow{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:4px}
+#mbar #audiobar{position:static;transform:none;bottom:auto;left:auto}
+#mbar .abtn{font-family:'micro8';font-size:11px;line-height:16px;color:#9fa8cf;background:rgba(0,0,0,.7);border:1px solid #5f78c8;padding:3px 8px;cursor:pointer;letter-spacing:1px}
