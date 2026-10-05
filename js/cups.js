@@ -110,7 +110,7 @@ function scrCopa(k){
   c.rounds.forEach(r=>{ sc.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',padding:'4px 4px 2px',letterSpacing:'1px'}},r.name)); sc.appendChild(tieTable(r,true)); });
   const R=panel(460,68,170,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'COMPETICIONES'));
   Object.keys(G.cups).forEach((kk,i)=>R.appendChild(btn(cupName(kk).toUpperCase(),10,26+i*26,150,()=>scrCopa(kk),kk===k?'green':'blue')));
-  R.appendChild(txt('Participantes: '+c.teams.length+'\nEliminatorias a doble partido; la final a partido único (UEFA a doble).',10,140,150,80,'f-p8'));
+  R.appendChild(txt('Participantes: '+c.teams.length+'\nEliminatorias a doble partido; la final, a partido único.',10,140,150,80,'f-p8'));
   const nxt=G.sched.slice(G.step).find(e=>e.type==='cup'&&e.cup===k); R.appendChild(txt(nxt?'Próxima ronda: '+CUP_DEFS[k].rounds[nxt.round]+' (tras la jornada '+cupAfter(k)[nxt.round]+')':'Competición finalizada.',10,230,150,60,'f-p8'));
   R.appendChild(btn('VOLVER',10,330,150,()=>scrOficina(),'blue','ico_volver'));
 }
