@@ -125,7 +125,7 @@ function scrCalendario(state){
   sc.appendChild(table([{t:'',w:16,k:r=>h('img',{src:escImg(r.h.id,'ridi'),style:{height:'14px'}})},{t:'LOCAL',k:r=>r.h.name},{t:'',w:50,cls:'c',k:r=>r.r?r.r.gh+' - '+r.r.ga:'-',cell:()=>'y'},{t:'VISITANTE',k:r=>r.a.name},{t:'',w:16,k:r=>h('img',{src:escImg(r.a.id,'ridi'),style:{height:'14px'}})},{t:'',w:60,cls:'c',k:r=>r.r&&r.r.events?'VER':'',cell:()=>'grey'}],rows,{rowClass:r=>(r.h.id===G.team||r.a.id===G.team)?'me':'',onRow:r=>r.r&&r.r.events&&scrResumen(r.r,()=>scrCalendario(state))}));
   const R=panel(460,68,170,372); s.appendChild(R); R.appendChild(h('div',{class:'hdr'},'JORNADAS'));
   R.appendChild(btn('<',14,30,40,()=>scrCalendario({lg,j:Math.max(1,j-1)}),'blue')); R.appendChild(btn('>',112,30,40,()=>scrCalendario({lg,j:Math.min(cal.length,j+1)}),'blue'));
-  R.appendChild(txt(String(j),60,32,46,16,'f-e4')); R.appendChild(btn('ACTUAL',14,58,140,()=>scrCalendario({lg}),'blue'));
+  { const jn=txt(String(j),54,32,58,16,'f-e4'); jn.style.textAlign='center'; R.appendChild(jn); } R.appendChild(btn('ACTUAL',14,58,140,()=>scrCalendario({lg}),'blue'));
   const sib=SIBLING[G.league]; const other=lg===G.league?sib:G.league;
   R.appendChild(btn(league(other).name,14,100,140,()=>scrCalendario({lg:other}),'blue','ico_liga'));
   R.appendChild(btn('VOLVER',14,330,140,()=>scrOficina(),'blue','ico_volver'));
