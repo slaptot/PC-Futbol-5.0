@@ -48,7 +48,7 @@ function scrFinanzas(){
   const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:me,title:'FINANZAS',date:gameDate(),sub:'PRESUPUESTO: '+fmtNum(G.budget)+' MILLONES'}));
   // arriba: taquilla, televisión y sueldos en tres columnas
-  const T=panel(10,68,620,130); s.appendChild(T); T.appendChild(h('div',{class:'hdr'},'TAQUILLA · TELEVISIÓN · SUELDOS'));
+  const T=panel(10,68,620,130); s.appendChild(T); if(MUI){ T.classList.add('finfix'); setTimeout(()=>{ const tb=document.querySelector('#screen .topbar'); T.style.top=(tb?tb.offsetHeight:60)+'px'; },50); } T.appendChild(h('div',{class:'hdr'},'TAQUILLA · TELEVISIÓN · SUELDOS'));
   const colA=at(h('div',{class:'fincol'}),0,20,206,108), colB=at(h('div',{class:'fincol'}),206,20,214,108), colC=at(h('div',{class:'fincol'}),420,20,200,108); T.appendChild(colA); T.appendChild(colB); T.appendChild(colC);
   const blk=(cls,text)=>h('div',{class:cls,style:{position:'static',display:'block',margin:'0 8px 4px'}},text); const small=e=>{ if(!MUI){ e.classList.remove('f-p8'); e.classList.add('f-m8'); e.style.fontSize='10px'; e.style.lineHeight='12px'; } return e; };
   const nm=nextMatch(); const home=nm&&nm[0]===G.team; const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;
@@ -72,7 +72,7 @@ function scrFinanzas(){
   else {
     const concept=x=>x.other!==undefined&&!x.wages&&!x.gate&&!x.tv?x.rival:(x.home?'En casa vs ':'Fuera vs ')+x.rival; const net=x=>(x.gate||0)+(x.tv||0)-(x.wages||0)+(x.other||0);
     const num=(v,sign,cls)=>h('td',{class:'r '+cls},v?((sign&&v>0?'+':'')+fmtNum(v)):'-');
-    const tbl=h('table',{class:'t fin'}); const thead=h('tr',{},h('th',{class:'c',style:{width:'28px'}},'J.'),h('th',{},'CONCEPTO'),h('th',{class:'r',style:{width:'60px'}},'PÚBL.'),h('th',{class:'r',style:{width:'46px'}},'TAQ.'),h('th',{class:'r',style:{width:'40px'}},'TV'),h('th',{class:'r',style:{width:'46px'}},'SUEL.'),h('th',{class:'r',style:{width:'52px'}},'OTROS'),h('th',{class:'r',style:{width:'54px'}},'CAJA')); tbl.appendChild(thead);
+    const tbl=h('table',{class:'t fin'}); const thead=MUI?h('tr',{},h('th',{colspan:6},'JORNADA · CONCEPTO · DETALLE'),h('th',{class:'r',style:{width:'52px'}},'NETO'),h('th',{class:'r',style:{width:'54px'}},'CAJA')):h('tr',{},h('th',{class:'c',style:{width:'28px'}},'J.'),h('th',{},'CONCEPTO'),h('th',{class:'r',style:{width:'60px'}},'PÚBL.'),h('th',{class:'r',style:{width:'46px'}},'TAQ.'),h('th',{class:'r',style:{width:'40px'}},'TV'),h('th',{class:'r',style:{width:'46px'}},'SUEL.'),h('th',{class:'r',style:{width:'52px'}},'OTROS'),h('th',{class:'r',style:{width:'54px'}},'CAJA')); tbl.appendChild(thead);
     log.forEach((x,i)=>{ const pub=x.att?fmtNum(x.att)+(x.full?' ★':''):'-';
       if(MUI){ // móvil: título de la fila y los datos debajo
         tbl.appendChild(h('tr',{class:'fint'},h('td',{colspan:8},h('span',{class:'f-con8',style:{color:'#ffe24a'}},'J.'+x.j+' · '),h('span',{},concept(x)),x.att?h('span',{class:'f-con8',style:{color:x.full?'#ffe24a':'#9fb4e8',marginLeft:'6px'}},pub+' espect.'):null)));
