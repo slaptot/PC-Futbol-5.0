@@ -173,10 +173,17 @@ async function scrFicha(tid, idx, back){
   // atributos
   const A=panel(218,66,180,374); s.appendChild(A); A.appendChild(h('div',{class:'hdr'},'ATRIBUTOS'));
   const names=['VELOCIDAD','RESISTENCIA','AGRESIVIDAD','CALIDAD','PASE','REGATE','REMATE','TIRO','ENTRADAS','PORTERO'];
+  if(typeof UI!=='undefined'&&UI==='mobile'){ // móvil: atributos en dos columnas
+    const g=h('div',{class:'attrgrid'}); names.forEach((n,i)=>g.appendChild(h('div',{class:'attrcell'},h('div',{class:'an'},h('span',{},n),h('span',{class:'av'},String(p.attrs[i]))),h('div',{class:'bar'},h('i',{style:{width:p.attrs[i]+'%'}})))));
+    g.appendChild(h('div',{class:'attrcell sum'},h('div',{class:'an'},h('span',{},'MEDIA'),h('span',{class:'av big'},String(p.me)))));
+    g.appendChild(h('div',{class:'attrcell sum'},h('div',{class:'an'},h('span',{},'ENERGÍA'),h('span',{class:'av'},'99')),h('div',{class:'an'},h('span',{},'MORAL'),h('span',{class:'av'},'95'))));
+    A.appendChild(g);
+  } else {
   names.forEach((n,i)=>{ A.appendChild(lbl(n,8,26+i*30)); A.appendChild(txt(String(p.attrs[i]),140,26+i*30,30,14,'f-con')); const b=at(h('div',{class:'bar'},h('i',{style:{width:p.attrs[i]+'%'}})),8,40+i*30,160,9); A.appendChild(b); });
   A.appendChild(lbl('MEDIA',8,326)); A.appendChild(txt(String(p.me),140,324,30,14,'f-e4'));
   A.appendChild(lbl('ENERGÍA',8,342)); A.appendChild(txt('99',140,342,30,14,'f-con'));
   A.appendChild(lbl('MORAL',8,358)); A.appendChild(txt('95',140,358,30,14,'f-con'));
+  }
   // textos
   const T=panel(406,66,224,374); s.appendChild(T); T.appendChild(h('div',{class:'hdr'},'INFORME'));
   const tabs=['PRESENTACIÓN','CARACTERÍSTICAS','PALMARÉS','INTERNACIONAL','OTROS DATOS','TEMPORADA 95-96','TRAYECTORIA'];

@@ -243,3 +243,9 @@ body.mui .topbar .teambox .n1,body.mui .topbar .teambox .n2{white-space:nowrap;o
 body.mui .navrow{display:flex;align-items:center;gap:8px;flex-basis:100%;width:100%;margin:2px 0}
 body.mui .navrow .btn{flex:0 0 64px;min-width:64px;font-size:18px}
 body.mui .navrow .txt{flex:1 1 auto;text-align:center;margin:0;font-size:18px}
+body.mui .attrgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;width:100%;flex-basis:100%;padding:4px 2px}
+body.mui .attrcell .an{display:flex;justify-content:space-between;align-items:baseline;font-family:'euroh5';font-size:11px;letter-spacing:1px;color:#ffe24a}
+body.mui .attrcell .av{font-family:'futcon12';font-size:16px;color:#fff;letter-spacing:0}
+body.mui .attrcell .av.big{font-family:'euroh4';font-size:18px;color:#ffe24a}
+body.mui .attrcell .bar{position:relative!important;height:10px;margin-top:3px;width:100%}
+body.mui .attrcell.sum{border-top:1px solid #1a2b70;padding-top:6px}
