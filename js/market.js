@@ -42,7 +42,8 @@ function scrFichajes(state){
   L.appendChild(btn('COMPRAR',10,22,150,()=>scrFichajes({mode:'buy',lg}),mode==='buy'?'green':'blue'));
   L.appendChild(btn('VENDER',10,44,150,()=>scrFichajes({mode:'sell',lg}),mode==='sell'?'green':'blue'));
   const groups=[['TODAS LAS LIGAS','ALL'],...LEAGUE_ORDER.map(k=>[LEAGUE_SHORT[k],k]),['RESTO EUROPA','EU'],['AMÉRICA','AM']];
-  if(mode==='buy'){ groups.forEach((g,i)=>L.appendChild(btn(g[0],10,68+i*21,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
+  if(mode==='buy'){ if(MUI){ const strip=h('div',{class:'clubstrip',style:{top:'68px',left:'0px'}}); groups.forEach(g=>strip.appendChild(h('div',{class:'f-con8'+(g[1]===lg?' on':''),style:{color:g[1]===lg?'#ffe24a':'#fff',background:g[1]===lg?'#2d49b8':''},onclick:()=>scrFichajes({mode,lg:g[1]})},g[0]))); L.appendChild(strip); requestAnimationFrame(()=>{ const on=strip.querySelector('.on'); if(on) strip.scrollLeft=Math.max(0,on.offsetLeft-strip.clientWidth/2+on.offsetWidth/2); }); }
+    else groups.forEach((g,i)=>L.appendChild(btn(g[0],10,68+i*21,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
   L.appendChild(txt('Presupuesto:\n'+fmtNum(G.budget)+' M ptas.\nPlantilla: '+me.players.length+' jugadores (mín. 16, máx. 30).',10,262,150,70,'f-p8'));
   (MUI?s:L).appendChild(btn('VOLVER',10,MUI?446:340,150,()=>scrOficina(),'blue','ico_volver'));
   const R=panel(190,68,440,372); s.appendChild(R);
@@ -54,10 +55,12 @@ function scrFichajes(state){
     return;
   }
   const flt=state.lg||'ALL'; const list=marketList(flt).sort((a,b)=>b.p.me-a.p.me);
-  R.appendChild(h('div',{class:'hdr'},'MERCADO DE FICHAJES · JORNADA '+G.jornada+' · '+list.length+' JUGADORES'));
+  R.appendChild(h('div',{class:'hdr'},(MUI?'MERCADO · J.'+G.jornada:'MERCADO DE FICHAJES · JORNADA '+G.jornada)+' · '+list.length+' JUGADORES'));
   const sc=at(h('div',{class:'scroll'}),0,18,436,350); R.appendChild(sc);
   if(!list.length) sc.appendChild(txt('Ahora mismo no hay jugadores transferibles en este mercado. Cada jornada aparecen nuevos.',8,8,400,30,'f-p12'));
-  const tb=table([{t:'JUGADOR',w:84,k:r=>r.p.name},{t:'CLUB',w:60,k:r=>h('span',{class:'f-con8'},r.t.name)},{t:'ROL',w:60,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]])},{t:'ED',w:22,cls:'c',k:r=>playerAge(r.p)},{t:'ME',w:24,cls:'r',k:r=>r.p.me,cell:()=>'y'},{t:'FICHA',w:40,cls:'r',k:r=>fmtNum(r.m.ficha)},{t:'PRECIO',w:46,cls:'r',k:r=>fmtNum(r.m.ask)},{t:'HASTA',w:40,cls:'c',k:r=>'J.'+r.m.until}],list,{rowClass:r=>r.m.star?'me':'',onRow:r=>scrOferta(r,state)}); tb.style.tableLayout='fixed'; sc.appendChild(tb);
+  const cols=[{t:'JUGADOR',w:84,k:r=>r.p.name},{t:'CLUB',w:60,k:r=>h('span',{class:'f-con8'},r.t.name)},{t:'ROL',w:60,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]])},{t:'ED',w:22,cls:'c',k:r=>playerAge(r.p)},{t:'ME',w:24,cls:'r',k:r=>r.p.me,cell:()=>'y'},{t:'FICHA',w:40,cls:'r',k:r=>fmtNum(r.m.ficha)},{t:'PRECIO',w:46,cls:'r',k:r=>fmtNum(r.m.ask)},{t:'HASTA',w:40,cls:'c',k:r=>'J.'+r.m.until}];
+  const colsM=[cols[0],cols[1],{t:'ROL',w:52,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]].replace(/\.$/,''))},cols[4],{t:'PRECIO',w:46,cls:'r',k:r=>fmtNum(r.m.ask)},{t:'J.',w:26,cls:'c',k:r=>r.m.until}];
+  const tb=table(MUI?colsM:cols,list,{rowClass:r=>r.m.star?'me':'',onRow:r=>scrOferta(r,state)}); if(!MUI) tb.style.tableLayout='fixed'; sc.appendChild(tb);
 }
 
 // ---- mercado de fichajes variable: cada jornada aparecen y desaparecen jugadores transferibles
@@ -97,7 +100,7 @@ function scrOferta(r,state){
   const o={fee:demand.fee,ficha:demand.ficha,years:3,clause:demand.fee*3,goal:0,casa:false,renov:false,libertad:false};
   const m=$('#modal'); m.innerHTML=''; m.classList.add('on');
   const d=h('div',{class:'dlg offer'},h('h3',{},'HACER OFERTA · '+p.name.toUpperCase()));
-  d.appendChild(h('div',{class:'f-p8 offinfo'},T.name+' · '+ROLES[p.roles[0]]+' · '+age+' años · ME '+p.me+'\nEl '+T.name+' pide '+fmtNum(demand.fee)+' millones por el traspaso. El jugador pide una ficha anual de '+fmtNum(demand.ficha)+' millones.'));
+  d.appendChild(h('div',{class:'f-p8 offinfo'},T.name+' · '+ROLES[p.roles[0]]+' · '+age+' años · ME '+p.me+'\nEl '+T.name+' pide '+fmtNum(demand.fee)+' millones por el traspaso. El jugador pide una ficha anual de '+fmtNum(demand.ficha)+' millones.'+(r.m?' Disponible hasta la jornada '+r.m.until+'.':'')));
   const rows=h('div',{class:'offrows'}); d.appendChild(rows); const tot=h('div',{class:'f-p8 offtot'}); d.appendChild(tot);
   const upds=[]; const upd=()=>{ upds.forEach(f=>f()); tot.textContent='Traspaso '+fmtNum(o.fee)+' M + ficha '+fmtNum(o.ficha)+' M/año × '+o.years+' · Presupuesto: '+fmtNum(G.budget)+' M'; };
   const mkb=(t,f)=>h('div',{class:'btn blue offb',onclick:f},t);
