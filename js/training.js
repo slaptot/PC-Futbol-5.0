@@ -28,7 +28,13 @@ function scrEntrenamiento(){
   s.appendChild(topbar({team:t,title:'ENTRENAMIENTO',date:gameDate(),sub:'CARGA DE TRABAJO: '+trainingLoad()+' / '+TRAIN_MAX}));
   const L=panel(10,68,250,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'PLAN SEMANAL'));
   const render=()=>{ L.querySelectorAll('.tr').forEach(e=>e.remove()); const sub=s.querySelector('.topbar .sub'); if(sub) sub.textContent='CARGA DE TRABAJO: '+trainingLoad()+' / '+TRAIN_MAX;
+    const MUI=(typeof UI!=='undefined'&&UI==='mobile');
     TRAIN_AREAS.forEach((a,i)=>{ const y=26+i*40; const v=G.training[a[0]]||0;
+      if(MUI){ // versión móvil: fila en columna con controles grandes
+        const dec=btn('−',0,0,48,()=>{ if(v>0){ G.training[a[0]]=v-1; saveGame(); render(); } },'blue'); const inc=btn('+',0,0,48,()=>{ if(v<4&&trainingLoad()<TRAIN_MAX){ G.training[a[0]]=v+1; saveGame(); render(); } },'green');
+        const row=h('div',{class:'tr trm'},h('div',{class:'trh'},h('span',{class:'f-e5',style:{color:'#ffe24a',letterSpacing:'1px'}},a[1]),h('span',{class:'f-m8',style:{color:'#9fb4e8',marginLeft:'8px'}},a[3])),
+          h('div',{class:'trc'},dec,h('div',{class:'bar'},h('i',{style:{width:(v*25)+'%'}})),h('span',{class:'trv'},String(v)),inc));
+        row.style.top=y+'px'; L.appendChild(row); return; }
       const row=at(h('div',{class:'tr'}),0,y,246,40);
       row.appendChild(lbl(a[1],10,2)); const d=txt(a[3],10,16,150,12,'f-m8'); d.style.whiteSpace='nowrap'; row.appendChild(d);
       row.appendChild(btn('-',164,4,22,()=>{ if(v>0){ G.training[a[0]]=v-1; saveGame(); render(); } },'blue'));

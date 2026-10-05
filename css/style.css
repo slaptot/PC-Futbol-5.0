@@ -182,10 +182,10 @@ body.mui #screen .pitch *{position:absolute!important}
 body.mui #screen img{max-width:100%}
 body.mui #rotate{display:none!important}
 body.mui .topbar{width:auto!important;height:auto!important;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:4px 6px;background:#1a2b70 url(../img/ui/barra0.png) no-repeat center/cover;border-bottom:2px solid #5f78c8}
-body.mui .topbar .teambox{width:auto;max-width:34%;height:auto;flex:0 1 auto;padding:2px 4px}
+body.mui .topbar .teambox{width:auto;max-width:30%;height:auto;flex:0 1 auto;padding:2px 4px}
 body.mui .topbar .esc{flex:0 0 36px}
-body.mui .topbar .title{flex:1 1 60px;width:auto;font-size:17px!important;line-height:24px;text-align:center;min-width:60px;overflow:hidden;font-family:'euroh32'!important}
-body.mui .topbar .datebox{width:84px;height:auto;flex:0 0 auto;padding:2px 0;font-size:10px;line-height:12px}
+body.mui .topbar .title{flex:1 1 60px;width:auto;height:auto;font-size:13px!important;line-height:24px;text-align:center;min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'euroh32'!important;letter-spacing:0}
+body.mui .topbar .datebox{width:76px;height:auto;flex:0 0 auto;padding:2px 0;font-size:10px;line-height:12px}
 body.mui .topbar .datebox b{font-size:12px;line-height:13px}
 body.mui .topbar .sub{flex-basis:100%;width:auto;font-size:12px}
 body.mui .panel{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;width:auto!important;height:auto!important;margin:6px 6px 0;padding:4px;overflow:visible;gap:2px 4px}
@@ -220,3 +220,10 @@ body.mui .dlg video{width:100%!important;height:auto!important}
 #mbar .mrow{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:4px}
 #mbar #audiobar{position:static;transform:none;bottom:auto;left:auto}
 #mbar .abtn{font-family:'micro8';font-size:11px;line-height:16px;color:#9fa8cf;background:rgba(0,0,0,.7);border:1px solid #5f78c8;padding:3px 8px;cursor:pointer;letter-spacing:1px}
+body.mui .tr{width:auto!important;height:auto!important;flex-basis:100%}
+body.mui .trm{display:flex;flex-direction:column;gap:6px;padding:8px 4px;border-bottom:1px solid #1a2b70}
+body.mui .trh{font-size:14px;line-height:16px}
+body.mui .trc{display:flex;align-items:center;gap:10px}
+body.mui .trc .btn{flex:0 0 52px;min-width:52px;height:40px!important;font-size:22px}
+body.mui .trc .bar{flex:1;height:16px;position:relative!important}
+body.mui .trv{min-width:28px;text-align:center;font-family:'euroh4';font-size:20px;color:#ffe24a}
