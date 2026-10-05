@@ -85,6 +85,14 @@ puede borrar el almacenamiento local, el diálogo "Guardar partida" permite expo
 archivo JSON e importarla después. Cámara, instalación y caché exigen servir la web por HTTPS (o
 `localhost`).
 
+## Publicación en GitHub Pages con contraseña
+
+La web se publica desde la rama `master` en GitHub Pages para poder probarla en el móvil por HTTPS.
+Fuera de `localhost` pide una contraseña antes de cargar (`js/auth.js`): se compara el hash SHA-256
+de lo tecleado con el guardado en el código y se recuerda en el navegador. Es una barrera contra el
+acceso casual, no una protección real: quien conozca las URL de los archivos puede descargarlos.
+Para cambiar la contraseña: `python3 tools/setpass.py <nueva>` y subir `js/auth.js`.
+
 ## Estructura
 
 - `index.html`, `css/style.css`, `js/*.js`: la aplicación (pantalla lógica de 640x480 escalada).
