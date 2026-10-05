@@ -15,6 +15,7 @@ function muiInit(){ // se llama tras audioInit cuando UI==='mobile'
   const bar=h('div',{id:'mbar'},h('div',{id:'mact'}),h('div',{class:'mrow'}));
   document.body.appendChild(bar); const row=bar.querySelector('.mrow');
   const ab=document.getElementById('audiobar'); if(ab) row.appendChild(ab);
+  row.appendChild(h('div',{class:'abtn',onclick:()=>scrAvisos()},'🔔 AVISOS'));
   row.appendChild(h('div',{class:'abtn',onclick:()=>setUI('desktop')},'⇄ ESCRITORIO'));
   const scr=document.getElementById('screen'); let pend=false;
   new MutationObserver(()=>{ if(pend) return; pend=true; setTimeout(()=>{ pend=false; muiReflow(scr); },0); }).observe(scr,{childList:true,subtree:true});
@@ -22,7 +23,7 @@ function muiInit(){ // se llama tras audioInit cuando UI==='mobile'
   fitStage();
 }
 function muiBarDesktop(){ // botón para pasar a la versión móvil desde el escritorio en un móvil
-  if(!MOBILE||UI!=='desktop') return; const ab=document.getElementById('audiobar'); if(ab) ab.appendChild(h('div',{class:'abtn',onclick:()=>setUI('mobile')},'⇄ MÓVIL'));
+  if(!MOBILE||UI!=='desktop') return; const ab=document.getElementById('audiobar'); if(ab){ ab.appendChild(h('div',{class:'abtn',onclick:()=>scrAvisos()},'🔔')); ab.appendChild(h('div',{class:'abtn',onclick:()=>setUI('mobile')},'⇄ MÓVIL')); }
 }
 function muiPos(el){ const t=parseFloat(el.style.top), l=parseFloat(el.style.left); return [isNaN(t)?1e9:t, isNaN(l)?1e9:l]; }
 function muiSort(c){ const kids=[...c.children]; const ord=kids.map((k,i)=>({k,i,p:muiPos(k),hdr:(k.classList.contains('hdr')||k.classList.contains('topbar'))?0:1}));

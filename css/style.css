@@ -362,3 +362,11 @@ body.mui .dlg .btn.tvoffer{height:auto!important;line-height:16px;padding:6px 10
 body.mui .dlg .btn.tvoffer .l2{font-size:13px}
 .instr{line-height:15px}
 body.mui .instr{font-size:14px;line-height:18px}
+/* splash de carga (móvil / PWA) */
+#splash{position:fixed;inset:0;z-index:2000;background:#0a3a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .45s}
+#splash img{width:46vw;max-width:260px;image-rendering:auto;border-radius:12px;box-shadow:0 0 30px rgba(0,0,0,.6)}
+#splash .bar{width:46vw;max-width:260px;height:8px;background:#071030;border:1px solid #5f78c8}
+#splash .bar i{display:block;height:100%;width:0;background:linear-gradient(#5ad05a,#167a16);transition:width 2.5s ease}
+#splash.go .bar i{width:90%}
+#splash .t{font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:2px}
+#splash.out{opacity:0;pointer-events:none}
