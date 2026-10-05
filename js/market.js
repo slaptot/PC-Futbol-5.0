@@ -35,7 +35,7 @@ function doTransfer(fromTid,idx,toTid,price,record){
 }
 function applyTransfers(){ if(!G||!G.transfers) return; const tr=G.transfers; G.transfers=[]; const inj=G.inj; G.inj={}; const lu=G.lineup; const bb=G.bench; G.lineup=[]; G.bench=[]; tr.forEach(x=>doTransfer(x.from,x.idx,x.to,x.price,false)); G.transfers=tr; G.inj=inj||{}; G.lineup=lu; G.bench=bb||[]; }
 function scrFichajes(state){
-  state=state||{}; const me=team(G.team); setBg('fondo6'); const s=clearScreen();
+  state=state||{}; const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:me,title:'FICHAJES',date:gameDate(),sub:'PRESUPUESTO: '+fmtNum(G.budget)+' MILLONES'}));
   const mode=state.mode||'buy'; const lg=state.lg||G.league;
   const L=panel(10,68,170,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'MERCADO'));
@@ -44,7 +44,7 @@ function scrFichajes(state){
   const groups=[...LEAGUE_ORDER.map(k=>[LEAGUE_SHORT[k],k]),['RESTO EUROPA','EU'],['AMÉRICA','AM']];
   if(mode==='buy'){ groups.forEach((g,i)=>L.appendChild(btn(g[0],10,78+i*22,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
   L.appendChild(txt('Presupuesto:\n'+fmtNum(G.budget)+' M ptas.\nPlantilla: '+me.players.length+' jugadores (mín. 16, máx. 30).',10,262,150,70,'f-p8'));
-  L.appendChild(btn('VOLVER',10,340,150,()=>scrOficina(),'blue','ico_volver'));
+  (MUI?s:L).appendChild(btn('VOLVER',10,MUI?446:340,150,()=>scrOficina(),'blue','ico_volver'));
   const R=panel(190,68,440,372); s.appendChild(R);
   if(mode==='sell'){
     R.appendChild(h('div',{class:'hdr'},'VENDER JUGADORES · '+me.name.toUpperCase()));
@@ -56,9 +56,10 @@ function scrFichajes(state){
   let teams; if(lg==='EU') teams=Object.values(DATA.teams).filter(t=>!t.league&&t.id<2800&&t.id>=200&&t.players.length>=14); else if(lg==='AM') teams=Object.values(DATA.teams).filter(t=>t.id>=2800&&t.id<9000); else teams=teamsOfLeague(lg);
   teams=teams.filter(t=>t.id!==G.team).sort((a,b)=>a.name.localeCompare(b.name)); const sel=state.team||0; const T=sel?team(sel):null;
   R.appendChild(h('div',{class:'hdr'},'COMPRAR · '+(T?T.name.toUpperCase():'TODOS LOS CLUBES')));
-  const tl=at(h('div',{class:'scroll',style:{borderRight:'1px solid #3a4f9f'}}),0,18,100,350); R.appendChild(tl);
-  const item=(name,id)=>h('div',{class:'f-con8',style:{padding:'1px 4px',cursor:'pointer',whiteSpace:'nowrap',overflow:'hidden',background:id===sel?'#2d49b8':'',color:id===sel?'#ffe24a':'#fff'},onclick:()=>scrFichajes({mode,lg,team:id})},name);
-  tl.appendChild(h('div',{class:'f-e8b',style:{color:'#ffe24a',padding:'2px 4px'}},'CLUBES')); tl.appendChild(item('Todos',0)); teams.forEach(t=>tl.appendChild(item(t.name,t.id)));
+  const tl=MUI?h('div',{class:'clubstrip',style:{top:'18px',left:'0px'}}):at(h('div',{class:'scroll',style:{borderRight:'1px solid #3a4f9f'}}),0,18,100,350); R.appendChild(tl);
+  const item=(name,id)=>h('div',{class:'f-con8'+(id===sel?' on':''),style:{padding:'1px 4px',cursor:'pointer',whiteSpace:'nowrap',overflow:'hidden',background:id===sel?'#2d49b8':'',color:id===sel?'#ffe24a':'#fff'},onclick:()=>scrFichajes({mode,lg,team:id})},name);
+  if(!MUI) tl.appendChild(h('div',{class:'f-e8b',style:{color:'#ffe24a',padding:'2px 4px'}},'CLUBES')); tl.appendChild(item('Todos',0)); teams.forEach(t=>tl.appendChild(item(t.name,t.id)));
+  if(MUI) requestAnimationFrame(()=>{ const on=tl.querySelector('.on'); if(on) tl.scrollLeft=Math.max(0,on.offsetLeft-tl.clientWidth/2+on.offsetWidth/2); });
   const sc=at(h('div',{class:'scroll'}),102,18,334,350); R.appendChild(sc);
   const ps=(T?T.players.map(p=>({p,t:T})):teams.flatMap(t=>t.players.map(p=>({p,t})))).sort((a,b)=>b.p.me-a.p.me).slice(0,T?999:150);
   const tb=table([{t:'JUGADOR',w:86,k:r=>r.p.name},{t:'CLUB',w:60,k:r=>h('span',{class:'f-con8'},r.t.name)},{t:'ROL',w:62,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]])},{t:'ED',w:22,cls:'c',k:r=>playerAge(r.p)},{t:'ME',w:24,cls:'r',k:r=>r.p.me,cell:()=>'y'},{t:'VALOR',w:44,cls:'r',k:r=>fmtNum(playerValue(r.p))}],ps,{onRow:r=>{ const p=r.p, T=r.t; if(me.players.length>=30) return dialog('FICHAR','La plantilla está completa (30 jugadores).'); if(T.players.length<=14) return dialog('FICHAR','El '+T.name+' no puede vender más jugadores.'); const ask=Math.round(playerValue(p)*(1+Math.random()*0.35)); dialog('FICHAR A '+p.name.toUpperCase(),'El '+T.name+' pide '+fmtNum(ask)+' millones de pesetas por '+p.name+' (ME '+p.me+', '+playerAge(p)+' años, '+ROLES[p.roles[0]]+').\nTu presupuesto: '+fmtNum(G.budget)+' M.',[{t:'PAGAR',cls:'green',f:()=>{ if(ask>G.budget) return dialog('FICHAR','No tienes presupuesto suficiente.'); doTransfer(T.id,p.idx,G.team,ask); G.budget-=ask; saveGame(); dialog('FICHAJE','¡'+p.name+' es nuevo jugador del '+me.name+'!',[{t:'ACEPTAR',f:()=>scrFichajes(state)}]); }},{t:'CANCELAR'}]); }}); tb.style.tableLayout='fixed'; sc.appendChild(tb);

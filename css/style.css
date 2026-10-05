@@ -263,3 +263,7 @@ body.mui .nextm .side{flex:1 1 0;display:flex;flex-direction:column;align-items:
 body.mui .nextm .side img{height:64px}
 body.mui .nextm .nm{font-family:'euroh5';font-size:13px;letter-spacing:1px;color:#ffe24a;text-align:center;text-shadow:1px 1px 0 #000}
 body.mui .nextm .vs{flex:0 0 40px;text-align:center;color:#fff}
+body.mui .clubstrip{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;width:100%;flex-basis:100%;padding:4px 2px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+body.mui .clubstrip::-webkit-scrollbar{display:none}
+body.mui .clubstrip div{flex:0 0 auto;padding:7px 12px!important;border:1px solid #3a4f9f;border-radius:4px;font-size:13px!important;background:#0a1240}
+body.mui .clubstrip div.on{border-color:#ffe24a}
