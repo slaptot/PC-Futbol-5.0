@@ -26,7 +26,11 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   el estado del club en cada copa y acceso a cada una), y hay un botón EMPLEADOS que abre la pantalla
   "Personal del club" con los ocho puestos del juego original (segundo entrenador, entrenador de juveniles,
   fisioterapeuta, psicólogo, ojeador, secretario técnico, asistente y cuidador del césped).
-- **Empleados** (`js/empleados.js`): por cada puesto hay tres candidatos con estrellas (1 a 5) y sueldo anual
+- **Empleados** (`js/empleados.js`): los nombres salen de las listas del juego original (`DBDAT/NOMBRES.xx` y
+  `APELLIDO.xx` de España, Inglaterra e Italia, exportadas a `data/names.json` con `tools/names.py`; formato
+  DMLT con cadenas de longitud u16 y XOR 0x61), según el país de la liga; las estrellas y el sueldo son
+  propios de la web, porque el juego no guarda empleados en sus datos. Por cada puesto hay tres candidatos con
+  estrellas (1 a 5) y sueldo anual
   (12 a 150 millones según estrellas, ±15 %), que se renuevan cada 1 a 3 jornadas. Se contrata uno por
   puesto (fila en verde, CONTRATADO) y se despide pagando el sueldo del resto de la temporada. El sueldo se
   descuenta por jornada con el de los jugadores. Efectos: segundo entrenador +10 % de progreso en el

@@ -15,14 +15,17 @@ const EMP_APELLIDOS=['García','Fernández','López','Martínez','Sánchez','Pé
 const EMP_SUELDO=[0,12,25,50,90,150]; // millones de pesetas por temporada según estrellas
 function empRole(k){ return EMP_ROLES.find(r=>r[0]===k); }
 function empInit(){ G.emp={hired:{},market:{}}; EMP_ROLES.forEach(r=>{ G.emp.market[r[0]]=[]; }); empTick(true); }
-function empNew(){ const stars=1+Math.floor(Math.random()*5); const s=Math.round(EMP_SUELDO[stars]*(0.85+Math.random()*0.3)); return {name:EMP_NOMBRES[Math.floor(Math.random()*EMP_NOMBRES.length)]+' '+EMP_APELLIDOS[Math.floor(Math.random()*EMP_APELLIDOS.length)],stars,salary:Math.max(5,s),until:(G.jornada||1)+1+Math.floor(Math.random()*3)}; }
+// nombre al azar con las listas del juego original del país de la liga (22 España, 30 Inglaterra, 36 Italia); si faltan, listas propias
+function empName(){ const c=String((league(G.league)||{}).country||22); const L=DATA.names&&DATA.names[c]; const n=L&&L.n&&L.n.length?L.n:EMP_NOMBRES, a=L&&L.a&&L.a.length?L.a:EMP_APELLIDOS; return n[Math.floor(Math.random()*n.length)]+' '+a[Math.floor(Math.random()*a.length)]; }
+function empNew(){ const stars=1+Math.floor(Math.random()*5); const s=Math.round(EMP_SUELDO[stars]*(0.85+Math.random()*0.3)); return {name:empName(),stars,salary:Math.max(5,s),until:(G.jornada||1)+1+Math.floor(Math.random()*3)}; }
 function empTick(init){ // tras cada jornada: los candidatos caducados se sustituyen; siempre hay 3 por puesto
   if(!G.emp) return empInit(); const j=G.jornada||1;
   EMP_ROLES.forEach(r=>{ const k=r[0]; let list=(G.emp.market[k]||[]).filter(c=>init||c.until>j); while(list.length<3) list.push(empNew()); G.emp.market[k]=list; });
 }
 function empStars(k){ const e=G&&G.emp&&G.emp.hired&&G.emp.hired[k]; return e?e.stars:0; }
 function empWagesWeek(){ if(!G||!G.emp) return 0; const N=Math.max(30,calOf(G.league).length); return Math.round(Object.values(G.emp.hired).reduce((a,e)=>a+e.salary,0)/N); }
-function empStarsEl(n){ const d=h('span',{class:'stars'}); for(let i=1;i<=5;i++) d.appendChild(h('img',{src:'img/ui/'+(i<=n?'stareqon.png':'stareqon-off.png'),style:{height:'10px',marginRight:'1px'}})); return d; }
+// estrellas: la imagen del juego (stareqon) para las llenas; las vacías son la misma en gris apagado (el sprite "-off" del juego es media estrella)
+function empStarsEl(n){ const d=h('span',{class:'stars',title:n+' de 5'}); for(let i=1;i<=5;i++) d.appendChild(h('img',{src:'img/ui/stareqon.png',style:{height:'10px',marginRight:'1px',filter:i<=n?'':'grayscale(1) brightness(.6) opacity(.45)'}})); return d; }
 function empHire(k,c){ const role=empRole(k); if(G.emp.hired[k]) return dialog('EMPLEADOS','Ya tienes un empleado contratado para este trabajo. Despídelo antes de contratar a otro.');
   dialog('CONTRATAR',role[1].toUpperCase()+': '+c.name+'<br>'+'Sueldo: '+fmtNum(c.salary)+' millones por temporada ('+fmtNum(Math.round(c.salary/Math.max(30,calOf(G.league).length)))+' por jornada).<br>'+role[2],
     [{t:'CONTRATAR',cls:'green',f:()=>{ G.emp.hired[k]=Object.assign({since:G.jornada},c); G.emp.market[k]=G.emp.market[k].filter(x=>x!==c); saveGame(); scrEmpleados(); }},{t:'CANCELAR'}]); }

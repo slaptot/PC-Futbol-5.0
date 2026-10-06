@@ -31,8 +31,8 @@ const MONTHS = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Ago
 const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 async function loadData(){
-  const [teams, leagues, referees, liga, cups] = await Promise.all(['teams','leagues','referees','liga_history','cups'].map(n=>fetch('data/'+n+'.json').then(r=>r.json())));
-  DATA.teams = teams; DATA.leagues = leagues; DATA.referees = referees; DATA.liga = liga; DATA.cups = cups;
+  const [teams, leagues, referees, liga, cups, names] = await Promise.all(['teams','leagues','referees','liga_history','cups','names'].map(n=>fetch('data/'+n+'.json').then(r=>r.ok?r.json():null).catch(()=>null)));
+  DATA.teams = teams; DATA.leagues = leagues; DATA.referees = referees; DATA.liga = liga; DATA.cups = cups; DATA.names = names||{}; // listas de nombres del juego (NOMBRES.xx / APELLIDO.xx) para empleados
   DATA.calendar = {div1: leagues.ESP1.rounds, div2: leagues.ESP2.rounds};
   // post-proceso
   for (const id in teams){
