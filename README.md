@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Fotos en los sucesos del partido**: cada línea del partido en directo y del resumen (gol, tarjeta,
+  expulsión, lesión) lleva la foto en miniatura del jugador (`img/foto`, precargada), a 16 px en
+  escritorio y 22 px en móvil.
 - **Precarga de imágenes** (comprobada en el móvil): tras arrancar, se descargan en segundo plano las
   4.671 imágenes y fuentes de uso frecuente (fondos y botones de `img/ui`, fuentes, banderas, escudos,
   iconos de camiseta, equipaciones, bombo, fotos pequeñas de jugadores, campos, entrenadores y árbitros;

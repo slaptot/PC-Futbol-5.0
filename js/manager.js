@@ -142,11 +142,14 @@ function scrResumen(r, back){
   s.appendChild(btn('VOLVER',540,446,90,back,'blue','ico_volver'));
 }
 function eventLine(e,hm,aw){
-  const tn=(e.side==='H'?hm:aw).name; const p=e.player.name||team(e.player.team).players[e.player.idx].name;
-  if(e.type==='goal') return h('div',{class:'ev goal'},"⚽ "+e.min+"' GOL de "+p+" ("+tn+")  "+e.score[0]+"-"+e.score[1]);
-  if(e.type==='injury') return h('div',{class:'ev red'},"✚ "+e.min+"' Lesionado "+p+" ("+tn+")"+(e.kind?': '+e.kind.toLowerCase():'')+" · "+e.weeks+(e.weeks===1?' semana':' semanas'));
-  if(e.type==='yellow') return h('div',{class:'ev card'},"▮ "+e.min+"' Tarjeta amarilla a "+p+" ("+tn+")");
-  return h('div',{class:'ev red'},"▮ "+e.min+"' EXPULSADO "+p+" ("+tn+")");
+  const tn=(e.side==='H'?hm:aw).name; const po=e.player.name?e.player:(team(e.player.team)||{players:[]}).players[e.player.idx]; const p=po?po.name:'?';
+  // foto en miniatura del jugador (img/foto, precargada); si no hay, se oculta
+  const ph=po&&po.id>0?h('img',{class:'evph',src:'img/foto/'+po.id+'.png',alt:'',onerror:function(){ this.style.display='none'; }}):null;
+  const line=(cls,text)=>{ const d=h('div',{class:'ev '+cls}); if(ph) d.appendChild(ph); d.appendChild(h('span',{},text)); return d; };
+  if(e.type==='goal') return line('goal',"⚽ "+e.min+"' GOL de "+p+" ("+tn+")  "+e.score[0]+"-"+e.score[1]);
+  if(e.type==='injury') return line('red',"✚ "+e.min+"' Lesionado "+p+" ("+tn+")"+(e.kind?': '+e.kind.toLowerCase():'')+" · "+e.weeks+(e.weeks===1?' semana':' semanas'));
+  if(e.type==='yellow') return line('card',"▮ "+e.min+"' Tarjeta amarilla a "+p+" ("+tn+")");
+  return line('red',"▮ "+e.min+"' EXPULSADO "+p+" ("+tn+")");
 }
 // ---- alineación
 function ensureBench(){
