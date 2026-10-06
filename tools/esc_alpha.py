@@ -1,13 +1,18 @@
-# Quita el fondo negro de los escudos: el negro conectado con el borde de la imagen pasa a transparente
-# (el negro interior del dibujo se conserva). Uso:
+# Quita el fondo negro de los escudos: el color exacto del fondo (el de las esquinas, negro puro) conectado con
+# el borde de la imagen pasa a transparente. El negro del dibujo (bordes, murciélagos, letras) es otro tono y se conserva. Uso:
 #   python3 tools/esc_alpha.py [--out DIR] [id ...]     (sin ids: todos los escudos de img/esc e img/escbig)
 import os,sys
 from PIL import Image
 ROOT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
-def clear_bg(im,thr=24):
+def clear_bg(im):
+    # el fondo es el color exacto de las esquinas (en los BMP del juego, el índice 0 = negro puro);
+    # el negro del dibujo usa otros índices (p. ej. 22,22,22) y no se toca
     im=im.convert('RGBA'); w,h=im.size; px=im.load()
+    from collections import Counter
+    bg=Counter(px[x,y][:3] for x,y in ((0,0),(w-1,0),(0,h-1),(w-1,h-1))).most_common(1)[0][0]
+    if max(bg)>24: return im,0   # la esquina no es negra: no hay fondo que quitar
     seen=bytearray(w*h); stack=[]
-    def dark(x,y): r,g,b,a=px[x,y]; return r<=thr and g<=thr and b<=thr
+    def dark(x,y): return px[x,y][:3]==bg
     for x in range(w):
         for y in (0,h-1):
             if dark(x,y): stack.append((x,y))

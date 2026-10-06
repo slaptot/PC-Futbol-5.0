@@ -195,7 +195,9 @@ del autor; Apple rechaza direcciones de ejemplo. Las claves VAPID se generaron u
 jugadores deben volver a activar los avisos.
 
 Los escudos (`img/esc`, `img/escbig`) se muestran sin el fondo negro original: `tools/esc_alpha.py` vuelve
-transparente el negro conectado con el borde de cada imagen y conserva el negro interior del dibujo. Los
+transparente el color exacto del fondo (el de las esquinas, negro puro, índice 0 de la paleta) conectado con
+el borde de cada imagen; el negro del dibujo (bordes, murciélago del Valencia, pantalones) es otro tono y se
+conserva. Los
 originales se guardan fuera del repositorio (`../escudos_originales/`) y también están en el historial de git.
 
 ## Publicación en GitHub Pages con contraseña
