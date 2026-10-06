@@ -149,7 +149,7 @@ function scrDbTeam(tid, opts){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   if(t.custom) camp.appendChild(btn('FOTO',140,98,70,()=>scrFotoEntrenador(photo=>{ t.coach.photo=photo; if(G&&G.custom){ G.custom.photo=photo; saveGame(); } scrDbTeam(tid,opts); }),'green'));
   if(t.hist){ const ht=txt(t.hist[0]+' PJ · '+t.hist[1]+' PG\n'+t.hist[2]+' PE · '+t.hist[3]+' GF\n'+t.hist[4]+' GC'+(t.seasons?' · '+t.seasons+' temp.':''),6,146,210,36,'f-p8'); ht.style.lineHeight='11px'; camp.appendChild(ht); }
   // plantilla
-  const pl=panel(238,66,392,374); s.appendChild(pl); pl.appendChild(h('div',{class:'hdr'},'JUGADORES ('+t.players.length+')'));
+  const pl=panel(238,66,392,374); s.appendChild(pl); pl.appendChild(h('div',{class:'hdr'},'JUGADORES ('+t.players.length+')')); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(t.players.concat(t.bajas||[])),300);
   const sc=at(h('div',{class:'scroll'}),0,18,388,352); pl.appendChild(sc);
   const byDem=(a,b)=>(['POR','DEF','MED','DEL'].indexOf(a.dem)-['POR','DEF','MED','DEL'].indexOf(b.dem))||b.me-a.me; const ps=t.players.slice().sort(byDem); if(t.bajas&&t.bajas.length){ ps.push({__group:'BAJAS 96-97 (ya no están en el club)'}); ps.push(...t.bajas.slice().sort(byDem)); }
   sc.appendChild(table([{t:'Nº',w:24,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'SIT',w:36,cls:'c',k:p=>h('span',{class:'f-m8',style:{color:p.f2===3?'#ff8a60':p.f2===2?'#9fb4e8':'#8fe08f'}},sitLabel(p))},{t:'',w:20,k:p=>h('img',{src:'img/band/'+p.country+'.png',style:{width:'14px',height:'10px'}})},{t:'EDAD',w:34,cls:'c',k:p=>playerAge(p)},{t:'VE',w:26,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:26,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:26,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:26,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:26,cls:'r',k:p=>p.me,cell:()=>'y'},...(opts.back&&typeof contractFicha==='function'&&G?[{t:'FICHA',w:44,cls:'r',k:p=>fmtNum(contractFicha(p))}]:[]),{t:'DEM',w:34,cls:'c',k:p=>p.dem}],ps,{onRow:p=>scrFicha(tid,p,()=>scrDbTeam(tid,opts))}));
@@ -176,7 +176,7 @@ async function scrFicha(tid, idx, back){
   setBg('fondo_dbase'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:'FICHA',right:p.name}));
   const L=panel(10,66,200,374); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},p.name.toUpperCase()));
-  const ph=at(h('div',{class:'ph',style:{background:'#223'}}),6,24,126,184); L.appendChild(ph);
+  const ph=at(h('div',{class:'ph',style:{background:'#223'}}),6,24,126,184); L.appendChild(ph); if(p.id>0) ph.style.background='#223 url(img/foto/'+p.id+'.png) center/cover no-repeat';
   ph.appendChild(h('img',{src:'img/fotobig/'+p.id+'.png',style:{width:'124px',height:'182px'},onerror:function(){this.src='img/foto/'+p.id+'.png';this.style.width='124px';this.style.height='124px';this.onerror=function(){this.src='img/ui/foto_general.png';this.style.width='64px';this.style.height='64px';this.style.margin='60px 30px'}}}));
   L.appendChild(at(h('img',{src:'img/bandbig/'+p.country+'.png',style:{width:'40px',height:'28px'}}),140,24));
   { const cn=txt(countryName(p.country),138,56,60,24,'f-m8'); cn.style.lineHeight='10px'; cn.style.fontSize='9px'; L.appendChild(cn); }

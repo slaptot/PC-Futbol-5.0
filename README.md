@@ -19,13 +19,17 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
-- **Precarga de imágenes**: tras arrancar, se descargan en segundo plano las 2.531 imágenes y fuentes
-  pequeñas de uso frecuente (fondos y botones de `img/ui`, fuentes, banderas, escudos, iconos de camiseta,
-  equipaciones, bombo; 6,9 MB en total, lista en `data/precache.json` generada por
-  `tools/build_precache.py`). En móvil lo hace el propio service worker al activarse y las guarda en su
-  caché, así que al cambiar de pantalla ya no hay que esperar a la red; en escritorio quedan en la caché
-  HTTP del navegador. Las fotos de jugadores, campos, entrenadores y árbitros siguen cargándose bajo
-  demanda. Se omite si el navegador tiene activado el ahorro de datos.
+- **Precarga de imágenes** (comprobada en el móvil): tras arrancar, se descargan en segundo plano las
+  4.671 imágenes y fuentes de uso frecuente (fondos y botones de `img/ui`, fuentes, banderas, escudos,
+  iconos de camiseta, equipaciones, bombo, fotos pequeñas de jugadores, campos, entrenadores y árbitros;
+  12,1 MB en total, lista en `data/precache.json` generada por `tools/build_precache.py`). En móvil lo
+  hace el propio service worker al activarse y las guarda en su caché, así que al cambiar de pantalla ya
+  no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador. Se omite si el
+  navegador tiene activado el ahorro de datos.
+- **Fotos grandes de jugadores** (`img/fotobig`, 25 MB): no se precargan todas, sino por plantilla al
+  entrar en ella: al abrir un equipo en la base de datos, al cargar la partida (equipo propio) y al abrir
+  Fichajes (jugadores del mercado), `prefetchPhotos` pide sus fotos en segundo plano. Mientras llega la
+  grande, la ficha muestra ampliada la foto pequeña, que ya está en caché.
 - **Bajas fuera de las plantillas**: los 94 jugadores que el campo `f2` del juego marca como baja (ya no
   estaban en el club en la 96-97: Bakero, Bebeto, Romario en el Valencia…) se retiran de las plantillas
   jugables al cargar los datos, con lo que desaparecen los duplicados (Prosinecki jugaba a la vez en el

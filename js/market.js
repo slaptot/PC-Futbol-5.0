@@ -41,7 +41,7 @@ function doTransfer(fromTid,idx,toTid,price,record){
 }
 function applyTransfers(){ if(!G||!G.transfers) return; const tr=G.transfers; G.transfers=[]; const inj=G.inj; G.inj={}; const lu=G.lineup; const bb=G.bench; G.lineup=[]; G.bench=[]; tr.forEach(x=>doTransfer(x.from,x.idx,x.to,x.price,false)); G.transfers=tr; G.inj=inj||{}; G.lineup=lu; G.bench=bb||[]; }
 function scrFichajes(state){
-  state=state||{}; const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  state=state||{}; const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile'); if(typeof prefetchPhotos==='function'&&G.market) setTimeout(()=>prefetchPhotos(G.market.map(e=>DATA.playersById[e.id])),300);
   s.appendChild(topbar({team:me,title:'FICHAJES',date:gameDate(),sub:'PRESUPUESTO: '+fmtNum(G.budget)+' MILLONES'}));
   const mode=state.mode||'buy'; const lg=state.lg||'ALL';
   const L=panel(10,68,170,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'MERCADO'));

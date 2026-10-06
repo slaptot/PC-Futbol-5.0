@@ -37,6 +37,16 @@ async function warmCache(){
   let i=0; const next=()=>{ if(i>=urls.length) return; const u=urls[i++]; fetch(u,{priority:'low'}).catch(()=>{}).finally(()=>idle(next)); };
   for(let k=0;k<3;k++) idle(next);
 }
+// precarga puntual (fotos grandes de una plantilla, etc.): en móvil las guarda el service worker, en escritorio la caché HTTP
+function prefetchImgs(urls){
+  urls=(urls||[]).filter(Boolean).slice(0,80); if(!urls.length) return;
+  try{ if(navigator.connection&&navigator.connection.saveData) return; }catch(e){}
+  if('serviceWorker' in navigator&&navigator.serviceWorker.controller){ navigator.serviceWorker.controller.postMessage({type:'warm',urls}); return; }
+  const idle=cb=>(window.requestIdleCallback||(f=>setTimeout(f,100)))(cb);
+  let i=0; const next=()=>{ if(i>=urls.length) return; fetch(urls[i++],{priority:'low'}).catch(()=>{}).finally(()=>idle(next)); };
+  for(let k=0;k<3;k++) idle(next);
+}
+function prefetchPhotos(players){ prefetchImgs((players||[]).filter(p=>p&&p.id>0).map(p=>'img/fotobig/'+p.id+'.png')); }
 // ---- exportar / importar la partida (el almacenamiento del navegador móvil puede borrarse)
 function exportSave(){
   const s=localStorage.getItem('pcf5_save'); if(!s) return dialog('EXPORTAR','No hay partida guardada.');

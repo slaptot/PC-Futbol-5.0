@@ -1,10 +1,10 @@
 # Genera data/precache.json: lista de imágenes y fuentes pequeñas que se descargan en segundo plano tras
 # arrancar (y que el service worker guarda en caché) para que las pantallas se pinten al instante.
-# Fotos de jugadores, campos, entrenadores y árbitros quedan fuera: se cargan bajo demanda.
+# Las fotos grandes de jugadores (img/fotobig, 25 MB) quedan fuera: se precargan por plantilla al entrar en ella.
 #   python3 tools/build_precache.py
 import os,json
 ROOT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
-DIRS=['img/ui','fonts','img/sorteo','img/cam','img/band','img/bandbig','img/ridi','img/nano','img/esc','img/escbig']
+DIRS=['img/ui','fonts','img/sorteo','img/cam','img/band','img/bandbig','img/ridi','img/nano','img/esc','img/escbig','img/foto','img/campo','img/entr','img/arb']
 urls=[]; total=0
 for d in DIRS:
     for f in sorted(os.listdir(os.path.join(ROOT,d))):

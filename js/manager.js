@@ -17,7 +17,7 @@ function refFor(hm){ return DATA.referees[(G.jornada*7+hm.id)%DATA.referees.leng
 
 function scrLiga(){
   const saved=loadGame();
-  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
+  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
   scrSelectTeam();
 }
 function scrSelectTeam(state){
