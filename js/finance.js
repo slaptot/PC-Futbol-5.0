@@ -48,7 +48,7 @@ function scrFinanzas(){
   const me=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:me,title:'FINANZAS',date:gameDate(),sub:'PRESUPUESTO: '+fmtNum(G.budget)+' MILLONES'}));
   // arriba: taquilla, televisión y sueldos en tres columnas
-  const T=panel(10,68,620,130); s.appendChild(T); if(MUI){ T.classList.add('finfix'); setTimeout(()=>{ const tb=document.querySelector('#screen .topbar'); T.style.top=(tb?tb.offsetHeight:60)+'px'; },50); } T.appendChild(h('div',{class:'hdr'},'TAQUILLA · TELEVISIÓN · SUELDOS'));
+  const T=panel(10,68,620,130); s.appendChild(T); if(MUI){ T.classList.add('finfix'); setTimeout(()=>{ const tb=document.querySelector('#screen .topbar'); T.style.top='calc('+(tb?tb.offsetHeight:60)+'px + env(safe-area-inset-top))'; },50); } T.appendChild(h('div',{class:'hdr'},'TAQUILLA · TELEVISIÓN · SUELDOS'));
   const colA=at(h('div',{class:'fincol'}),0,20,206,108), colB=at(h('div',{class:'fincol'}),206,20,214,108), colC=at(h('div',{class:'fincol'}),420,20,200,108); T.appendChild(colA); T.appendChild(colB); T.appendChild(colC);
   const blk=(cls,text)=>h('div',{class:cls,style:{position:'static',display:'block',margin:'0 8px 4px'}},text); const small=e=>{ if(!MUI){ e.classList.remove('f-p8'); e.classList.add('f-m8'); e.style.fontSize='10px'; e.style.lineHeight='12px'; } return e; };
   const nm=nextMatch(); const home=nm&&nm[0]===G.team; const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;

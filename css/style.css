@@ -371,3 +371,10 @@ body.mui .instr{font-size:14px;line-height:18px}
 #splash.go .bar i{width:90%}
 #splash .t{font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:2px}
 #splash.out{opacity:0;pointer-events:none}
+/* zona segura de iOS en la versión móvil instalada (barra de estado / isla sobre el contenido) */
+body.mui{padding-top:env(safe-area-inset-top)}
+body.mui::before{content:'';position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#06102e;z-index:55}
+body.mui #screen .topbar{top:env(safe-area-inset-top)}
+body.mui #screen .panel.finfix{top:env(safe-area-inset-top)}
+body.mui .dlg{top:calc(env(safe-area-inset-top) + 4vh)!important;top:calc(env(safe-area-inset-top) + 4dvh)!important;max-height:calc(86dvh - env(safe-area-inset-top))}
+#splash{padding-top:env(safe-area-inset-top)}
