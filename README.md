@@ -19,6 +19,12 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Falta de ritmo**: los jugadores del club que no juegan pierden media poco a poco a partir de la
+  tercera jornada sin jugar (1 punto por atributo con probabilidad 0,25 cada jornada, tope 8 puntos por
+  atributo) y la recuperan al volver a jugar; los lesionados no cuentan. El aviso sale con el del
+  entrenamiento tras cada jornada. La base de datos del juego no guarda mínimos por jugador (los campos
+  desconocidos del registro son índices y códigos, no topes), así que el tope se define respecto al valor
+  del jugador con su entrenamiento.
 - **Escudos, iconos de camiseta y equipaciones sin fondo negro** en toda la web (`tools/esc_alpha.py`),
   con copia de los originales fuera del repositorio, comprobados en el móvil. Las banderas no lo necesitan. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
   Fichajes se desplaza y la app consume menos batería.
