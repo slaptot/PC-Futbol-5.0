@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Alineación más legible**: la tabla de escritorio funde ROL y POS en una sola columna POS / ROL (puesto en
+  el once, o demarcación natural para el resto, con la lesión o sanción) y elimina DEM, redundante con el rol;
+  el espacio va a la columna del nombre, que ya no se corta.
 - **Sanciones**: expulsión = 1 partido (2 si es roja directa) y acumulación de amarillas (5 en liga, 3 en
   copa) = 1 partido, que se cumplen en la misma competición (liga o copas). Los sancionados no pueden ser
   titulares ni convocados (la alineación los agrupa en SANCIONADOS y la oficina avisa "SANCIONADOS EN EL
