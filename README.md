@@ -24,9 +24,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   iconos de camiseta, equipaciones, bombo, fotos pequeñas de jugadores, campos, entrenadores y árbitros;
   12,1 MB en total, lista en `data/precache.json` generada por `tools/build_precache.py`). En móvil lo
   hace el propio service worker al activarse y las guarda en su caché, así que al cambiar de pantalla ya
-  no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador (descarga de tres en tres
-  en los ratos libres del navegador, con un tope de 400 ms de espera para que no se pare en pestañas
-  ocupadas; comprobado). Se omite si el
+  no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador, aunque desde el 7 de octubre de 2026 el service worker también se registra en
+  escritorio y las guarda igual que en móvil. Se omite si el
   navegador tiene activado el ahorro de datos.
 - **Fotos grandes de jugadores** (`img/fotobig`, 25 MB): no se precargan todas, sino por plantilla al
   entrar en ella: al abrir un equipo en la base de datos, al cargar la partida (equipo propio) y al abrir
@@ -185,9 +184,9 @@ versión usar, y la elección se recuerda (`?ui=mobile` o `?ui=desktop` la fuerz
   aparece el aviso de girar el móvil), con zoom y selección bloqueados y pulsación larga. Desde la
   barra de audio se puede pasar a la versión móvil.
 
-La versión de escritorio en un ordenador no cambia. En ambos modos móviles hay `manifest.json` e
-iconos para añadir la web a la pantalla de inicio como app, y un `sw.js` (sólo se registra en móvil)
-que guarda en caché la aplicación, precarga al activarse las imágenes y fuentes de `data/precache.json` y guarda
+La versión de escritorio en un ordenador no cambia. Hay `manifest.json` e iconos para añadir la web a
+la pantalla de inicio como app, y un `sw.js` (registrado en todos los modos, también en escritorio, desde el 7
+de octubre de 2026) que guarda en caché la aplicación, precarga al activarse las imágenes y fuentes de `data/precache.json` y guarda
 bajo demanda el resto de imágenes, datos y música, para jugar sin conexión. Tras cambiar imágenes hay que
 regenerar la lista (`python3 tools/build_precache.py`) y subir la versión de caché `V` en `sw.js`.
 
@@ -195,7 +194,8 @@ Espacio que ocupa la caché en el móvil: la aplicación y los datos (unos 23 MB
 `teams.json`), la precarga (12 MB) y, bajo demanda, las fotos grandes que se hayan visto (hasta 25 MB) y
 la música que se haya oído (hasta 25 MB). Máximo unos 85 MB y 7.000 entradas, muy por debajo de lo que
 permiten Safari y Chrome (cientos de MB por sitio). Al cambiar la versión `V` se borra la caché anterior,
-así que nunca se acumulan versiones. Safari borra la caché de las webs que no se abren en 7 días, pero no
+así que nunca se acumulan versiones. Al desarrollar en `localhost` el service worker también está
+activo: tras cambiar imágenes o datos hay que subir `V` o borrar el almacenamiento del sitio en el navegador. Safari borra la caché de las webs que no se abren en 7 días, pero no
 la de la app instalada en la pantalla de inicio. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
 exportar la partida a un archivo JSON e importarla después. Cámara, instalación y caché exigen HTTPS
 (o `localhost`).
