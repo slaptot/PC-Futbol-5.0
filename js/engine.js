@@ -28,9 +28,9 @@ function bestLineup(t, formation, comp){
   return lineup;
 }
 function slotPos(l){ return (l.x!==undefined)?[l.x,l.y]:ROLE_POS[l.role]; }
-function squadStrength(t, lineup){
+function squadStrength(t, lineup, hurt){
   const P = i=>t.players[i];
-  const F = l=>{ const p=P(l.idx); return effME(p,l.role)/Math.max(1,p.me); };
+  const F = l=>{ const p=P(l.idx); return effME(p,l.role)/Math.max(1,p.me)*(hurt&&hurt.has(l.idx)?0.5:1); };
   const gk = lineup.filter(l=>ROLE_DEM[l.role]==='POR').map(l=>P(l.idx).attrs[9]*F(l));
   const def = lineup.filter(l=>ROLE_DEM[l.role]==='DEF').map(l=>{const a=P(l.idx).attrs; return (a[8]*0.5+a[2]*0.2+a[1]*0.15+a[0]*0.15)*F(l);});
   const mid = lineup.filter(l=>ROLE_DEM[l.role]==='MED').map(l=>{const a=P(l.idx).attrs; return (a[4]*0.4+a[5]*0.2+a[3]*0.2+a[1]*0.2)*F(l);});
@@ -42,27 +42,45 @@ function squadStrength(t, lineup){
 const INJURIES=[['Gripe',1,1,14,3],['Gastroenteritis',1,1,8,3],['Sobrecarga muscular',1,2,14,6],['Sobrecarga gemelos',1,2,8,6],['Contractura cervicales',1,2,6,8],['Estiramiento abductor',2,3,7,12],['Esguince de tobillo',2,3,10,15],['Conmoción cerebral',1,2,3,10],['Rotura fibrilar',3,4,8,25],['Desgarro muscular',3,5,6,35],['Fractura huesos de la nariz',3,4,3,30],['Distensión de ligamentos',4,6,5,45],['Esguince de rodilla',4,6,4,50],['Rotura de menisco',8,12,2,120],['Fractura tibia y peroné',16,24,1,250],['Rotura tendón de Aquiles',20,28,1,300],['Rotura de ligamentos',24,32,1,400]];
 function randomInjury(){ const tot=INJURIES.reduce((a,x)=>a+x[3],0); let r=Math.random()*tot; for(const x of INJURIES){ r-=x[3]; if(r<=0) return {kind:x[0],weeks:x[1]+Math.floor(Math.random()*(x[2]-x[1]+1))}; } const x=INJURIES[0]; return {kind:x[0],weeks:x[1]}; }
 function injuryCost(kind,weeks){ const x=INJURIES.find(i=>i[0]===kind); if(!x) return Math.max(5,(weeks||1)*10); return x[4]; }
-function simulateMatch(home, away, lh, la, opts){
+// Simulación minuto a minuto con estado: permite sustituciones (máximo 3 por equipo) durante el partido.
+// Los expulsados dejan el equipo con uno menos (menos ataque y defensa); los lesionados que siguen en el campo
+// rinden a la mitad hasta que se les sustituye. ai:{H,A} = el equipo lo lleva la máquina (sustituye lesionados solo).
+function matchSim(home, away, lh, la, opts){
   opts=opts||{};
-  const sh=squadStrength(home,lh), sa=squadStrength(away,la);
-  const expH = (opts.neutral?1.3:1.5)*Math.pow(sh.att/sa.def,2.4)*Math.pow(sh.mid/sa.mid,0.9)*Math.pow(72/sa.gk,0.8);
-  const expA = (opts.neutral?1.3:1.15)*Math.pow(sa.att/sh.def,2.4)*Math.pow(sa.mid/sh.mid,0.9)*Math.pow(72/sh.gk,0.8);
-  const events=[]; let gh=0, ga=0;
-  const scorers = (t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>{const p=t.players[x.idx]; const d=ROLE_DEM[x.role]; return (d==='DEL'?5:d==='MED'?2:0.6)*(p.attrs[6]+p.attrs[7])/100;}); return ()=>t.players[pick(c,w).idx]; };
-  const scH=scorers(home,lh), scA=scorers(away,la);
-  const cardable = (t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>t.players[x.idx].attrs[2]/100); return ()=>t.players[pick(c,w).idx]; };
-  const cdH=cardable(home,lh), cdA=cardable(away,la);
-  const yellows=new Set(); const full=!!opts.full; // con el estadio lleno, el público empuja al local si no gana en los últimos 10 minutos
-  for(let m=1;m<=90;m++){
-    const boost=(full&&m>80&&gh<=ga)?1.15:1;
-    if(rnd()<expH*boost/90){ gh++; events.push({min:m,type:'goal',side:'H',player:scH(),score:[gh,ga]}); }
-    if(rnd()<expA/90){ ga++; events.push({min:m,type:'goal',side:'A',player:scA(),score:[gh,ga]}); }
-    if(rnd()<0.035){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); const k=side+p.idx;
-      if(yellows.has(k)){ events.push({min:m,type:'red',side,player:p}); yellows.delete(k);} else { yellows.add(k); events.push({min:m,type:'yellow',side,player:p}); } }
-    if(rnd()<0.0007){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); events.push({min:m,type:'red',side,player:p,direct:true}); }
-    if(rnd()<0.0018){ const side=rnd()<0.5?'H':'A'; const l=side==='H'?lh:la; const x=l[Math.floor(rnd()*l.length)]; const p=(side==='H'?home:away).players[x.idx]; const inj=randomInjury(); if(!events.some(e=>e.type==='injury'&&e.player===p)) events.push({min:m,type:'injury',side,player:p,weeks:inj.weeks,kind:inj.kind}); }
-  }
-  return {home:home.id, away:away.id, gh, ga, events, att:Math.min(home.capacity||20000, Math.round((home.capacity||20000)*(0.45+rnd()*0.5)))};
+  const S={home,away,lh:lh.map(l=>Object.assign({},l)),la:la.map(l=>Object.assign({},l)),m:0,gh:0,ga:0,events:[],subs:[],done:false,
+    yellows:new Set(),hurt:{H:new Set(),A:new Set()},used:{H:new Set(),A:new Set()},nsubs:{H:0,A:0},minutes:{},ai:opts.ai||{H:true,A:true},full:!!opts.full,neutral:!!opts.neutral};
+  const start={}; S.lh.forEach(l=>start['H:'+l.idx]=0); S.la.forEach(l=>start['A:'+l.idx]=0);
+  const ends={}; // minuto de salida (expulsión o sustitución)
+  let C=null;
+  const calc=()=>{ const sh=squadStrength(home,S.lh,S.hurt.H), sa=squadStrength(away,S.la,S.hurt.A); const nh=S.lh.length/11, na=S.la.length/11;
+    const expH=(S.neutral?1.3:1.5)*Math.pow(sh.att/sa.def,2.4)*Math.pow(sh.mid/sa.mid,0.9)*Math.pow(72/sa.gk,0.8)*Math.pow(nh,1.2)*Math.pow(1/na,0.8);
+    const expA=(S.neutral?1.3:1.15)*Math.pow(sa.att/sh.def,2.4)*Math.pow(sa.mid/sh.mid,0.9)*Math.pow(72/sh.gk,0.8)*Math.pow(na,1.2)*Math.pow(1/nh,0.8);
+    const scorers=(t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>{const p=t.players[x.idx]; const d=ROLE_DEM[x.role]; return (d==='DEL'?5:d==='MED'?2:0.6)*(p.attrs[6]+p.attrs[7])/100;}); return ()=>t.players[pick(c,w).idx]; };
+    const cardable=(t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>t.players[x.idx].attrs[2]/100); return ()=>t.players[pick(c,w).idx]; };
+    C={expH,expA,scH:scorers(home,S.lh),scA:scorers(away,S.la),cdH:cardable(home,S.lh),cdA:cardable(away,S.la)}; };
+  const side=x=>x==='H'?{t:home,l:S.lh}:{t:away,l:S.la};
+  // banquillo de la máquina: mejores no alineados, no lesionados ni sancionados, misma línea si es posible
+  const aiBench=(sd,role)=>{ const {t,l}=side(sd); const inL=new Set(l.map(x=>x.idx)); const cands=t.players.map((p,i)=>i).filter(i=>!inL.has(i)&&!S.used[sd].has(i)&&!(typeof isInjured==='function'&&isInjured(t.id,i))&&!(typeof isSuspended==='function'&&isSuspended(t.id,i,opts.comp||'L')));
+    const same=cands.filter(i=>ROLE_DEM[t.players[i].roles[0]]===ROLE_DEM[role]); const pool=same.length?same:cands; if(!pool.length) return -1; return pool.sort((a,b)=>effME(t.players[b],role)-effME(t.players[a],role))[0]; };
+  S.sub=(sd,outIdx,inIdx)=>{ const {t,l}=side(sd); const k=l.findIndex(x=>x.idx===outIdx); if(k<0||S.nsubs[sd]>=3||S.done||inIdx<0) return false; if(l.some(x=>x.idx===inIdx)) return false;
+    l[k]={idx:inIdx,role:l[k].role,x:l[k].x,y:l[k].y}; S.hurt[sd].delete(outIdx); S.used[sd].add(inIdx); S.nsubs[sd]++; ends[sd+':'+outIdx]=S.m; start[sd+':'+inIdx]=S.m;
+    S.subs.push({min:S.m,side:sd,out:outIdx,in:inIdx}); S.events.push({min:S.m,type:'sub',side:sd,player:t.players[inIdx],out:t.players[outIdx]}); C=null; return true; };
+  S.step=()=>{ if(S.done) return; if(!C) calc(); const m=++S.m; const boost=(S.full&&m>80&&S.gh<=S.ga)?1.15:1;
+    if(rnd()<C.expH*boost/90){ S.gh++; S.events.push({min:m,type:'goal',side:'H',player:C.scH(),score:[S.gh,S.ga]}); }
+    if(rnd()<C.expA/90){ S.ga++; S.events.push({min:m,type:'goal',side:'A',player:C.scA(),score:[S.gh,S.ga]}); }
+    const sendOff=(sd,p,direct)=>{ S.events.push(Object.assign({min:m,type:'red',side:sd,player:p},direct?{direct:true}:{})); const l=side(sd).l; const k=l.findIndex(x=>x.idx===p.idx); if(k>=0) l.splice(k,1); S.hurt[sd].delete(p.idx); ends[sd+':'+p.idx]=m; C=null; };
+    if(rnd()<0.035){ const sd=rnd()<0.5?'H':'A'; const p=(sd==='H'?C.cdH:C.cdA)(); const k=sd+p.idx; if(S.yellows.has(k)){ S.yellows.delete(k); sendOff(sd,p,false); } else { S.yellows.add(k); S.events.push({min:m,type:'yellow',side:sd,player:p}); } }
+    if(!S.done&&rnd()<0.0007){ const sd=rnd()<0.5?'H':'A'; const p=(sd==='H'?C.cdH:C.cdA)(); sendOff(sd,p,true); }
+    if(rnd()<0.0018){ const sd=rnd()<0.5?'H':'A'; const {t,l}=side(sd); if(l.length){ const x=l[Math.floor(rnd()*l.length)]; const p=t.players[x.idx]; if(!S.events.some(e=>e.type==='injury'&&e.player===p)){ const inj=randomInjury(); S.events.push({min:m,type:'injury',side:sd,player:p,weeks:inj.weeks,kind:inj.kind}); S.hurt[sd].add(p.idx); C=null;
+      if(S.ai[sd]) S.sub(sd,p.idx,aiBench(sd,x.role)); } } }
+    if(m>=90){ S.done=true; }
+  };
+  S.result=()=>{ const minutes={}; for(const k in start){ minutes[k]=Math.max(0,(ends[k]!==undefined?ends[k]:90)-start[k]); }
+    return {home:home.id, away:away.id, gh:S.gh, ga:S.ga, events:S.events, subs:S.subs, minutes, att:Math.min(home.capacity||20000, Math.round((home.capacity||20000)*(0.45+rnd()*0.5)))}; };
+  return S;
+}
+function simulateMatch(home, away, lh, la, opts){
+  const S=matchSim(home,away,lh,la,Object.assign({ai:{H:true,A:true}},opts||{})); while(!S.done) S.step(); return S.result();
 }
 function standings(teamIds, results){
   const S={}; teamIds.forEach(id=>S[id]={id,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0});

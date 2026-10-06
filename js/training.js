@@ -97,9 +97,11 @@ function scrEntrenamiento(){
 function statsRecord(hm,aw,lh,la,r){
   G.stats=G.stats||{};
   const S=p=>{ const k=pkey(p); return G.stats[k]||(G.stats[k]={pj:0,min:0,g:0,ta:0,tr:0,t:p.team}); };
-  const wk=G.week||0; lh.forEach(l=>{ const s=S(hm.players[l.idx]); s.pj++; s.min+=90; s.t=hm.id; s.last=wk; }); la.forEach(l=>{ const s=S(aw.players[l.idx]); s.pj++; s.min+=90; s.t=aw.id; s.last=wk; });
+  const wk=G.week||0;
+  if(r.minutes){ for(const k in r.minutes){ const [sd,i]=k.split(':'); const t=sd==='H'?hm:aw; const p=t.players[+i]; if(!p) continue; const mn=r.minutes[k]; if(mn<=0) continue; const s=S(p); s.pj++; s.min+=mn; s.t=t.id; s.last=wk; } }
+  else { lh.forEach(l=>{ const s=S(hm.players[l.idx]); s.pj++; s.min+=90; s.t=hm.id; s.last=wk; }); la.forEach(l=>{ const s=S(aw.players[l.idx]); s.pj++; s.min+=90; s.t=aw.id; s.last=wk; }); }
   for(const e of r.events){ const p=e.player.name?e.player:team(e.player.team).players[e.player.idx]; if(!p) continue; const s=S(p);
-    if(e.type==='goal') s.g++; else if(e.type==='yellow') s.ta++; else if(e.type==='red'){ s.tr++; s.min-=Math.max(0,90-e.min); } }
+    if(e.type==='goal') s.g++; else if(e.type==='yellow') s.ta++; else if(e.type==='red'){ s.tr++; if(!r.minutes) s.min-=Math.max(0,90-e.min); } }
 }
 function statOf(p){ return (G.stats&&G.stats[pkey(p)])||{pj:0,min:0,g:0,ta:0,tr:0}; }
 function scrEstadisticas(state){

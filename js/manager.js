@@ -149,6 +149,7 @@ function eventLine(e,hm,aw){
   if(e.type==='goal') return line('goal',"⚽ "+e.min+"' GOL de "+p+" ("+tn+")  "+e.score[0]+"-"+e.score[1]);
   const line2=(cls,ico,text)=>{ const d=line(cls,text); d.insertBefore(icoImg(ico,12),d.lastChild); return d; };
   if(e.type==='injury') return line2('red','ico_lesion',e.min+"' Lesionado "+p+" ("+tn+")"+(e.kind?': '+e.kind.toLowerCase():'')+" · "+e.weeks+(e.weeks===1?' semana':' semanas'));
+  if(e.type==='sub') return line('sub',"⇄ "+e.min+"' Cambio ("+tn+"): entra "+p+" por "+(e.out&&e.out.name||'?'));
   if(e.type==='yellow') return line2('card','tarjeta_amar',e.min+"' Tarjeta amarilla a "+p+" ("+tn+")");
   return line2('red',e.direct?'tarjeta_roja':'tarjeta2_amar',e.min+"' EXPULSADO "+p+" ("+tn+")"+(e.direct?' (roja directa)':' (doble amarilla)'));
 }
@@ -292,16 +293,19 @@ function playJornadaAI(lg, j){
   return res;
 }
 function scrMatchLive(hm,aw,lh,la,opts){
-  const t=team(G.team); const r=simulateMatch(hm,aw,lh,la,{full:opts.att&&!opts.neutral?isFull(hm,opts.att):false,neutral:!!opts.neutral}); if(opts.att) r.att=opts.att; const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  const t=team(G.team); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
+  const mySide=hm.id===G.team?'H':aw.id===G.team?'A':null; if(mySide&&typeof ensureBench==='function') ensureBench();
+  const S=matchSim(hm,aw,lh,la,{full:opts.att&&!opts.neutral?isFull(hm,opts.att):false,neutral:!!opts.neutral,ai:{H:mySide!=='H',A:mySide!=='A'},comp:opts.comp||'L'});
+  const r={att:opts.att||Math.min(hm.capacity||20000,Math.round((hm.capacity||20000)*(0.45+rnd()*0.5)))}; // el resultado completo se rellena al acabar
   setBg('fondo8'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:opts.title||'PARTIDO',date:gameDate(),sub:opts.sub||''}));
-  const pl=[...lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})];
+  const plNow=()=>[...S.lh.map(l=>{const rp=slotPos(l); return {x:rp[0]/2,y:rp[1],n:hm.players[l.idx].dorsal||'',cls:''};}),...S.la.map(l=>{const rp=slotPos(l); return {x:100-rp[0]/2,y:100-rp[1],n:aw.players[l.idx].dorsal||'',cls:'rival'};})]; const pl=plNow(); let pitchEl=null;
   let score, clock, ev, P, H;
   if(MUI){ // móvil: equipos y marcador arriba, campo, y debajo el relato del partido
     H=panel(10,68,620,80); s.appendChild(H);
     score=h('div',{class:'f-e1 mlsc'},'0 - 0'); clock=h('div',{class:'f-e4 mlck'},"0'");
     H.appendChild(h('div',{class:'mlh'},h('img',{src:escImg(hm.id)}),h('div',{class:'mln'},hm.name),h('div',{class:'mls'},score,clock),h('div',{class:'mln'},aw.name),h('img',{src:escImg(aw.id)})));
-    const F=panel(10,160,620,230); s.appendChild(F); F.appendChild(pitch(0,0,330,200,pl));
+    const F=panel(10,160,620,230); s.appendChild(F); pitchEl=pitch(0,0,330,200,pl); F.appendChild(pitchEl);
     const E=panel(10,400,620,200); s.appendChild(E); E.appendChild(h('div',{class:'hdr'},'EL PARTIDO · '+fmtNum(r.att)+' espectadores'+(!opts.neutral&&isFull(hm,r.att)?' · ¡LLENO!':'')+' · Árbitro: '+refName(refFor(hm))));
     ev=h('div',{class:'scroll mlev'}); E.appendChild(ev);
   } else {
@@ -313,20 +317,31 @@ function scrMatchLive(hm,aw,lh,la,opts){
     P.appendChild(at(h('img',{src:'img/cam/'+hm.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),100,44));
     P.appendChild(at(h('img',{src:'img/cam/'+aw.id+'.png',style:{width:'73px',height:'38px'},onerror:function(){this.style.display='none'}}),447,44));
     ev=at(h('div',{class:'scroll'}),20,96,360,250); P.appendChild(ev);
-    P.appendChild(pitch(392,96,218,140,pl));
+    pitchEl=pitch(392,96,218,140,pl); P.appendChild(pitchEl);
     P.appendChild(txt('Espectadores: '+fmtNum(r.att)+(!opts.neutral&&isFull(hm,r.att)?' (¡lleno!)':'')+'\nÁrbitro: '+refName(refFor(hm)),392,244,218,40,'f-p8'));
   }
-  let min=0, gh=0, ga=0, ei=0, timer=null, speed=60, finished=false;
-  const finish=()=>{ if(finished) return; finished=true; clearInterval(timer); timer=null; min=90; clock.textContent="90'"; score.textContent=r.gh+' - '+r.ga; while(ei<r.events.length){ ev.appendChild(eventLine(r.events[ei++],hm,aw)); } ev.scrollTop=1e6;
+  let min=0, gh=0, ga=0, ei=0, timer=null, speed=60, finished=false, subBtn=null;
+  const redrawPitch=()=>{ if(!pitchEl) return; const np=MUI?pitch(0,0,330,200,plNow()):pitch(392,96,218,140,plNow()); pitchEl.replaceWith(np); pitchEl=np; };
+  const pause=()=>{ if(timer){ clearInterval(timer); timer=null; } }; const resume=()=>{ if(!finished&&!timer) timer=setInterval(tick,speed); };
+  const showEvents=()=>{ while(ei<S.events.length){ const e=S.events[ei++]; if(e.type==='goal'){ gh=e.score[0]; ga=e.score[1]; score.textContent=gh+' - '+ga; } if(e.type==='sub'||e.type==='red') redrawPitch(); ev.appendChild(eventLine(e,hm,aw)); ev.scrollTop=1e6; if(mySide&&e.side===mySide&&e.type==='injury'&&!finished){ pause(); dialog('LESIONADO',e.player.name+' se ha lesionado ('+(e.kind||'').toLowerCase()+'). Puede seguir en el campo a medio rendimiento o ser sustituido.',[{t:'SUSTITUIR',cls:'green',f:()=>subFlow(e.player.idx)},{t:'SEGUIR',f:resume}]); return; } } };
+  // sustitución del usuario: quién sale (del once) y quién entra (del banquillo convocado), máximo 3
+  const subFlow=outIdx=>{ if(!mySide||finished) return; pause(); const l=mySide==='H'?S.lh:S.la; if(S.nsubs[mySide]>=3){ dialog('CAMBIO','Ya has hecho los tres cambios.',[{t:'ACEPTAR',f:resume}]); return; }
+    const inOnce=new Set(l.map(x=>x.idx)); const bench=(G.bench||[]).filter(i=>t.players[i]&&!inOnce.has(i)&&!S.used[mySide].has(i)&&!isOut(G.team,i));
+    if(!bench.length){ dialog('CAMBIO','No quedan jugadores convocados en el banquillo.',[{t:'ACEPTAR',f:resume}]); return; }
+    const pick=(title,cands,f)=>{ const b=h('div',{class:'scroll',style:{maxHeight:'250px'}}); cands.forEach(p=>b.appendChild(h('div',{class:'btn blue',style:{position:'relative',display:'block',margin:'2px 0'},onclick:()=>{closeDialog(); f(p);}},(p.dorsal?p.dorsal+' ':'')+p.name+' ('+ROLES_SHORT[p.roles[0]]+') · ME '+p.me+(S.hurt[mySide].has(p.idx)?' · lesionado':'')))); dialog(title,b,[{t:'CANCELAR',f:resume}]); };
+    const chooseIn=po=>pick('ENTRA POR '+po.name.toUpperCase()+' ('+ROLES_SHORT[l.find(x=>x.idx===po.idx).role]+')',bench.map(i=>t.players[i]),pi=>{ S.sub(mySide,po.idx,pi.idx); if(subBtn) subBtn.textContent='CAMBIO '+S.nsubs[mySide]+'/3'; showEvents(); resume(); });
+    if(outIdx!==undefined&&inOnce.has(outIdx)) chooseIn(t.players[outIdx]); else pick('¿QUIÉN SALE? ('+S.nsubs[mySide]+'/3 cambios)',l.map(x=>t.players[x.idx]),chooseIn); };
+  const finish=()=>{ if(finished) return; finished=true; clearInterval(timer); timer=null; closeDialog(); while(!S.done) S.step(); Object.assign(r,S.result(),{att:r.att}); min=90; clock.textContent="90'"; score.textContent=r.gh+' - '+r.ga; while(ei<r.events.length){ const e=r.events[ei++]; ev.appendChild(eventLine(e,hm,aw)); } redrawPitch(); ev.scrollTop=1e6; if(subBtn) subBtn.remove();
     const isHome=hm.id===G.team; const my=isHome?[r.gh,r.ga]:[r.ga,r.gh]; const msg=my[0]>my[1]?'¡VICTORIA!':my[0]<my[1]?'DERROTA':'EMPATE';
     if(MUI){ const m=h('div',{class:'f-e4 mlmsg'},msg); H.appendChild(m); s.appendChild(btn('CONTINUAR',240,446,120,()=>opts.after(r),'green')); }
     else { P.appendChild(txt(msg,392,356,218,16,'f-e4')).style.textAlign='center'; P.appendChild(btn('CONTINUAR',392,300,218,()=>opts.after(r),'green')); }
   };
-  const tick=()=>{ if(finished) return; min++; clock.textContent=min+"'"; while(ei<r.events.length&&r.events[ei].min<=min){ const e=r.events[ei++]; if(e.type==='goal'){ if(e.side==='H') gh++; else ga++; score.textContent=gh+' - '+ga; } ev.appendChild(eventLine(e,hm,aw)); ev.scrollTop=1e6; } if(min>=90) finish(); };
+  const tick=()=>{ if(finished) return; S.step(); min=S.m; clock.textContent=min+"'"; showEvents(); if(S.done) finish(); };
   timer=setInterval(tick,speed);
   const host=MUI?s:P;
-  host.appendChild(btn('RÁPIDO',20,350,100,()=>{clearInterval(timer); timer=setInterval(tick,8);},'blue'));
-  host.appendChild(btn('FINALIZAR',130,350,100,()=>{ if(timer) finish(); },'red'));
+  host.appendChild(btn('RÁPIDO',20,350,100,()=>{ speed=8; if(timer){ clearInterval(timer); timer=setInterval(tick,speed); } },'blue'));
+  host.appendChild(btn('FINALIZAR',130,350,100,()=>{ if(!finished) finish(); },'red'));
+  if(mySide){ subBtn=btn('CAMBIO 0/3',240,350,120,()=>subFlow(),'green'); host.appendChild(subBtn); }
 }
 function scrPartido(){
   const nm=nextMatch(); if(!nm) return scrOficina();

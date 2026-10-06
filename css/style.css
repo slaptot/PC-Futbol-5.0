@@ -142,6 +142,7 @@ body.mui #screen .ev .evph{position:static!important}
 .ev.goal{color:#ffe24a}
 .ev.card{color:#ffb060}
 .ev.red{color:#ff6060}
+.ev.sub{color:#9fd0ff}
 .select{position:absolute;background:#fff;color:#000;border:1px solid #000;font-family:'futcon12';font-size:15px;height:18px;padding:0 2px}
 select.select{appearance:none;-webkit-appearance:none;border-radius:0}
 .cursor-hand{cursor:pointer}

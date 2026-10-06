@@ -19,6 +19,15 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Sustituciones durante el partido**: el partido en directo se simula minuto a minuto con estado
+  (`matchSim` en `js/engine.js`), así que se pueden hacer hasta tres cambios con el botón CAMBIO: se elige
+  quién sale del once y quién entra de los siete convocados; el que entra ocupa el puesto del que sale.
+  Si se lesiona un jugador propio, el partido se detiene y ofrece sustituirlo o dejarlo (rinde a la mitad).
+  Los expulsados dejan al equipo con uno menos (menos ataque y defensa, y el rival aprovecha). Los equipos
+  de la máquina sustituyen a sus lesionados con el mejor suplente de la misma línea. Los cambios salen en
+  el relato (⇄), el campo se redibuja con los dorsales nuevos y las estadísticas cuentan los minutos reales
+  (partidos jugados y minutos de titulares, suplentes y expulsados). Los cambios no alteran la alineación
+  guardada para el siguiente partido. No hay partido animado.
 - **Alineación más legible**: la tabla de escritorio funde ROL y POS en una sola columna POS / ROL (puesto en
   el once, o demarcación natural para el resto, con la lesión o sanción) y elimina DEM, redundante con el rol;
   el espacio va a la columna del nombre, que ya no se corta.
