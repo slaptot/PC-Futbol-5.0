@@ -185,9 +185,9 @@ python3 tools/push.py ../suscripciones.json "Título" "Texto del aviso" "https:/
 El aviso llega como notificación del sistema y, al abrirlo, el juego muestra una alerta con el título,
 el texto y el enlace opcional. El script imprime "Enviados N de M"; una suscripción caducada da error
 y hay que pedir al jugador que la copie de nuevo. El contacto VAPID (`sub`) del script es el correo
-del autor; Apple rechaza direcciones de ejemplo. Las claves se generaron una vez con `pywebpush`
-(`vapid --gen`); la pública está en `js/push.js` y si se cambia, los jugadores deben volver a activar
-los avisos.
+del autor; Apple rechaza direcciones de ejemplo. Las claves VAPID se generaron una vez con
+`openssl ecparam -genkey -name prime256v1`; la pública está en `js/push.js` y si se cambia, los
+jugadores deben volver a activar los avisos.
 
 ## Publicación en GitHub Pages con contraseña
 
