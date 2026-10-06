@@ -19,8 +19,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
-- **Escudos sin fondo negro** en toda la web (`tools/esc_alpha.py`), con copia de los originales fuera
-  del repositorio. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
+- **Escudos, iconos de camiseta y equipaciones sin fondo negro** en toda la web (`tools/esc_alpha.py`),
+  con copia de los originales fuera del repositorio. Las banderas no lo necesitan. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
   Fichajes se desplaza y la app consume menos batería.
 - **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`), probados en iPhone
   con la app instalada.
@@ -194,10 +194,14 @@ del autor; Apple rechaza direcciones de ejemplo. Las claves VAPID se generaron u
 `openssl ecparam -genkey -name prime256v1`; la pública está en `js/push.js` y si se cambia, los
 jugadores deben volver a activar los avisos.
 
-Los escudos (`img/esc`, `img/escbig`) se muestran sin el fondo negro original: `tools/esc_alpha.py` vuelve
+Los escudos (`img/esc`, `img/escbig`), sus iconos pequeños (`img/nano`, `img/ridi`: camisetas de las
+listas) y las equipaciones (`img/cam`) se muestran sin el fondo negro original: `tools/esc_alpha.py` vuelve
 transparente el color exacto del fondo (el de las esquinas, negro puro, índice 0 de la paleta) conectado con
 el borde de cada imagen; el negro del dibujo (bordes, murciélago del Valencia, pantalones) es otro tono y se
-conserva. Los
+conserva. Se aplica con `--dirs` a cualquier carpeta de `img/`. Las banderas (`img/band`, `img/bandbig`)
+no se tocan: son rectángulos ondeando que ocupan toda la imagen, sin fondo, y en diez de ellas el negro
+del borde forma parte del dibujo (Alemania, Bélgica, Estonia…). Las fotos de jugadores, árbitros y campos
+tampoco tienen fondo que recortar. Los
 originales se guardan fuera del repositorio (`../escudos_originales/`) y también están en el historial de git.
 
 ## Publicación en GitHub Pages con contraseña

@@ -1,6 +1,6 @@
 # Quita el fondo negro de los escudos: el color exacto del fondo (el de las esquinas, negro puro) conectado con
 # el borde de la imagen pasa a transparente. El negro del dibujo (bordes, murciélagos, letras) es otro tono y se conserva. Uso:
-#   python3 tools/esc_alpha.py [--out DIR] [id ...]     (sin ids: todos los escudos de img/esc e img/escbig)
+#   python3 tools/esc_alpha.py [--out DIR] [--dirs esc,escbig,nano,ridi] [id ...]   (sin ids: todas las imágenes de esas carpetas)
 import os,sys
 from PIL import Image
 ROOT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..')
@@ -29,10 +29,13 @@ def clear_bg(im):
             if 0<=nx<w and 0<=ny<h and not seen[ny*w+nx] and dark(nx,ny): stack.append((nx,ny))
     return im,n
 if __name__=='__main__':
-    args=sys.argv[1:]; out=None
-    if args and args[0]=='--out': out=args[1]; args=args[2:]
-    ids=args or sorted({f[:-4] for d in ('esc','escbig') for f in os.listdir(os.path.join(ROOT,'img',d)) if f.endswith('.png')},key=lambda s:int(s) if s.isdigit() else 0)
-    for d in ('esc','escbig'):
+    args=sys.argv[1:]; out=None; dirs=('esc','escbig')
+    while args and args[0] in ('--out','--dirs'):
+        if args[0]=='--out': out=args[1]
+        else: dirs=tuple(args[1].split(','))
+        args=args[2:]
+    ids=args or sorted({f[:-4] for d in dirs for f in os.listdir(os.path.join(ROOT,'img',d)) if f.endswith('.png')},key=lambda s:int(s) if s.isdigit() else 0)
+    for d in dirs:
         for i in ids:
             p=os.path.join(ROOT,'img',d,str(i)+'.png')
             if not os.path.exists(p): continue
