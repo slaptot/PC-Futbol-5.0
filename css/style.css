@@ -89,6 +89,12 @@ table.t tr.sel td{background:#2d49b8;color:#fff}
 table.t tr.me td{color:#7fff7f}
 table.t tr.pend td{background:#7a4a10;color:#ffd080}
 table.t tr.pend.sel td{background:#9a5a10;color:#fff}
+/* alineación: sancionados en rojo, lesionados en naranja (el seleccionado conserva su azul) */
+table.t tr.san td{background:#5a0a0a;color:#ff9a9a}
+table.t tr.les td{background:#4a2a08;color:#ffc080}
+table.t tr.san.clk:hover td{background:#7a1414}
+table.t tr.les.clk:hover td{background:#6a3a10}
+table.t tr.san.sel td,table.t tr.les.sel td{background:#2d49b8;color:#fff}
 table.t tr.clk{cursor:pointer}
 table.t tr.clk:hover td{background:#1d2f80}
 table.t td.r,table.t th.r{text-align:right}
