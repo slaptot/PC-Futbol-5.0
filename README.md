@@ -255,3 +255,20 @@ Para cambiar la contraseña: `python3 tools/setpass.py <nueva>` y subir `js/auth
   puerta a favor, 35 penalti, 67 tarjeta) y declaraciones) `tools/cups.py` las copas (`C1`: ediciones con alineación; `C2/C3/C4`: ranking de 50 equipos y finales;
   `C5/C6/C7`: ediciones con dos partidos, estadio, fecha, árbitro, público y alineaciones) y
   `tools/export2.py` genera todos los JSON.
+- **Campos del registro de jugador** (`f1`–`f4`, `c2` en `teams.json`), descifrados por estadística sobre
+  los 12.591 jugadores (6 de octubre de 2026):
+  - `f4` = línea: 0 portero, 1 defensa, 2 medio, 3 delantero (coincide al 99 % con la demarcación).
+  - `f2` = situación en la plantilla 96-97: 0 continúa, 1 alta de esta temporada (el 91 % llegó en el
+    96: Ronaldo, Mijatovic, Suker, Vieri), 2 filial/canterano con ficha del equipo B (Arnau, Víctor,
+    Etxeberria), 3 baja: ya no está en el club (Bakero, Bebeto, Prosinecki en el Barcelona, que aparece
+    también en el Sevilla como alta). Los 94 jugadores con `f2`=3 siguen hoy en las plantillas del manager.
+  - `f1` = número de orden de la ficha en la plantilla (1–25, único por club; 99 = sin ficha del primer
+    equipo, es decir, filiales y bajas). No es el dorsal.
+  - `c2` = tono de piel del jugador para los gráficos del partido (1 claro, 2 oscuro, 3 intermedio):
+    lo confirman las listas de cada valor (Ronaldo, Amunike, Seedorf, Andy Cole, Ince con 2; Naybet,
+    Chaouch con 3) y que no depende del club ni del pasaporte (Donato y Mauro Silva, españoles, son 2).
+    No tiene relación con la regla de extracomunitarios del juego y la web no lo usa.
+  - `f3` (valores 1, 2, 3, 5 y 6; parece una máscara de bits 1/2/4) sigue sin descifrar: no depende de
+    la demarcación ni de la edad, varía por liga (Italia casi todo 3, Inglaterra inferior mitad 6) y no
+    se corresponde con fotos, biografías, internacionalidades ni cantera. No hay ningún campo de mínimo
+    ni de potencial por jugador: los topes de la falta de ritmo son propios de la web.
