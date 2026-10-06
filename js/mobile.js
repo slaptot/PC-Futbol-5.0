@@ -26,6 +26,17 @@ function mobileInit(){
   // service worker para instalar como app y jugar sin conexión (necesita HTTPS o localhost)
   if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 }
+// ---- precarga de imágenes y fuentes en segundo plano (data/precache.json, generado por tools/build_precache.py)
+// En móvil las guarda el service worker (caché permanente); en escritorio las deja en la caché HTTP del navegador.
+async function warmCache(){
+  try{ if(navigator.connection&&navigator.connection.saveData) return; }catch(e){}
+  let urls; try{ urls=await fetch('data/precache.json').then(r=>r.json()); }catch(e){ return; }
+  if(!Array.isArray(urls)||!urls.length) return;
+  if('serviceWorker' in navigator&&MOBILE){ try{ const reg=await navigator.serviceWorker.ready; if(reg.active){ reg.active.postMessage({type:'warm',urls}); return; } }catch(e){} }
+  const idle=cb=>(window.requestIdleCallback||(f=>setTimeout(f,200)))(cb);
+  let i=0; const next=()=>{ if(i>=urls.length) return; const u=urls[i++]; fetch(u,{priority:'low'}).catch(()=>{}).finally(()=>idle(next)); };
+  for(let k=0;k<3;k++) idle(next);
+}
 // ---- exportar / importar la partida (el almacenamiento del navegador móvil puede borrarse)
 function exportSave(){
   const s=localStorage.getItem('pcf5_save'); if(!s) return dialog('EXPORTAR','No hay partida guardada.');

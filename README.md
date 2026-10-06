@@ -19,6 +19,13 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Precarga de imágenes**: tras arrancar, se descargan en segundo plano las 2.531 imágenes y fuentes
+  pequeñas de uso frecuente (fondos y botones de `img/ui`, fuentes, banderas, escudos, iconos de camiseta,
+  equipaciones, bombo; 6,9 MB en total, lista en `data/precache.json` generada por
+  `tools/build_precache.py`). En móvil lo hace el propio service worker al activarse y las guarda en su
+  caché, así que al cambiar de pantalla ya no hay que esperar a la red; en escritorio quedan en la caché
+  HTTP del navegador. Las fotos de jugadores, campos, entrenadores y árbitros siguen cargándose bajo
+  demanda. Se omite si el navegador tiene activado el ahorro de datos.
 - **Bajas fuera de las plantillas**: los 94 jugadores que el campo `f2` del juego marca como baja (ya no
   estaban en el club en la 96-97: Bakero, Bebeto, Romario en el Valencia…) se retiran de las plantillas
   jugables al cargar los datos, con lo que desaparecen los duplicados (Prosinecki jugaba a la vez en el
@@ -174,8 +181,9 @@ versión usar, y la elección se recuerda (`?ui=mobile` o `?ui=desktop` la fuerz
 
 La versión de escritorio en un ordenador no cambia. En ambos modos móviles hay `manifest.json` e
 iconos para añadir la web a la pantalla de inicio como app, y un `sw.js` (sólo se registra en móvil)
-que guarda en caché la aplicación y, bajo demanda, imágenes, datos, fuentes y música, para jugar sin
-conexión. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
+que guarda en caché la aplicación, precarga al activarse las imágenes y fuentes de `data/precache.json` y guarda
+bajo demanda el resto de imágenes, datos y música, para jugar sin conexión. Tras cambiar imágenes hay que
+regenerar la lista (`python3 tools/build_precache.py`) y subir la versión de caché `V` en `sw.js`. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
 exportar la partida a un archivo JSON e importarla después. Cámara, instalación y caché exigen HTTPS
 (o `localhost`).
 

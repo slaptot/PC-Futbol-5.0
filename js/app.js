@@ -27,4 +27,5 @@ function go(name,arg){
   if(typeof pushInit==='function') pushInit();
   splashOff();
   go('menu');
+  if(typeof warmCache==='function') setTimeout(warmCache,1500);
 })();
