@@ -36,8 +36,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   descuenta por jornada con el de los jugadores. Efectos: segundo entrenador +10 % de progreso en el
   entrenamiento por estrella; entrenador de juveniles +4 % para los de 22 años o menos; fisioterapeuta −8 %
   de semanas de lesión; psicólogo −10 % de pérdida de ritmo; ojeador +20 % de figuras en el mercado;
-  secretario técnico −2 % en el precio que aceptan los clubes; asistente, informe del rival en la oficina
-  (media de su once y jugadores clave); cuidador del césped +1 % de público y −5 % de lesiones en casa.
+  secretario técnico −2 % en el precio que aceptan los clubes; asistente, botón INFORME DEL RIVAL en la oficina que abre un
+  diálogo con el once probable del rival (media, jugadores clave, portero y líneas con 2 estrellas, últimos
+  resultados con 4); cuidador del césped +1 % de público y −5 % de lesiones en casa.
 - **Sustituciones durante el partido**: el partido en directo se simula minuto a minuto con estado
   (`matchSim` en `js/engine.js`), así que se pueden hacer hasta tres cambios con el botón CAMBIO: se elige
   quién sale del once y quién entra de los siete convocados; el que entra ocupa el puesto del que sale.
