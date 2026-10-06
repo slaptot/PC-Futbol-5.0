@@ -74,15 +74,17 @@ function simLeg(tie,leg,nlegs,live,after){
 }
 function playCupEvent(e,drawn){
   const c=G.cups[e.cup]; const fresh=!c.rounds[e.round]; const round=c.rounds[e.round]||drawRound(c,e.round);
-  if(fresh&&!drawn&&userInCup(e.cup)&&round.ties.length>1){ saveGame(); scrSorteo(e.cup,e.round,()=>playCupEvent(e,true)); return; } // la final no se sortea: solo quedan dos
+  // tras el sorteo se vuelve a la oficina: así se puede preparar la alineación antes de la ida (la final no se sortea: solo quedan dos)
+  if(fresh&&!drawn&&userInCup(e.cup)&&round.ties.length>1){ saveGame(); scrSorteo(e.cup,e.round,()=>{ saveGame(); scrOficina(); }); return; }
   G.curCup=e.cup; G.curRound=e.round;
   const mine=round.ties.find(t=>t.a===G.team||t.b===G.team);
-  // simular las eliminatorias de los demás
-  for(const t of round.ties){ if(t===mine||t.winner) continue; for(let l=0;l<round.nlegs;l++) simLeg(t,l,round.nlegs,false,()=>{}); resolveTie(t); }
+  const leg=mine?mine.legs.length:round.nlegs; // próxima manga del usuario (0 ida, 1 vuelta)
+  // los demás juegan la misma manga que el usuario (o toda la eliminatoria si el usuario no participa)
+  for(const t of round.ties){ if(t===mine||t.winner) continue; for(let l=t.legs.length;l<=Math.min(leg,round.nlegs-1);l++) simLeg(t,l,round.nlegs,false,()=>{}); if(t.legs.length>=round.nlegs) resolveTie(t); }
   const finishRound=()=>{ if(mine) resolveTie(mine); decInjuries(); c.alive=round.ties.map(t=>t.winner); if(c.alive.length===1){ c.winner=c.alive[0]; } if(c.alive.length===2&&!c.rounds[e.round+1]&&e.round+1<CUP_DEFS[e.cup].rounds.length) drawRound(c,e.round+1); /* la final queda fijada (sede y entrada) al acabar las semifinales */ if(mine&&!mine.awarded){ mine.awarded=true; awardCupRound(e.cup,e.round,c.winner===G.team); } G.step++; saveGame(); scrCupResult(e.cup,e.round); };
   if(!mine||mine.winner){ finishRound(); return; }
-  const playLeg=l=>{ if(l>=round.nlegs){ finishRound(); return; } simLeg(mine,l,round.nlegs,true,()=>playLeg(l+1)); };
-  playLeg(0);
+  // una manga por pulsación de JUGAR: tras la ida se vuelve a la oficina y se puede cambiar la alineación
+  simLeg(mine,leg,round.nlegs,true,()=>{ if(leg+1>=round.nlegs) finishRound(); else { decInjuries(); saveGame(); scrCupResult(e.cup,e.round); } });
 }
 function scrCupResult(k,ri){
   const c=G.cups[k]; const round=c.rounds[ri];
@@ -92,7 +94,7 @@ function scrCupResult(k,ri){
   const sc=at(h('div',{class:'scroll'}),0,20,616,312); P.appendChild(sc);
   sc.appendChild(tieTable(round,true));
   const mine=round.ties.find(x=>x.a===G.team||x.b===G.team);
-  let msg=''; if(mine){ msg=mine.winner===G.team?'¡Tu equipo pasa a la siguiente ronda!':'Tu equipo queda eliminado.'; if(c.winner===G.team) msg='¡¡CAMPEÓN DE '+cupName(k).toUpperCase()+'!!'; }
+  let msg=''; if(mine&&!mine.winner){ const l=mine.legs[0]; msg=l?'Ida: '+team(l.home).name+' '+l.gh+'-'+l.ga+' '+team(l.away).name+'. La vuelta se juega al pulsar JUGAR en la oficina.':''; } else if(mine){ msg=mine.winner===G.team?'¡Tu equipo pasa a la siguiente ronda!':'Tu equipo queda eliminado.'; if(c.winner===G.team) msg='¡¡CAMPEÓN DE '+cupName(k).toUpperCase()+'!!'; }
   else if(c.winner) msg='Campeón: '+team(c.winner).name;
   P.appendChild(txt(msg,10,340,400,20,'f-e4'));
   P.appendChild(btn('CONTINUAR',480,338,130,()=>scrOficina(),'green'));
