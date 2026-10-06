@@ -29,7 +29,7 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
 - **Fotos grandes de jugadores** (`img/fotobig`, 25 MB): no se precargan todas, sino por plantilla al
   entrar en ella: al abrir un equipo en la base de datos, al cargar la partida (equipo propio) y al abrir
   Fichajes (jugadores del mercado), `prefetchPhotos` pide sus fotos en segundo plano. Mientras llega la
-  grande, la ficha muestra ampliada la foto pequeña, que ya está en caché.
+  grande, la ficha muestra ampliada la foto pequeña, que ya está en caché. Comprobado en el móvil.
 - **Bajas fuera de las plantillas**: los 94 jugadores que el campo `f2` del juego marca como baja (ya no
   estaban en el club en la 96-97: Bakero, Bebeto, Romario en el Valencia…) se retiran de las plantillas
   jugables al cargar los datos, con lo que desaparecen los duplicados (Prosinecki jugaba a la vez en el
@@ -187,7 +187,14 @@ La versión de escritorio en un ordenador no cambia. En ambos modos móviles hay
 iconos para añadir la web a la pantalla de inicio como app, y un `sw.js` (sólo se registra en móvil)
 que guarda en caché la aplicación, precarga al activarse las imágenes y fuentes de `data/precache.json` y guarda
 bajo demanda el resto de imágenes, datos y música, para jugar sin conexión. Tras cambiar imágenes hay que
-regenerar la lista (`python3 tools/build_precache.py`) y subir la versión de caché `V` en `sw.js`. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
+regenerar la lista (`python3 tools/build_precache.py`) y subir la versión de caché `V` en `sw.js`.
+
+Espacio que ocupa la caché en el móvil: la aplicación y los datos (unos 23 MB, de ellos 22 MB de
+`teams.json`), la precarga (12 MB) y, bajo demanda, las fotos grandes que se hayan visto (hasta 25 MB) y
+la música que se haya oído (hasta 25 MB). Máximo unos 85 MB y 7.000 entradas, muy por debajo de lo que
+permiten Safari y Chrome (cientos de MB por sitio). Al cambiar la versión `V` se borra la caché anterior,
+así que nunca se acumulan versiones. Safari borra la caché de las webs que no se abren en 7 días, pero no
+la de la app instalada en la pantalla de inicio. Como el navegador móvil puede borrar el almacenamiento local, "Guardar partida" permite
 exportar la partida a un archivo JSON e importarla después. Cámara, instalación y caché exigen HTTPS
 (o `localhost`).
 
