@@ -17,6 +17,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   imágenes de arranque de iOS) y arranque corregido: el splash ya no tapa el diálogo de contraseña ni
   el de elección de versión, así que la app instalada ya no se queda en "cargando". El manifest ya no
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
+  Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
+  isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
 - **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`), probados en iPhone
   con la app instalada.
 - **Créditos**: datos de Dinamic Multimedia (PC Fútbol 5.0 y Edición de Oro) y autoría de la web, en
