@@ -24,7 +24,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   iconos de camiseta, equipaciones, bombo, fotos pequeñas de jugadores, campos, entrenadores y árbitros;
   12,1 MB en total, lista en `data/precache.json` generada por `tools/build_precache.py`). En móvil lo
   hace el propio service worker al activarse y las guarda en su caché, así que al cambiar de pantalla ya
-  no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador. Se omite si el
+  no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador (descarga de tres en tres
+  en los ratos libres del navegador, con un tope de 400 ms de espera para que no se pare en pestañas
+  ocupadas; comprobado). Se omite si el
   navegador tiene activado el ahorro de datos.
 - **Fotos grandes de jugadores** (`img/fotobig`, 25 MB): no se precargan todas, sino por plantilla al
   entrar en ella: al abrir un equipo en la base de datos, al cargar la partida (equipo propio) y al abrir
