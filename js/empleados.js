@@ -36,12 +36,11 @@ function scrEmpleados(){
   if(!G.emp) empInit(); const t=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:t,title:'PERSONAL DEL CLUB',date:gameDate(),sub:'EMPLEADOS · SUELDOS: '+fmtNum(empWagesWeek())+' M POR JORNADA'}));
   const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'EMPLEADOS DEL CLUB · PRESUPUESTO '+fmtNum(G.budget||0)+' M'));
-  const sc=at(h('div',{class:'scroll'}),0,20,616,312); P.appendChild(sc);
+  const sc=at(h('div',{class:'scroll'}),0,20,616,348); P.appendChild(sc);
   const rows=[]; EMP_ROLES.forEach(r=>{ const k=r[0]; const e=G.emp.hired[k]; rows.push({__group:MUI?r[1].toUpperCase():r[1].toUpperCase()+' · '+r[2]}); if(e) rows.push({k,c:e,hired:true}); (G.emp.market[k]||[]).forEach(c=>rows.push({k,c})); });
   const cols=[{t:'NOMBRE',w:MUI?120:170,k:x=>x.c.name},{t:'ESTADO',w:MUI?80:110,k:x=>x.hired?h('span',{style:{color:'#8dff8d'}},'CONTRATADO'):h('span',{class:'f-con8',style:{color:'#9fb4e8'}},'disponible '+(x.c.until-(G.jornada||1))+' j.')},{t:'ESTRELLAS',w:70,cls:'c',k:x=>empStarsEl(x.c.stars)},{t:'SUELDO',w:70,cls:'r',k:x=>fmtNum(x.c.salary)+' M'},{t:'',w:MUI?90:110,cls:'c',k:x=>h('span',{class:'f-con8',style:{color:x.hired?'#ff8a60':'#8dff8d'}},x.hired?'DESPEDIR':(G.emp.hired[x.k]?'':'CONTRATAR'))}];
   // móvil: tres columnas; el estado va bajo el nombre y la acción se hace tocando la fila
   const colsM=[{t:'NOMBRE',k:x=>h('span',{},x.c.name,h('br'),h('span',{class:'f-con8',style:{color:x.hired?'#8dff8d':'#9fb4e8'}},x.hired?'CONTRATADO · tocar para despedir':'disponible '+(x.c.until-(G.jornada||1))+' j.'+(G.emp.hired[x.k]?'':' · tocar para contratar')))},{t:'ESTRELLAS',w:72,cls:'c',k:x=>empStarsEl(x.c.stars)},{t:'SUELDO',w:56,cls:'r',k:x=>fmtNum(x.c.salary)+' M'}];
   sc.appendChild(table(MUI?colsM:cols,rows,{rowClass:x=>x.hired?'hired':'',onRow:x=>x.hired?empFire(x.k):empHire(x.k,x.c)}));
-  P.appendChild(txt('Un empleado por puesto. Los candidatos se renuevan cada 1-3 jornadas. Despedir cuesta el sueldo del resto de la temporada.',10,338,480,24,'f-p8'));
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }
