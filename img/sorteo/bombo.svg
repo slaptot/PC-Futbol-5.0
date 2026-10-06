@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 140" width="128" height="140">
+  <defs>
+    <radialGradient id="g" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".55" stop-color="#9fb4e8" stop-opacity=".25"/><stop offset="1" stop-color="#06102e" stop-opacity=".6"/></radialGradient>
+    <linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f4"/><stop offset=".5" stop-color="#9a9a9a"/><stop offset="1" stop-color="#e8e8e8"/></linearGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8d8d8"/><stop offset="1" stop-color="#6a6a6a"/></linearGradient>
+    <clipPath id="c"><circle cx="64" cy="58" r="46"/></clipPath>
+  </defs>
+  <!-- soporte -->
+  <rect x="58" y="100" width="12" height="18" fill="url(#b)"/>
+  <ellipse cx="64" cy="122" rx="34" ry="8" fill="url(#b)" stroke="#333" stroke-width="1"/>
+  <!-- esfera -->
+  <circle cx="64" cy="58" r="46" fill="url(#g)" stroke="#dcdcdc" stroke-width="2"/>
+  <!-- bolas -->
+  <g clip-path="url(#c)">
+    <circle cx="48" cy="86" r="7" fill="#ffe24a" stroke="#7a5a00"/><circle cx="64" cy="92" r="7" fill="#ff6a3a" stroke="#7a2a00"/><circle cx="80" cy="86" r="7" fill="#4ad0ff" stroke="#004a7a"/>
+    <circle cx="56" cy="76" r="7" fill="#8dff8d" stroke="#1a6a1a"/><circle cx="72" cy="76" r="7" fill="#ff8ad0" stroke="#7a1a5a"/><circle cx="64" cy="64" r="7" fill="#ffffff" stroke="#555"/>
+  </g>
+  <!-- jaula metálica -->
+  <g fill="none" stroke="url(#m)" stroke-width="2.5" opacity=".9">
+    <ellipse cx="64" cy="58" rx="46" ry="16"/><ellipse cx="64" cy="58" rx="46" ry="34"/><ellipse cx="64" cy="58" rx="16" ry="46"/><ellipse cx="64" cy="58" rx="34" ry="46"/>
+    <circle cx="64" cy="58" r="46" stroke-width="3"/>
+  </g>
+  <!-- eje y manivela -->
+  <rect x="110" y="55" width="12" height="6" fill="url(#b)"/><rect x="118" y="40" width="5" height="20" fill="url(#b)"/><circle cx="120" cy="38" r="4" fill="#333"/>
+  <rect x="6" y="55" width="12" height="6" fill="url(#b)"/>
+</svg>

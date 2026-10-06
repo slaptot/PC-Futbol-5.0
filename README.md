@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Sorteo**: el bombo es ahora un dibujo vectorial (`img/sorteo/bombo.svg`: esfera con jaula metálica,
+  bolas de colores y manivela, animado) en vez del sprite de 31 px ampliado, y la foto del trofeo del
+  juego se funde con el panel (mezcla "screen" y máscara radial) para que no se vea su recuadro azul.
 - **Velocidad del partido**: LENTA (300 ms por minuto, unos 30 s), MEDIA (150 ms) o RÁPIDA (60 ms, la de
   siempre), en el botón OPCIONES de la oficina o con el botón VEL. durante el partido; se recuerda en el
   navegador (`pcf5_speed`).

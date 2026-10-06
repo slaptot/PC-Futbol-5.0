@@ -311,7 +311,9 @@ body.mui table.t.fin{table-layout:fixed}
 body.mui #screen .panel.finfix{position:sticky!important;z-index:40;background:#0d1a4e}
 /* sorteo de copa */
 .sorteo-izq{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:10px}
-.bombo{width:124px;height:124px;image-rendering:pixelated;transform-origin:50% 60%}
+.bombo{width:124px;height:136px;transform-origin:50% 42%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+/* trofeo: la foto del juego trae fondo azul; se funde con el panel y se difuminan los bordes */
+.trofeo{mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 55% 62% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 55% 62% at 50% 50%,#000 55%,transparent 100%)}
 .bombo.girando{animation:bombo 0.9s ease-in-out infinite}
 @keyframes bombo{0%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}100%{transform:rotate(-10deg)}}
 .bola{min-height:22px;font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:1px;text-shadow:1px 1px 0 #000;text-align:center}
