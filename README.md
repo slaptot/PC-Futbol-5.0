@@ -26,6 +26,7 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   a doble partido cada pulsación de JUGAR juega una manga (IDA o VUELTA, la oficina indica cuál y si es en
   casa o fuera, con el resultado de la ida), de modo que se puede cambiar la alineación antes de cada
   partido. Los demás equipos juegan la misma manga. Antes, el sorteo y los dos partidos iban seguidos.
+  Comprobado en el móvil.
 - **Precarga de imágenes** (comprobada en el móvil): tras arrancar, se descargan en segundo plano las
   4.671 imágenes y fuentes de uso frecuente (fondos y botones de `img/ui`, fuentes, banderas, escudos,
   iconos de camiseta, equipaciones, bombo, fotos pequeñas de jugadores, campos, entrenadores y árbitros;
