@@ -8,7 +8,29 @@ function decInjuries(){ if(!G.inj) return; for(const k of Object.keys(G.inj)){ G
 function injKindOf(k){ return (G.injKind&&G.injKind[k])||'Lesión'; }
 function cureInjury(tid,idx,back){ const k=injKey(tid,idx); const w=G.inj&&G.inj[k]; if(!w) return; const p=team(tid).players[idx]; const kind=injKindOf(k); const cost=injuryCost(kind,w);
   dialog('CURAR A '+p.name.toUpperCase(),kind+' · '+w+(w===1?' semana':' semanas')+' de baja.\nEl tratamiento médico cuesta '+fmtNum(cost)+' millones y el jugador queda disponible para el próximo partido.\nPresupuesto: '+fmtNum(G.budget)+' M.',[{t:'PAGAR '+fmtNum(cost)+' M',cls:'green',f:()=>{ if(cost>G.budget) return dialog('CURAR','No tienes presupuesto suficiente.',[{t:'ACEPTAR',f:back}]); G.budget-=cost; delete G.inj[k]; if(G.injKind) delete G.injKind[k]; finOther('Tratamiento '+p.name,-cost); saveGame(); dialog('CURADO','¡'+p.name+' se ha recuperado de su '+kind.toLowerCase()+'!',[{t:'ACEPTAR',f:back}]); }},{t:'CANCELAR',f:back}]); }
-function lineupHasInjured(){ return G.lineup.some(l=>isInjured(G.team,l.idx)); }
+// ---- sanciones: expulsión = 1 partido (2 si es roja directa); 5 amarillas en liga o 3 en copa = 1 partido.
+// Se cumplen en la misma competición (L liga, C copas). G.cards: amarillas acumuladas; G.susp: partidos pendientes.
+function nextComp(){ const e=G&&G.sched&&G.sched[G.step]; return e&&e.type==='cup'?'C':'L'; }
+function suspOf(tid,idx,comp){ const s=G&&G.susp&&G.susp[injKey(tid,idx)]; return s?(s[comp]||0):0; }
+function isSuspended(tid,idx,comp){ return suspOf(tid,idx,comp||'L')>0; }
+function cardsOf(tid,idx,comp){ const c=G&&G.cards&&G.cards[injKey(tid,idx)]; return c?(c[comp]||0):0; }
+function isOut(tid,idx){ return isInjured(tid,idx)||isSuspended(tid,idx,nextComp()); }
+function outLabel(tid,idx){ return isInjured(tid,idx)?'LESIONADO':'SANCIONADO'; }
+function applyCards(hm,aw,r,comp){
+  G.cards=G.cards||{}; G.susp=G.susp||{}; const log=[]; const compName=comp==='C'?'copa':'liga';
+  // los sancionados de ambos equipos cumplen un partido
+  for(const k in G.susp){ const tid=+k.split(':')[0]; if(tid!==hm.id&&tid!==aw.id) continue; const s=G.susp[k]; if(s[comp]>0){ s[comp]--; if(!s.L&&!s.C) delete G.susp[k]; } }
+  for(const e of r.events){ if(e.type!=='yellow'&&e.type!=='red') continue; const t=e.side==='H'?hm:aw; const p=e.player.name?e.player:t.players[e.player.idx]; if(!p) continue; const k=injKey(t.id,p.idx);
+    const c=G.cards[k]||(G.cards[k]={L:0,C:0}); const s=G.susp[k]||(G.susp[k]={L:0,C:0}); let why=null, n=0;
+    if(e.type==='red'){ n=e.direct?2:1; why=e.direct?'roja directa':'doble amarilla'; }
+    else { c[comp]++; const lim=comp==='C'?3:5; if(c[comp]%lim===0){ n=1; why=lim+' amarillas'; } }
+    if(n){ s[comp]+=n; if(t.id===G.team) log.push(p.name+': sancionado '+n+(n===1?' partido':' partidos')+' de '+compName+' ('+why+')'); }
+    else if(t.id===G.team&&e.type==='yellow'&&c[comp]===(comp==='C'?2:4)) log.push(p.name+': '+c[comp]+' amarillas en '+compName+', la próxima es sanción');
+  }
+  return log;
+}
+function suspendedOf(tid){ if(!G||!G.susp) return []; const t=team(tid); return Object.entries(G.susp).filter(([k])=>k.split(':')[0]==String(tid)).map(([k,s])=>({p:t.players[+k.split(':')[1]],L:s.L||0,C:s.C||0})).filter(x=>x.p&&(x.L||x.C)); }
+function lineupHasInjured(){ return G.lineup.some(l=>isOut(G.team,l.idx)); }
 function scrLesionados(back){
   const t=team(G.team); const list=injuredOf(G.team);
   const b=h('div',{});
@@ -17,6 +39,8 @@ function scrLesionados(back){
   list.sort((x,y)=>y.weeks-x.weeks).forEach(x=>{ const k=injKey(G.team,x.p.idx); const kind=injKindOf(k); const cost=injuryCost(kind,x.weeks);
     b.appendChild(h('div',{class:'injrow'},h('div',{class:'f-con injtxt'},'✚ '+x.p.name+' ('+ROLES_SHORT[x.p.roles[0]]+')',h('div',{class:'f-m8',style:{color:'#ff8a60'}},kind+' · '+x.weeks+(x.weeks===1?' semana':' semanas'))),h('div',{class:'btn green injbtn',onclick:()=>{ closeDialog(); cureInjury(G.team,x.p.idx,again); }},'CURAR '+fmtNum(cost)+' M'))); });
   if(list.length) b.appendChild(h('div',{class:'f-m8',style:{color:'#9fb4e8',marginTop:'6px'}},'El coste del tratamiento depende del tipo de lesión. Presupuesto: '+fmtNum(G.budget)+' M.'));
+  const sus=suspendedOf(G.team); if(sus.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'SANCIONADOS')); sus.forEach(x=>b.appendChild(h('div',{class:'injrow'},h('span',{},x.p.name),h('span',{style:{color:'#ff8a60'}},(x.L?x.L+(x.L===1?' partido':' partidos')+' de liga':'')+(x.L&&x.C?' · ':'')+(x.C?x.C+(x.C===1?' partido':' partidos')+' de copa':''))))); }
+  const warn=t.players.filter(p=>cardsOf(G.team,p.idx,'L')%5>=3||cardsOf(G.team,p.idx,'C')%3>=2); if(warn.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'AMARILLAS ACUMULADAS')); warn.forEach(p=>b.appendChild(h('div',{class:'injrow'},h('span',{},p.name),h('span',{style:{color:'#ffb060'}},'liga '+cardsOf(G.team,p.idx,'L')%5+'/5 · copa '+cardsOf(G.team,p.idx,'C')%3+'/3')))); }
   dialog('LESIONADOS · '+t.name.toUpperCase(),b,[{t:'ACEPTAR',f:back}]);
 }
 // ---- fichajes

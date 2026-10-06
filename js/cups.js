@@ -67,10 +67,10 @@ function resolveTie(tie){
 }
 function simLeg(tie,leg,nlegs,live,after){
   const [hid,aid]=tieLeg(tie,leg,nlegs); const hm=team(hid), aw=team(aid);
-  const lh=hid===G.team?G.lineup:bestLineup(hm,'4-4-2'), la=aid===G.team?G.lineup:bestLineup(aw,'4-4-2');
+  const lh=hid===G.team?G.lineup:bestLineup(hm,'4-4-2','C'), la=aid===G.team?G.lineup:bestLineup(aw,'4-4-2','C');
   if(live){ const round=G.cups[G.curCup].rounds[G.curRound]; const venue=round&&round.venue?team(round.venue):null;
-    scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+(venue?venue.stadium+' (campo neutral)':hm.stadium),att:venue?finalAttendance(venue,[hid,aid]):(hid===G.team?attendanceModel(hm,aw):null),neutral:!!venue,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); if(venue) finalFinance(G.curCup,round,r); else cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
-  const r=simulateMatch(hm,aw,lh,la); applyInjuries(r); statsRecord(hm,aw,lh,la,r); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();
+    scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+(venue?venue.stadium+' (campo neutral)':hm.stadium),att:venue?finalAttendance(venue,[hid,aid]):(hid===G.team?attendanceModel(hm,aw):null),neutral:!!venue,after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); G.pendingSanc=applyCards(hm,aw,r,'C'); if(venue) finalFinance(G.curCup,round,r); else cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
+  const r=simulateMatch(hm,aw,lh,la); applyInjuries(r); statsRecord(hm,aw,lh,la,r); applyCards(hm,aw,r,'C'); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();
 }
 function playCupEvent(e,drawn){
   const c=G.cups[e.cup]; const fresh=!c.rounds[e.round]; const round=c.rounds[e.round]||drawRound(c,e.round);
@@ -98,6 +98,7 @@ function scrCupResult(k,ri){
   else if(c.winner) msg='Campeón: '+team(c.winner).name;
   P.appendChild(txt(msg,10,340,400,20,'f-e4'));
   P.appendChild(btn('CONTINUAR',480,338,130,()=>scrOficina(),'green'));
+  if(G.pendingSanc&&G.pendingSanc.length){ const l=G.pendingSanc; G.pendingSanc=null; saveGame(); dialog('SANCIONES',l.join('<br>')); }
 }
 function tieTable(round,showLegs){
   const rows=round.ties.map(tie=>({tie}));

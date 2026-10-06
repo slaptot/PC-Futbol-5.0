@@ -12,12 +12,12 @@ const FORMATIONS = {
   '5-4-1':[[1,6,50],[2,28,90],[6,22,68],[4,15,50],[5,22,32],[3,28,10],[7,50,86],[15,46,60],[10,50,38],[11,50,14],[9,82,50]],
   '3-4-3':[[1,6,50],[6,24,72],[4,17,50],[5,24,28],[7,50,86],[15,46,60],[10,50,38],[11,50,14],[12,76,86],[9,84,50],[14,76,14]],
 };
-function bestLineup(t, formation){
+function bestLineup(t, formation, comp){
   const slots = FORMATIONS[formation||'4-4-2'];
   const used = new Set(); const lineup=[];
   for (const [r,x,y] of slots){
     const dem = ROLE_DEM[r];
-    const cands = t.players.map((p,i)=>i).filter(i=>!used.has(i)&&!(typeof isInjured==='function'&&isInjured(t.id,i))).sort((a,b)=>{
+    const cands = t.players.map((p,i)=>i).filter(i=>!used.has(i)&&!(typeof isInjured==='function'&&isInjured(t.id,i))&&!(typeof isSuspended==='function'&&isSuspended(t.id,i,comp||'L'))).sort((a,b)=>{
       const pa=t.players[a], pb=t.players[b];
       const sa=(pa.roles.includes(r)?200:0)+(pa.dem===dem?100:0)+pa.me, sb=(pb.roles.includes(r)?200:0)+(pb.dem===dem?100:0)+pb.me;
       return sb-sa;
@@ -59,7 +59,7 @@ function simulateMatch(home, away, lh, la, opts){
     if(rnd()<expA/90){ ga++; events.push({min:m,type:'goal',side:'A',player:scA(),score:[gh,ga]}); }
     if(rnd()<0.035){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); const k=side+p.idx;
       if(yellows.has(k)){ events.push({min:m,type:'red',side,player:p}); yellows.delete(k);} else { yellows.add(k); events.push({min:m,type:'yellow',side,player:p}); } }
-    if(rnd()<0.0007){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); events.push({min:m,type:'red',side,player:p}); }
+    if(rnd()<0.0007){ const side=rnd()<0.5?'H':'A'; const p=(side==='H'?cdH:cdA)(); events.push({min:m,type:'red',side,player:p,direct:true}); }
     if(rnd()<0.0018){ const side=rnd()<0.5?'H':'A'; const l=side==='H'?lh:la; const x=l[Math.floor(rnd()*l.length)]; const p=(side==='H'?home:away).players[x.idx]; const inj=randomInjury(); if(!events.some(e=>e.type==='injury'&&e.player===p)) events.push({min:m,type:'injury',side,player:p,weeks:inj.weeks,kind:inj.kind}); }
   }
   return {home:home.id, away:away.id, gh, ga, events, att:Math.min(home.capacity||20000, Math.round((home.capacity||20000)*(0.45+rnd()*0.5)))};
