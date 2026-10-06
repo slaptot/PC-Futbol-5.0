@@ -37,7 +37,7 @@ FINANZAS: fija el precio de la entrada (la asistencia depende de tu posición, l
 
 FIN DE TEMPORADA: pantallas de campeones de los tres países, premios Pichichi, Zamora y mejor entrenador, campeones de copa y balance. Después empieza la temporada siguiente con ascensos y descensos, calendarios nuevos y las competiciones europeas que hayas ganado.
 
-BASE DE DATOS: consulta los 645 equipos de la Edición de Oro (España, Inglaterra, Italia, resto de Europa y Sudamérica), sus plantillas, fichas de jugadores con fotos, biografías y trayectorias, entrenadores, estadios y árbitros. El BUSCADOR encuentra cualquier texto: jugadores, equipos, crónicas, declaraciones…
+BASE DE DATOS: consulta los 645 equipos de la Edición de Oro (España, Inglaterra, Italia, resto de Europa y Sudamérica), sus plantillas, fichas de jugadores con fotos, biografías y trayectorias, entrenadores, estadios y árbitros. En cada plantilla, la columna SIT marca las altas de la temporada 96-97 y los jugadores del filial; las bajas (jugadores que ya habían dejado el club) aparecen al final y no juegan en el manager. El BUSCADOR encuentra cualquier texto: jugadores, equipos, crónicas, declaraciones…
 
 SEGUIMIENTO MANUAL: resultados reales de la temporada 96-97 completa (1ª y 2ª División, Premier League, First Division, Serie A y Serie B) con clasificación por jornada y, en la Liga española, la crónica de cada partido: ficha, goles, tarjetas, alineaciones y declaraciones de los entrenadores.
 
@@ -151,8 +151,8 @@ function scrDbTeam(tid, opts){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   // plantilla
   const pl=panel(238,66,392,374); s.appendChild(pl); pl.appendChild(h('div',{class:'hdr'},'JUGADORES ('+t.players.length+')'));
   const sc=at(h('div',{class:'scroll'}),0,18,388,352); pl.appendChild(sc);
-  const ps=t.players.slice().sort((a,b)=>(['POR','DEF','MED','DEL'].indexOf(a.dem)-['POR','DEF','MED','DEL'].indexOf(b.dem))||b.me-a.me);
-  sc.appendChild(table([{t:'Nº',w:24,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'',w:20,k:p=>h('img',{src:'img/band/'+p.country+'.png',style:{width:'14px',height:'10px'}})},{t:'EDAD',w:34,cls:'c',k:p=>playerAge(p)},{t:'VE',w:26,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:26,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:26,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:26,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:26,cls:'r',k:p=>p.me,cell:()=>'y'},...(opts.back&&typeof contractFicha==='function'&&G?[{t:'FICHA',w:44,cls:'r',k:p=>fmtNum(contractFicha(p))}]:[]),{t:'DEM',w:34,cls:'c',k:p=>p.dem}],ps,{onRow:p=>scrFicha(tid,p.idx,()=>scrDbTeam(tid,opts))}));
+  const byDem=(a,b)=>(['POR','DEF','MED','DEL'].indexOf(a.dem)-['POR','DEF','MED','DEL'].indexOf(b.dem))||b.me-a.me; const ps=t.players.slice().sort(byDem); if(t.bajas&&t.bajas.length){ ps.push({__group:'BAJAS 96-97 (ya no están en el club)'}); ps.push(...t.bajas.slice().sort(byDem)); }
+  sc.appendChild(table([{t:'Nº',w:24,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'SIT',w:36,cls:'c',k:p=>h('span',{class:'f-m8',style:{color:p.f2===3?'#ff8a60':p.f2===2?'#9fb4e8':'#8fe08f'}},sitLabel(p))},{t:'',w:20,k:p=>h('img',{src:'img/band/'+p.country+'.png',style:{width:'14px',height:'10px'}})},{t:'EDAD',w:34,cls:'c',k:p=>playerAge(p)},{t:'VE',w:26,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:26,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:26,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:26,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:26,cls:'r',k:p=>p.me,cell:()=>'y'},...(opts.back&&typeof contractFicha==='function'&&G?[{t:'FICHA',w:44,cls:'r',k:p=>fmtNum(contractFicha(p))}]:[]),{t:'DEM',w:34,cls:'c',k:p=>p.dem}],ps,{onRow:p=>scrFicha(tid,p,()=>scrDbTeam(tid,opts))}));
   s.appendChild(btn('IMPRIMIR PDF',400,446,130,()=>printTeam(t),'blue','ico_impresora'));
   s.appendChild(btn('VOLVER',540,446,90,opts.back||(()=>scrDbase()),'blue','ico_volver'));
   if(opts.extra) opts.extra(s);
@@ -172,7 +172,7 @@ async function scrCoachBio(tid, back){
   s.appendChild(btn('VOLVER',540,446,90,back,'blue','ico_volver'));
 }
 async function scrFicha(tid, idx, back){
-  const t=team(tid); const p=t.players[idx]; const bio=t.long?await loadBio(tid):null; const pb=bio?bio.players[String(idx)]:null;
+  const t=team(tid); const p=typeof idx==='object'?idx:t.players[idx]; idx=p.idx; const bio=t.long?await loadBio(tid):null; const pb=bio?bio.players[String(p.idx0===undefined?idx:p.idx0)]:null;
   setBg('fondo_dbase'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:'FICHA',right:p.name}));
   const L=panel(10,66,200,374); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},p.name.toUpperCase()));
@@ -182,7 +182,7 @@ async function scrFicha(tid, idx, back){
   { const cn=txt(countryName(p.country),138,56,60,24,'f-m8'); cn.style.lineHeight='10px'; cn.style.fontSize='9px'; L.appendChild(cn); }
   L.appendChild(at(h('img',{src:escImg(tid),style:{height:'48px'}}),140,100));
   L.appendChild(txt('Nº '+(p.dorsal||'-'),140,156,50,14,'f-con'));
-  const data=[['NOMBRE',p.full||p.name],['FECHA NAC.',birthStr(p)+(p.birth[2]?' ('+playerAge(p)+' años)':'')],['LUGAR',p.birthplace||countryName(p.country)],['ALTURA / PESO',(p.height?p.height+' cm':'-')+' / '+(p.weight?p.weight+' kg':'-')],['PROCEDENCIA',p.prevclub||'-'],['INTERNACIONAL',p.intl!==undefined?(/^\d+$/.test(p.intl)?p.intl+' veces':p.intl):'-'],['DEMARCACIÓN',p.roles.map(r=>ROLES[r]).join(', ')]];
+  const data=[['NOMBRE',p.full||p.name],['FECHA NAC.',birthStr(p)+(p.birth[2]?' ('+playerAge(p)+' años)':'')],['LUGAR',p.birthplace||countryName(p.country)],['ALTURA / PESO',(p.height?p.height+' cm':'-')+' / '+(p.weight?p.weight+' kg':'-')],['PROCEDENCIA',p.prevclub||'-'],['SITUACIÓN 96-97',sitText(p)],['INTERNACIONAL',p.intl!==undefined?(/^\d+$/.test(p.intl)?p.intl+' veces':p.intl):'-'],['DEMARCACIÓN',p.roles.map(r=>ROLES[r]).join(', ')]];
   const info=at(h('div',{class:'scroll'}),4,212,192,158); L.appendChild(info);
   data.forEach(d=>{ info.appendChild(h('div',{class:'f-m8',style:{color:'#ffe24a',letterSpacing:'1px',marginTop:'4px'}},d[0])); info.appendChild(h('div',{class:'f-p8',style:{whiteSpace:'normal',lineHeight:'12px',paddingRight:'4px'}},String(d[1]))); });
   if(typeof UI!=='undefined'&&UI==='mobile'){ // móvil: foto a la izquierda, datos a la derecha

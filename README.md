@@ -19,6 +19,13 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Bajas fuera de las plantillas**: los 94 jugadores que el campo `f2` del juego marca como baja (ya no
+  estaban en el club en la 96-97: Bakero, Bebeto, Romario en el Valencia…) se retiran de las plantillas
+  jugables al cargar los datos, con lo que desaparecen los duplicados (Prosinecki jugaba a la vez en el
+  Barcelona y en el Sevilla). Siguen en la base de datos, en un grupo "Bajas 96-97" al final de cada
+  plantilla, con su ficha y biografía. La columna SIT de la plantilla y la ficha indican ALTA (fichaje de
+  esta temporada), FILIAL (ficha del equipo B) o BAJA. Las partidas guardadas se migran solas
+  (`migrateBajas`: convierte los índices de alineación, lesiones, traspasos y estadísticas).
 - **Falta de ritmo**: los jugadores del club que no juegan pierden media poco a poco a partir de la
   tercera jornada sin jugar (1 punto por atributo con probabilidad 0,25 cada jornada, tope 8 puntos por
   atributo) y la recuperan al volver a jugar; los lesionados no cuentan. El aviso sale con el del

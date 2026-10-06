@@ -3,6 +3,23 @@ const TRAIN_AREAS=[['fis','FÍSICO',[0,1],'VE y RE'],['fue','FUERZA',[2],'AG'],[
 const TRAIN_MAX=12;
 function pkey(p){ return p.id>0?'i'+p.id:'t'+p.team+'x'+p.idx; }
 function findByKey(k){ if(k[0]==='i') return DATA.playersById[+k.slice(1)]; const m=/^t(\d+)x(\d+)$/.exec(k); const t=m&&team(+m[1]); return t&&t.players[+m[2]]; }
+// Partidas guardadas antes de retirar las bajas: los índices de jugador (alineación, lesiones, traspasos,
+// estadísticas, eventos) se convierten del índice original al actual. Se llama nada más cargar G.
+function migrateBajas(){
+  if(!G||G.bajasVer) return; G.bajasVer=1;
+  const maps={}; const mp=tid=>{ if(maps[tid]) return maps[tid]; const t=DATA.teams[tid]; const m={}; if(t) t.players.forEach(p=>{ m[p.idx0===undefined?p.idx:p.idx0]=p.idx; }); return maps[tid]=m; };
+  const ix=(tid,i)=>{ const m=mp(tid); return m[i]===undefined?-1:m[i]; };
+  const rekey=o=>{ if(!o) return o; const n={}; for(const k in o){ const m=/^(\d+):(\d+)$/.exec(k); if(m){ const j=ix(+m[1],+m[2]); if(j>=0) n[m[1]+':'+j]=o[k]; continue; } const m2=/^t(\d+)x(\d+)$/.exec(k); if(m2){ const j=ix(+m2[1],+m2[2]); if(j>=0) n['t'+m2[1]+'x'+j]=o[k]; continue; } n[k]=o[k]; } return n; };
+  if(G.transfers) G.transfers.forEach(x=>{ x.idx=ix(x.from,x.idx); }); if(G.transfers) G.transfers=G.transfers.filter(x=>x.idx>=0);
+  if(G.lineup) G.lineup.forEach(l=>{ l.idx=ix(G.team,l.idx); });
+  if(G.bench) G.bench=G.bench.map(i=>ix(G.team,i)).filter(i=>i>=0);
+  // si un titular era una baja, se regenera la alineación automática (sin el equipo propio aún construido se deja para applyCustomTeam)
+  if(G.lineup&&G.lineup.some(l=>l.idx<0)){ const t=DATA.teams[G.team]; if(t&&typeof bestLineup==='function'){ G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=null; G.benchSet=false; } else G.lineup=G.lineup.filter(l=>l.idx>=0); }
+  G.inj=rekey(G.inj); G.injKind=rekey(G.injKind); G.mods=rekey(G.mods); G.stats=rekey(G.stats); G.rust=rekey(G.rust); G.inact=rekey(G.inact); G.base=rekey(G.base);
+  const ev=e=>{ if(e&&e.player&&e.player.idx!==undefined&&e.player.team!==undefined&&!e.player.name) e.player.idx=ix(e.player.team,e.player.idx); };
+  if(G.results) Object.values(G.results).forEach(rs=>rs.forEach(j=>(j||[]).forEach(r=>(r&&r.events||[]).forEach(ev))));
+  if(G.cups) Object.values(G.cups).forEach(c=>(c.rounds||[]).forEach(r=>(r.ties||[]).forEach(t=>(t.legs||[]).forEach(l=>(l.events||[]).forEach(ev)))));
+}
 function migrateGame(){ if(!G) return; const t=team(G.team); if(!G.training) G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; if(!G.mods) G.mods={}; if(!G.stats) G.stats={}; if(!G.inj) G.inj={}; if(!G.transfers) G.transfers=[]; if(!G.contracts) G.contracts={}; if(!G.injKind) G.injKind={}; if(!G.rust) G.rust={}; if(!G.inact) G.inact={}; if(G.week===undefined) G.week=0; if(!G.market) marketInit(); if(G.schedVer!==2&&G.sched){ G.schedVer=2; const done=e=>e.type==='liga'?e.j<G.jornada:(G.cups[e.cup]&&G.cups[e.cup].rounds[e.round]&&G.cups[e.cup].rounds[e.round].ties.every(t=>t.winner)); G.sched=buildSchedule(); let i=G.sched.findIndex(e=>!done(e)); G.step=i<0?G.sched.length:i; } if(G.cups&&G.cups.UEFA){ const r=G.cups.UEFA.rounds[4]; if(r&&r.nlegs===2&&r.ties.every(t=>!t.legs.length)) r.nlegs=1; } if(G.tv===undefined){ tvOffersInit(); if(G.jornada>1){ G.tv=G.tvOffers[0]; G.tvOffers=null; } } if(G.budget===undefined) G.budget=initBudget(t); if(!G.base) snapshotBase(); if(!G.cups){ G.cups=buildCups(); } if(!G.sched){ G.sched=buildSchedule(); G.step=Math.max(0,G.sched.findIndex(e=>e.type==='liga'&&e.j===G.jornada)); } LEAGUE_ORDER.forEach(k=>{ if(!G.results[k]) G.results[k]=[]; }); }
 function trainingLoad(){ return Object.values(G.training||{}).reduce((a,b)=>a+b,0); }
 function snapshotBase(){ const t=team(G.team); G.base={}; t.players.forEach(p=>G.base[pkey(p)]=p.attrs.slice()); }

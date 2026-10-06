@@ -37,9 +37,16 @@ async function loadData(){
   // post-proceso
   for (const id in teams){
     const t = teams[id];
-    t.players.forEach((p,i)=>{ p.idx=i; p.team=t.id; p.me = calcME(p); if(!p.roles.length) p.roles=[9]; p.dem = ROLE_DEM[p.roles[0]]||'MED'; if(p.id) DATA.playersById[p.id]=p; });
+    t.players.forEach((p,i)=>{ p.idx0=i; p.team=t.id; p.me = calcME(p); if(!p.roles.length) p.roles=[9]; p.dem = ROLE_DEM[p.roles[0]]||'MED'; });
+    // f2=3: bajas (jugadores que ya no estaban en el club en la 96-97); se consultan en la base de datos pero no juegan
+    t.bajas=t.players.filter(p=>p.f2===3); t.players=t.players.filter(p=>p.f2!==3);
+    t.players.forEach((p,i)=>{ p.idx=i; if(p.id) DATA.playersById[p.id]=p; }); t.bajas.forEach((p,i)=>{ p.idx=i; p.baja=true; if(p.id&&!DATA.playersById[p.id]) DATA.playersById[p.id]=p; });
   }
 }
+// situación del jugador en la plantilla 96-97 según el campo f2 del juego
+function sitLabel(p){ return p.f2===1?'ALTA':p.f2===2?'FILIAL':p.f2===3?'BAJA':''; }
+function sitText(p){ return p.f2===1?'Alta de la temporada 96-97':p.f2===2?'Filial (ficha del equipo B)':p.f2===3?'Baja: ya no está en el club':'Continúa en el club'; }
+function playerByOrig(tid,idx0){ const t=team(tid); if(!t) return null; return t.players.find(p=>p.idx0===idx0)||(t.bajas||[]).find(p=>p.idx0===idx0)||t.players[idx0]; }
 async function loadBio(tid){
   if (DATA.bios[tid]) return DATA.bios[tid];
   try { const b = await fetch('data/bio/'+tid+'.json').then(r=>r.ok?r.json():null); DATA.bios[tid]=b; return b; } catch(e){ return null; }

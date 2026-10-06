@@ -31,7 +31,7 @@ const SEARCH_TYPES={team:'EQUIPO',coach:'ENTRENADOR',player:'JUGADOR',cronica:'C
 function openResult(doc,back){
   const [type,ref]=doc;
   if(type==='team'||type==='coach') return type==='coach'?scrCoachBio(ref,back):scrDbTeam(ref,{back});
-  if(type==='player') return scrFicha(ref[0],ref[1],back);
+  if(type==='player') return scrFicha(ref[0],playerByOrig(ref[0],ref[1])||ref[1],back);
   if(type==='cronica') return scrCronica(ref[0],ref[1],ref[2],back);
   if(type==='ref') return scrArbitros({i:ref});
   if(type==='cup') return scrHistoria({comp:ref[0],i:ref[1]});
