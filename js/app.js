@@ -13,6 +13,8 @@ function go(name,arg){
 }
 (async function boot(){
   mobileInit(); fitStage();
+  // service worker en todos los modos: caché de la aplicación, imágenes y datos; instalación como app; avisos push
+  if('serviceWorker' in navigator&&location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
   const splash=document.getElementById('splash');
   const splashOff=()=>{ if(!splash||splash.dataset.off) return; splash.dataset.off=1; splash.classList.add('out'); setTimeout(()=>splash.remove(),500); };
   if(!MOBILE&&splash) splash.remove(); else if(splash){ setTimeout(()=>splash.classList.add('go'),200); setTimeout(splashOff,12000); }
