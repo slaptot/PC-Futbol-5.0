@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Escudos sin fondo negro** en toda la web (`tools/esc_alpha.py`), con copia de los originales fuera
+  del repositorio. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
+  Fichajes se desplaza y la app consume menos batería.
 - **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`), probados en iPhone
   con la app instalada.
 - **Créditos**: datos de Dinamic Multimedia (PC Fútbol 5.0 y Edición de Oro) y autoría de la web, en
