@@ -229,7 +229,9 @@ Para cambiar la contraseña: `python3 tools/setpass.py <nueva>` y subir `js/auth
 ## Estructura
 
 - `index.html`, `css/style.css`, `js/*.js`: la aplicación (pantalla lógica de 640x480 escalada).
-  `data.js` carga los JSON y define roles y medias; `engine.js` formaciones y simulación; `ui.js`
+  `data.js` carga los JSON y define roles y medias (al cargar, cada equipo queda con `players`, la
+  plantilla jugable, y `bajas`; cada jugador conserva en `idx0` su índice original, que usan biografías y
+  buscador, y `sitLabel`/`sitText` dan su situación); `engine.js` formaciones y simulación; `ui.js`
   widgets (botones, paneles, tablas, diálogos, campo); `screens.js` menú, base de datos, seguimiento e
   historia; `manager.js` el Liga Manager (oficina, alineación, táctica, partidos); `cups.js` copas;
   `market.js` fichajes y lesiones; `training.js` entrenamiento y estadísticas; `audio.js` música y
