@@ -191,6 +191,10 @@ del autor; Apple rechaza direcciones de ejemplo. Las claves VAPID se generaron u
 `openssl ecparam -genkey -name prime256v1`; la pública está en `js/push.js` y si se cambia, los
 jugadores deben volver a activar los avisos.
 
+Los escudos (`img/esc`, `img/escbig`) se muestran sin el fondo negro original: `tools/esc_alpha.py` vuelve
+transparente el negro conectado con el borde de cada imagen y conserva el negro interior del dibujo. Los
+originales se guardan fuera del repositorio (`../escudos_originales/`) y también están en el historial de git.
+
 ## Publicación en GitHub Pages con contraseña
 
 La web se publica desde la rama `master` en GitHub Pages para poder probarla en el móvil por HTTPS.

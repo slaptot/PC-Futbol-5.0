@@ -28,7 +28,9 @@ function muiBarDesktop(){ // botón para pasar a la versión móvil desde el esc
 }
 function muiPos(el){ const t=parseFloat(el.style.top), l=parseFloat(el.style.left); return [isNaN(t)?1e9:t, isNaN(l)?1e9:l]; }
 function muiSort(c){ const kids=[...c.children]; const ord=kids.map((k,i)=>({k,i,p:muiPos(k),hdr:(k.classList.contains('hdr')||k.classList.contains('topbar'))?0:1}));
-  ord.sort((a,b)=>a.hdr-b.hdr||Math.floor(a.p[0]/10)-Math.floor(b.p[0]/10)||a.p[1]-b.p[1]||a.i-b.i); ord.forEach(o=>c.appendChild(o.k)); }
+  ord.sort((a,b)=>a.hdr-b.hdr||Math.floor(a.p[0]/10)-Math.floor(b.p[0]/10)||a.p[1]-b.p[1]||a.i-b.i);
+  // si ya están en orden no se tocan: mover nodos dispara otra mutación (bucle) y reinicia el scroll de las tiras
+  if(ord.every((o,i)=>o.k===kids[i])) return; ord.forEach(o=>c.appendChild(o.k)); }
 function muiReflow(root){
   if(!root.dataset.m){ root.dataset.m=1; } muiSort(root);
   root.querySelectorAll('.panel').forEach(p=>{ if(p.dataset.m) return; p.dataset.m=1; muiSort(p); muiNavRow(p); });
