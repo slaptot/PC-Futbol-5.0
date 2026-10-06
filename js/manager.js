@@ -69,6 +69,7 @@ function scrOficina(){
     P.appendChild(txt(hm.name,8,100,110,16,'f-e5')); P.appendChild(txt(aw.name,190,100,110,16,'f-e5'));
     P.appendChild(txt('-',140,56,20,20,'f-e1')); }
     P.appendChild(txt('Estadio: '+hm.stadium+'\nAforo: '+fmtNum(hm.capacity)+'\nÁrbitro: '+refName(refFor(hm)),8,124,284,50,'f-p12'));
+    if(typeof empStars==='function'&&empStars('asistente')>0){ const rv=team(nm[0]===G.team?nm[1]:nm[0]); const bl=bestLineup(rv,'4-4-2'); const best=bl.map(l=>rv.players[l.idx]).sort((a,b)=>b.me-a.me).slice(0,empStars('asistente')>=3?3:1); const inf=txt('Informe del asistente: once del rival con media '+lineupME(rv,bl)+'. Jugadores clave: '+best.map(p=>p.name+' ('+p.me+')').join(', ')+'.',8,176,284,40,'f-p8'); inf.style.color='#9fd0ff'; P.appendChild(inf); }
     const st=standings(mgrIds(G.league),myResults()); const pos=st.findIndex(x=>x.id===G.team)+1; const rp=st.findIndex(x=>x.id===(nm[0]===G.team?nm[1]:nm[0]))+1;
     P.appendChild(txt('Tu equipo es '+pos+'º en la clasificación.\nEl rival es '+rp+'º.',8,178,284,30,'f-p12'));
     P.appendChild(btn(ms?'JUGAR JORNADA '+G.jornada:(G.lineup.some(l=>isInjured(G.team,l.idx))?'LESIONADOS EN EL ONCE':lineupHasInjured()?'SANCIONADOS EN EL ONCE':'ALINEACIÓN INCOMPLETA'),40,230,220,()=>ms?scrPartido():scrAlineacion(),ms?'green':'red','icono_balon_de_la_b'));
@@ -386,15 +387,4 @@ function scrCompeticiones(){
   ['COPA','CE','RECOPA','UEFA'].forEach(k=>{ const st=state(k); if(!st) return; b.appendChild(h('div',{class:'injrow'},h('span',{},cupName(k)),h('span',{style:{color:'#ffe24a'}},st))); btns.push({t:cupName(k).toUpperCase(),cls:'blue',f:()=>scrCopa(k)}); });
   if(!btns.length) b.appendChild(h('div',{},'Tu equipo no participa en ninguna copa esta temporada.'));
   btns.push({t:'CERRAR'}); dialog('COMPETICIONES',b,btns);
-}
-// ---- empleados (personal del club): pendiente de implementar; pantalla preparada con los puestos del juego original
-const EMPLEADOS=[['Segundo entrenador','segundo','Mejora el rendimiento del entrenamiento.'],['Entrenador de juveniles','juveniles','Hace progresar a los jugadores jóvenes.'],['Fisioterapeuta','fisio','Acorta las lesiones.'],['Psicólogo','psicologo','Mantiene la moral tras las derrotas.'],['Ojeador','ojeador','Encuentra jugadores interesantes en el mercado.'],['Secretario técnico','secretario','Negocia mejor los fichajes y las ventas.'],['Asistente','asistente','Informa sobre el rival y sus alineaciones.'],['Cuidador del césped','cesped','Reduce las lesiones en casa y mejora la taquilla.']];
-function scrEmpleados(){
-  const t=team(G.team); setBg('fondo6'); const s=clearScreen();
-  s.appendChild(topbar({team:t,title:'PERSONAL DEL CLUB',date:gameDate(),sub:'EMPLEADOS'}));
-  const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'EMPLEADOS DEL CLUB'));
-  const sc=at(h('div',{class:'scroll'}),0,20,616,312); P.appendChild(sc);
-  sc.appendChild(table([{t:'PUESTO',w:150,k:r=>r[0]},{t:'FUNCIÓN',k:r=>h('span',{class:'f-p8'},r[2])},{t:'ESTRELLAS',w:80,cls:'c',k:()=>h('span',{class:'grey'},'-')},{t:'SUELDO',w:70,cls:'r',k:()=>h('span',{class:'grey'},'-')}],EMPLEADOS,{}));
-  P.appendChild(txt('Próximamente: contratar y despedir empleados según sus estrellas y su sueldo, como en el juego original.',10,338,440,24,'f-p8'));
-  s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }

@@ -3,7 +3,7 @@
 function injKey(tid,idx){ return tid+':'+idx; }
 function isInjured(tid,idx){ return !!(G&&G.inj&&G.inj[injKey(tid,idx)]); }
 function injuredOf(tid){ if(!G||!G.inj) return []; const t=team(tid); return Object.entries(G.inj).filter(([k])=>k.split(':')[0]==String(tid)).map(([k,w])=>({p:t.players[+k.split(':')[1]],weeks:w})).filter(x=>x.p); }
-function applyInjuries(r){ if(!G.inj) G.inj={}; G.injKind=G.injKind||{}; for(const e of r.events){ if(e.type!=='injury') continue; const k=injKey(e.player.team,e.player.idx); if((e.weeks||0)>=(G.inj[k]||0)){ G.inj[k]=e.weeks; if(e.kind) G.injKind[k]=e.kind; } } }
+function applyInjuries(r){ if(!G.inj) G.inj={}; G.injKind=G.injKind||{}; for(const e of r.events){ if(e.type!=='injury') continue; const k=injKey(e.player.team,e.player.idx); let w=e.weeks||0; if(e.player.team===G.team&&typeof empStars==='function'){ w=Math.max(1,Math.round(w*(1-0.08*empStars('fisio'))*(r.home===G.team?(1-0.05*empStars('cesped')):1))); e.weeks=w; } if(w>=(G.inj[k]||0)){ G.inj[k]=w; if(e.kind) G.injKind[k]=e.kind; } } }
 function decInjuries(){ if(!G.inj) return; for(const k of Object.keys(G.inj)){ G.inj[k]--; if(G.inj[k]<=0){ delete G.inj[k]; if(G.injKind) delete G.injKind[k]; } } }
 function injKindOf(k){ return (G.injKind&&G.injKind[k])||'Lesión'; }
 function cureInjury(tid,idx,back){ const k=injKey(tid,idx); const w=G.inj&&G.inj[k]; if(!w) return; const p=team(tid).players[idx]; const kind=injKindOf(k); const cost=injuryCost(kind,w);
@@ -119,7 +119,7 @@ function marketTick(){ // tras cada jornada: caducan unos, entran otros y, cada 
   if(!G.market) return marketInit();
   G.market=G.market.filter(m=>m.until>G.jornada&&marketPlayer(m));
   const n=3+Math.floor(Math.random()*4); for(let i=0;i<n&&G.market.length<MARKET_SIZE+6;i++){ const e=marketPick(); if(e) G.market.push(e); }
-  if(G.jornada-(G.marketStar||0)>=3||Math.random()<0.2){ const e=marketPickStar(); if(e){ G.market.push(e); G.marketStar=G.jornada; } }
+  if(typeof empTick==='function') empTick(); if(G.jornada-(G.marketStar||0)>=3||Math.random()<0.2*(1+0.2*empStars('ojeador'))){ const e=marketPickStar(); if(e){ G.market.push(e); G.marketStar=G.jornada; } }
 }
 function marketPlayer(m){ const t=team(m.t); if(!t||t.id===G.team) return null; const p=t.players.find(q=>q.id===m.id); return p?{p,t,m}:null; }
 function marketList(filter){ return (G.market||[]).map(marketPlayer).filter(Boolean).filter(r=>!filter||filter==='ALL'||marketGroup(r.t)===filter); }
@@ -151,7 +151,7 @@ function offerResolve(r,o,demand,state){
   if(me.players.length>=30) return dialog('OFERTA','La plantilla está completa (30 jugadores).');
   if(T.players.length<=14) return dialog('OFERTA','El '+T.name+' no puede vender más jugadores.');
   const again=()=>scrOferta(r,state);
-  if(o.fee<demand.fee*(0.92+Math.random()*0.1)){ closeDialog(); return dialog('OFERTA RECHAZADA','El '+T.name+' ha rechazado tu oferta por '+p.name+'. Pide '+fmtNum(demand.fee)+' millones por el traspaso.',[{t:'ACEPTAR',f:again}]); }
+  if(o.fee<demand.fee*(0.92+Math.random()*0.1)*(1-0.02*(typeof empStars==='function'?empStars('secretario'):0))){ closeDialog(); return dialog('OFERTA RECHAZADA','El '+T.name+' ha rechazado tu oferta por '+p.name+'. Pide '+fmtNum(demand.fee)+' millones por el traspaso.',[{t:'ACEPTAR',f:again}]); }
   const goals=p.dem==='DEL'?12:p.dem==='MED'?5:1; const age=playerAge(p);
   let score=o.ficha+o.goal*goals*0.8+(o.casa?demand.ficha*0.12:0)+(o.libertad?demand.ficha*0.04:0)+(o.renov?demand.ficha*0.03:0);
   if(age!=='-'){ if(age>=30&&o.years>=3) score+=demand.ficha*0.06; if(age<25&&o.years>=4) score-=demand.ficha*0.04; }

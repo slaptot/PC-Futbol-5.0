@@ -25,8 +25,15 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
 - **Oficina reorganizada**: los botones de la copa nacional y de Europa se unen en COMPETICIONES (diálogo con
   el estado del club en cada copa y acceso a cada una), y hay un botón EMPLEADOS que abre la pantalla
   "Personal del club" con los ocho puestos del juego original (segundo entrenador, entrenador de juveniles,
-  fisioterapeuta, psicólogo, ojeador, secretario técnico, asistente y cuidador del césped), preparada para
-  la siguiente función: contratar y despedir empleados por estrellas y sueldo.
+  fisioterapeuta, psicólogo, ojeador, secretario técnico, asistente y cuidador del césped).
+- **Empleados** (`js/empleados.js`): por cada puesto hay tres candidatos con estrellas (1 a 5) y sueldo anual
+  (12 a 150 millones según estrellas, ±15 %), que se renuevan cada 1 a 3 jornadas. Se contrata uno por
+  puesto (fila en verde, CONTRATADO) y se despide pagando el sueldo del resto de la temporada. El sueldo se
+  descuenta por jornada con el de los jugadores. Efectos: segundo entrenador +10 % de progreso en el
+  entrenamiento por estrella; entrenador de juveniles +4 % para los de 22 años o menos; fisioterapeuta −8 %
+  de semanas de lesión; psicólogo −10 % de pérdida de ritmo; ojeador +20 % de figuras en el mercado;
+  secretario técnico −2 % en el precio que aceptan los clubes; asistente, informe del rival en la oficina
+  (media de su once y jugadores clave); cuidador del césped +1 % de público y −5 % de lesiones en casa.
 - **Sustituciones durante el partido**: el partido en directo se simula minuto a minuto con estado
   (`matchSim` en `js/engine.js`), así que se pueden hacer hasta tres cambios con el botón CAMBIO: se elige
   quién sale del once y quién entra de los siete convocados; el que entra ocupa el puesto del que sale.

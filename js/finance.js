@@ -12,7 +12,7 @@ function attendanceModel(hm,aw,price,detail){ // asistencia estimada a un partid
   const derby=isDerby(hm,aw); const rivalF=1+(rv.pos<=4?0.15:rv.pos<=8?0.05:0)+(derby?0.30:0);
   const priceF=Math.min(1.3,Math.max(0.35,Math.pow(ticketRef()/price,0.7)));
   const f=recentForm(hm.id); const formF=1+0.03*f.w-0.03*f.l;
-  const exp=cap*0.9*pop*rivalF*priceF*formF; const att=Math.min(cap,Math.round(exp*(detail?1:0.92+Math.random()*0.16)));
+  const exp=cap*0.9*pop*rivalF*priceF*formF*(hm.id===G.team&&typeof empStars==='function'?1+0.01*empStars('cesped'):1); const att=Math.min(cap,Math.round(exp*(detail?1:0.92+Math.random()*0.16)));
   return detail?{att,pop,rivalF,priceF,formF,derby,cap,full:att>=cap}:att;
 }
 function gateIncome(att,price,cap){ const g=att*(price||ticketPrice())/1e6; return Math.round(cap&&att>=cap?g*1.1:g); } // con lleno, un 10 % más (bar, tienda)
@@ -35,7 +35,7 @@ function scrTvOffers(after){
 }
 // ---- balance semanal: taquilla, televisión y sueldos
 function weeklyFinance(hm,aw,r){
-  const me=team(G.team); const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N);
+  const me=team(G.team); const N=Math.max(30,calOf(G.league).length); const wages=Math.round(me.players.reduce((a,p)=>a+contractFicha(p),0)/N)+(typeof empWagesWeek==='function'?empWagesWeek():0);
   const isHome=hm.id===G.team; const full=isHome&&isFull(hm,r.att); const gate=isHome?gateIncome(r.att,null,hm.capacity):0; const tv=tvIncome(hm,r);
   G.budget=(G.budget||0)+gate+tv-wages; G.lastFin={gate,tv,wages,att:isHome?r.att:0,full};
   G.finLog=(G.finLog||[]).concat([{j:G.jornada,rival:isHome?aw.name:hm.name,home:isHome,att:isHome?r.att:0,full,gate,tv,wages,budget:G.budget}]).slice(-40);
