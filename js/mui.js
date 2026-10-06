@@ -4,6 +4,7 @@
 let UI='desktop';
 function uiPref(){ try{ const q=new URLSearchParams(location.search).get('ui'); if(q==='mobile'||q==='desktop') localStorage.setItem('pcf5_ui',q); return localStorage.getItem('pcf5_ui'); }catch(e){ return null; } }
 function setUI(u){ try{ localStorage.setItem('pcf5_ui',u); }catch(e){} if(u!==UI) location.reload(); }
+function muiPending(){ const p=uiPref(); return MOBILE&&p!=='mobile'&&p!=='desktop'; }
 function muiDecide(){
   const p=uiPref(); if(p==='mobile'||p==='desktop'){ UI=p; return Promise.resolve(); }
   if(!MOBILE) return Promise.resolve();

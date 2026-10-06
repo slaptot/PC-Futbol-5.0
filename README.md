@@ -138,8 +138,10 @@ conexión. Como el navegador móvil puede borrar el almacenamiento local, "Guard
 exportar la partida a un archivo JSON e importarla después. Cámara, instalación y caché exigen HTTPS
 (o `localhost`).
 
-Instalada como app muestra una pantalla de arranque (splash) con el logo, también en iOS (imágenes
-en `img/splash/`). El botón "Avisos" de la barra inferior activa los avisos push: el jugador acepta
+Instalada como app muestra una pantalla de arranque (splash) con el icono propio, también en iOS (imágenes
+en `img/splash/`). El icono (`img/icon-*.png`, `img/apple-touch-icon.png`) y las imágenes de arranque se generan
+con `python3 tools/make_icons.py` a partir del logotipo del menú original. Si al arrancar hay que pedir la
+contraseña o elegir versión, el splash se retira antes para no tapar el diálogo. El botón "Avisos" de la barra inferior activa los avisos push: el jugador acepta
 el permiso, el navegador se suscribe con la clave pública VAPID de `js/push.js` y puede copiar su
 suscripción para enviársela al administrador; `tools/push.py` (con `pywebpush` y la clave privada
 guardada fuera del repositorio) manda un aviso a las suscripciones, que llega como notificación del

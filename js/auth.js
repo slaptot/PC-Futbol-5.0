@@ -5,6 +5,7 @@ const AUTH_SALT='pcf5';
 const AUTH_HASH='19a399dae0cf6a295e82b51c41a1a805d4d01cc72cf30d4b8eee3a9e8ebafc7e';
 function authNeeded(){ const hn=location.hostname; return !(hn==='localhost'||hn==='127.0.0.1'||hn==='[::1]'||hn.endsWith('.local')||location.protocol==='file:'); }
 async function authHash(pw){ const b=new TextEncoder().encode(AUTH_SALT+':'+pw); const d=await crypto.subtle.digest('SHA-256',b); return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function authPending(){ if(!authNeeded()) return false; try{ return localStorage.getItem('pcf5_auth')!==AUTH_HASH; }catch(e){ return true; } }
 function authGate(){
   if(!authNeeded()) return Promise.resolve();
   try{ if(localStorage.getItem('pcf5_auth')===AUTH_HASH) return Promise.resolve(); }catch(e){}
