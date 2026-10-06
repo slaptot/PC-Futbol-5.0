@@ -1,5 +1,5 @@
 // Service worker (se registra en todos los modos): caché del "shell", precarga y recursos bajo demanda.
-const V='pcf5-v5';
+const V='pcf5-v6';
 const SHELL=['./','./index.html','./css/style.css','./manifest.json',
   './js/data.js','./js/engine.js','./js/ui.js','./js/screens.js','./js/manager.js','./js/cups.js','./js/market.js','./js/empleados.js','./js/finance.js','./js/training.js','./js/audio.js','./js/search.js','./js/print.js','./js/custom.js','./js/season.js','./js/mobile.js','./js/auth.js','./js/mui.js','./js/push.js','./js/app.js','./img/icon-192.png','./img/icon-512.png'];
 self.addEventListener('install',e=>{ self.skipWaiting(); e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL).catch(()=>{}))); });

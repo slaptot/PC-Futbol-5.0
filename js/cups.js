@@ -126,7 +126,7 @@ function scrSorteo(k,ri,after){
   s.appendChild(topbar({team:t,title:'SORTEO',date:gameDate(),sub:cupName(k).toUpperCase()+' · '+round.name}));
   const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'SORTEO DE '+round.name+' · '+cupName(k).toUpperCase()));
   const L=at(h('div',{class:'sorteo-izq'}),0,20,200,350); P.appendChild(L);
-  const bombo=h('img',{class:'bombo girando',src:'img/sorteo/bombo_big.png',alt:''}); L.appendChild(bombo);
+  const bombo=h('img',{class:'bombo girando',src:'img/sorteo/bombo.png',alt:''}); L.appendChild(bombo);
   const bola=h('div',{class:'bola'},''); L.appendChild(bola);
   const trofeo=h('img',{class:'trofeo',src:'img/sorteo/'+(SORTEO_IMG[k]||'copa')+'.png',onerror:function(){this.style.display='none'}}); L.appendChild(trofeo);
   const R=at(h('div',{class:'scroll sorteo-der'}),200,20,416,310); P.appendChild(R);

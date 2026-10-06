@@ -19,9 +19,10 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
-- **Sorteo**: el bombo sigue siendo el sprite original de 31 px, pero ampliado seis veces con Scale3x y
-  Scale2x (`tools/upscale.py`, ampliación de pixel art que conserva los bordes sin desenfoque) y sin el
-  fondo negro, así que se ve nítido a 124 px.
+- **Sorteo**: el bombo es el sprite original de 31 px mostrado al doble (62 px, píxel nítido) y sin su fondo
+  morado, y los trofeos son las imágenes grandes del juego (`COPAS/* BIG.BMP`: Copa del Rey, Copa de Europa,
+  Recopa y UEFA, de unos 150x210 px), enteras y con el fondo negro quitado, en vez de las pequeñas de 72x144
+  que recortaban la copa. `tools/upscale.py` (Scale2x/Scale3x) queda disponible para otros sprites.
 - **Velocidad del partido**: LENTA (300 ms por minuto, unos 30 s), MEDIA (150 ms) o RÁPIDA (60 ms, la de
   siempre), en el botón OPCIONES de la oficina o con el botón VEL. durante el partido; se recuerda en el
   navegador (`pcf5_speed`).

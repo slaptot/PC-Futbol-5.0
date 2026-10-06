@@ -311,13 +311,13 @@ body.mui table.t.fin{table-layout:fixed}
 body.mui #screen .panel.finfix{position:sticky!important;z-index:40;background:#0d1a4e}
 /* sorteo de copa */
 .sorteo-izq{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:10px}
-.bombo{width:124px;height:124px;image-rendering:auto;transform-origin:50% 60%} /* sprite original de 31 px ampliado x6 con Scale3x/Scale2x (tools/upscale.py), sin fondo */
+.bombo{width:62px;height:62px;image-rendering:pixelated;transform-origin:50% 60%;margin:14px 0} /* sprite original de 31 px al doble, sin fondo */
 .bombo.girando{animation:bombo 0.9s ease-in-out infinite}
 @keyframes bombo{0%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}100%{transform:rotate(-10deg)}}
 .bola{min-height:22px;font-family:'euroh5';font-size:13px;color:#ffe24a;letter-spacing:1px;text-shadow:1px 1px 0 #000;text-align:center}
 .bola.pop{animation:bola 0.26s ease-out}
 @keyframes bola{0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
-.trofeo{height:108px;image-rendering:pixelated}
+.trofeo{height:120px;image-rendering:auto} /* trofeos "BIG" del juego, enteros y sin fondo */
 .sorteo-lista{padding:4px 8px}
 .sorteo-tie{display:flex;align-items:center;gap:8px;padding:3px 4px;border-bottom:1px solid #1a2b70;font-family:'futcon12';font-size:15px;color:#fff}
 .sorteo-tie .sa,.sorteo-tie .sb{flex:1 1 0;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -337,7 +337,7 @@ body.mui .prize{font-size:13px;line-height:15px;padding:4px 8px}
 .dlg>div{flex:0 1 auto;min-height:0;overflow:auto}
 .dlg>div:last-child{flex:0 0 auto;overflow:visible}
 /* final de copa */
-.final-trofeo{height:108px;image-rendering:pixelated}
+.final-trofeo{height:120px;image-rendering:auto}
 .finalside{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .finalside .esc{max-height:96px;max-width:96px}
 .finalside.champ .esc{max-height:124px;max-width:124px;filter:drop-shadow(0 0 8px #ffe24a)}
