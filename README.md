@@ -25,7 +25,7 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   12,1 MB en total, lista en `data/precache.json` generada por `tools/build_precache.py`). En móvil lo
   hace el propio service worker al activarse y las guarda en su caché, así que al cambiar de pantalla ya
   no hay que esperar a la red; en escritorio quedan en la caché HTTP del navegador, aunque desde el 7 de octubre de 2026 el service worker también se registra en
-  escritorio y las guarda igual que en móvil. Se omite si el
+  escritorio y las guarda igual que en móvil (comprobado). Se omite si el
   navegador tiene activado el ahorro de datos.
 - **Fotos grandes de jugadores** (`img/fotobig`, 25 MB): no se precargan todas, sino por plantilla al
   entrar en ella: al abrir un equipo en la base de datos, al cargar la partida (equipo propio) y al abrir
