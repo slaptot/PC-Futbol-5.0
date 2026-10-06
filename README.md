@@ -20,7 +20,7 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
 - **Escudos, iconos de camiseta y equipaciones sin fondo negro** en toda la web (`tools/esc_alpha.py`),
-  con copia de los originales fuera del repositorio. Las banderas no lo necesitan. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
+  con copia de los originales fuera del repositorio, comprobados en el móvil. Las banderas no lo necesitan. En móvil, el reordenado de las pantallas ya no se ejecuta en bucle: la tira de ligas de
   Fichajes se desplaza y la app consume menos batería.
 - **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`), probados en iPhone
   con la app instalada.
