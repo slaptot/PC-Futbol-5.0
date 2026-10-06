@@ -44,8 +44,8 @@ async function loadData(){
   }
 }
 // situación del jugador en la plantilla 96-97 según el campo f2 del juego
-function sitLabel(p){ return p.f2===1?'ALTA':p.f2===2?'FILIAL':p.f2===3?'BAJA':''; }
-function sitText(p){ return p.f2===1?'Alta de la temporada 96-97':p.f2===2?'Filial (ficha del equipo B)':p.f2===3?'Baja: ya no está en el club':'Continúa en el club'; }
+function sitLabel(p){ return p.youth?'JUVENIL':p.f2===1?'ALTA':p.f2===2?'FILIAL':p.f2===3?'BAJA':''; }
+function sitText(p){ return p.youth?'Juvenil promocionado al primer equipo (potencial '+p.pot+')':p.f2===1?'Alta de la temporada 96-97':p.f2===2?'Filial (ficha del equipo B)':p.f2===3?'Baja: ya no está en el club':'Continúa en el club'; }
 function playerByOrig(tid,idx0){ const t=team(tid); if(!t) return null; return t.players.find(p=>p.idx0===idx0)||(t.bajas||[]).find(p=>p.idx0===idx0)||t.players[idx0]; }
 async function loadBio(tid){
   if (DATA.bios[tid]) return DATA.bios[tid];

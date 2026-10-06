@@ -19,6 +19,18 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Jóvenes promesas** (`js/juveniles.js`, botón en EMPLEADOS): con un Ojeador contratado se encarga una
+  búsqueda por demarcación (portero, defensa, centrocampista, delantero) que dura entre 10 y 20 jornadas,
+  menos cuantas más estrellas tenga; al terminar trae 1-3 informes (o ninguno) de juveniles de 16 a 18 años
+  generados con el perfil de un jugador real de esa demarcación, que se pueden contratar (ficha pequeña; a
+  veces rechazan). Los juveniles entrenan en la plantilla de jóvenes promesas (hasta 10) cada jornada, más
+  deprisa con Entrenador de Juveniles, hasta su tope de juvenil (potencial − 8); entonces el entrenador avisa
+  y se pueden PROMOCIONAR al primer equipo, donde siguen creciendo con el entrenamiento normal hasta su
+  potencial. La columna PROYECCIÓN muestra el potencial en estrellas. Comprobación en la base de datos: el
+  registro de jugador del juego no tiene mínimos ni máximos (ver campos `f1`–`f4`), así que el juego
+  original generaba a los juveniles igual que esta web; el "mínimo del jugador en plantilla = máximo como
+  juvenil" se reproduce aquí con el tope de juvenil y el potencial por jugador generado. Los promocionados
+  llevan la situación JUVENIL en la ficha y se reañaden a la plantilla al cargar (`applyYouth`).
 - **Sorteo**: el bombo es el sprite original de 31 px mostrado al doble (62 px, píxel nítido) y sin su fondo
   morado, y los trofeos son las imágenes grandes del juego (`COPAS/* BIG.BMP`: Copa del Rey, Copa de Europa,
   Recopa y UEFA, de unos 150x210 px), enteras y con el fondo negro quitado, en vez de las pequeñas de 72x144

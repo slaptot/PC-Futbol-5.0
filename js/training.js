@@ -31,7 +31,7 @@ function applyTraining(){
     if(isInjured(G.team,p.idx)) continue;
     const k=pkey(p); const mods=G.mods[k]||(G.mods[k]=[0,0,0,0,0,0,0,0,0,0]); let changed=false;
     for(const [area,,idxs] of TRAIN_AREAS){ const L=G.training[area]||0; if(area==='por'&&p.dem!=='POR') continue; if(area!=='por'&&p.dem==='POR'&&area!=='fis') continue;
-      for(const i of idxs){ let d=0; if(Math.random()<L*0.05*ageFactor(p)*(1+0.1*empStars('segundo'))+(playerAge(p)!=='-'&&playerAge(p)<=22?L*0.04*empStars('juveniles'):0)) d=1; if(Math.random()<declineProb(p)) d-=1; if(d&&p.attrs[i]+d>=1&&p.attrs[i]+d<=99){ p.attrs[i]+=d; mods[i]+=d; changed=true; } } }
+      for(const i of idxs){ let d=0; if(Math.random()<L*0.05*ageFactor(p)*(1+0.1*empStars('segundo'))+(playerAge(p)!=='-'&&playerAge(p)<=22?L*0.04*empStars('juveniles'):0)) d=1; if(Math.random()<declineProb(p)) d-=1; if(d>0&&p.pot&&p.attrs[i]+d>p.pot) d=0; if(d&&p.attrs[i]+d>=1&&p.attrs[i]+d<=99){ p.attrs[i]+=d; mods[i]+=d; changed=true; } } }
     if(changed){ const old=p.me; p.me=calcME(p); if(p.me!==old) log.push(p.name+' '+(p.me>old?'sube':'baja')+' a '+p.me); }
   }
   // riesgo por sobrecarga

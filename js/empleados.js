@@ -42,5 +42,5 @@ function scrEmpleados(){
   // móvil: tres columnas; el estado va bajo el nombre y la acción se hace tocando la fila
   const colsM=[{t:'NOMBRE',k:x=>h('span',{},x.c.name,h('br'),h('span',{class:'f-con8',style:{color:x.hired?'#8dff8d':'#9fb4e8'}},x.hired?'CONTRATADO · tocar para despedir':'disponible '+(x.c.until-(G.jornada||1))+' j.'+(G.emp.hired[x.k]?'':' · tocar para contratar')))},{t:'ESTRELLAS',w:72,cls:'c',k:x=>empStarsEl(x.c.stars)},{t:'SUELDO',w:56,cls:'r',k:x=>fmtNum(x.c.salary)+' M'}];
   sc.appendChild(table(MUI?colsM:cols,rows,{rowClass:x=>x.hired?'hired':'',onRow:x=>x.hired?empFire(x.k):empHire(x.k,x.c)}));
-  s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
+  s.appendChild(btn('JÓVENES PROMESAS',380,446,150,()=>scrJuveniles(),'green')); s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }

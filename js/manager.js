@@ -17,7 +17,7 @@ function refFor(hm){ return DATA.referees[(G.jornada*7+hm.id)%DATA.referees.leng
 
 function scrLiga(){
   const saved=loadGame();
-  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
+  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); if(typeof applyYouth==='function') applyYouth(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
   scrSelectTeam();
 }
 function scrSelectTeam(state){
@@ -359,7 +359,7 @@ function scrPartido(){
   scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,att:isHome?attendanceModel(hm,aw):null,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
     LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
-    applyInjuries(r); statsRecord(hm,aw,lh,la,r); const sanc=applyCards(hm,aw,r,'L'); decInjuries(); weeklyFinance(hm,aw,r); const log=sanc.concat(applyTraining(),applyRust()); const j=G.jornada; G.jornada++; G.step++; marketTick(); saveGame(); if(log.length) dialog(sanc.length?'SANCIONES · ENTRENAMIENTO':'ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
+    applyInjuries(r); statsRecord(hm,aw,lh,la,r); const sanc=applyCards(hm,aw,r,'L'); decInjuries(); weeklyFinance(hm,aw,r); const log=sanc.concat(applyTraining(),applyRust()); const j=G.jornada; G.jornada++; G.step++; marketTick(); if(G.youthLog&&G.youthLog.length){ log.push(...G.youthLog); G.youthLog=null; } saveGame(); if(log.length) dialog(sanc.length?'SANCIONES · ENTRENAMIENTO':'ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }
 // ---- amistoso
