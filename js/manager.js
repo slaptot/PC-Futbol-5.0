@@ -68,11 +68,11 @@ function scrOficina(){
     P.appendChild(at(h('img',{src:escImg(hm.id),style:{height:'64px'}}),30,30)); P.appendChild(at(h('img',{src:escImg(aw.id),style:{height:'64px'}}),210,30));
     P.appendChild(txt(hm.name,8,100,110,16,'f-e5')); P.appendChild(txt(aw.name,190,100,110,16,'f-e5'));
     P.appendChild(txt('-',140,56,20,20,'f-e1')); }
-    P.appendChild(txt('Estadio: '+hm.stadium+'\nAforo: '+fmtNum(hm.capacity)+'\nÁrbitro: '+refName(refFor(hm)),8,124,284,50,'f-p12'));
+    { const et=txt('Estadio: '+hm.stadium+'\nAforo: '+fmtNum(hm.capacity)+'\nÁrbitro: '+refName(refFor(hm)),8,122,284,36,'f-p8'); et.style.lineHeight='11px'; P.appendChild(et); }
     const st=standings(mgrIds(G.league),myResults()); const pos=st.findIndex(x=>x.id===G.team)+1; const rp=st.findIndex(x=>x.id===(nm[0]===G.team?nm[1]:nm[0]))+1;
-    P.appendChild(txt('Clasificación: tu equipo '+pos+'º · rival '+rp+'º.',8,178,284,16,'f-p12'));
+    P.appendChild(txt('Clasificación: tu equipo '+pos+'º · rival '+rp+'º.',8,160,284,12,'f-p8'));
     // informe del asistente (empleado): botón que abre un diálogo con el once probable del rival
-    if(typeof empStars==='function'&&empStars('asistente')>0){ const rv=team(nm[0]===G.team?nm[1]:nm[0]); P.appendChild(btn('INFORME DEL RIVAL',40,200,220,()=>{ const st=empStars('asistente'); const bl=bestLineup(rv,'4-4-2'); const ps=bl.map(l=>rv.players[l.idx]); const best=ps.slice().sort((a,b)=>b.me-a.me).slice(0,st>=3?3:1);
+    if(typeof empStars==='function'&&empStars('asistente')>0){ const rv=team(nm[0]===G.team?nm[1]:nm[0]); P.appendChild(btn('INFORME DEL RIVAL',40,184,220,()=>{ const st=empStars('asistente'); const bl=bestLineup(rv,'4-4-2'); const ps=bl.map(l=>rv.players[l.idx]); const best=ps.slice().sort((a,b)=>b.me-a.me).slice(0,st>=3?3:1);
       const lastR=(G.results[rv.league]||G.results[G.league]||[]).slice(-5).flat().filter(r=>r&&(r.home===rv.id||r.away===rv.id)).map(r=>team(r.home).name+' '+r.gh+'-'+r.ga+' '+team(r.away).name);
       const b=h('div',{}); b.appendChild(h('div',{style:{marginBottom:'4px'}},'Once probable del '+rv.name+' (4-4-2), media '+lineupME(rv,bl)+'.')); b.appendChild(h('div',{style:{marginBottom:'4px'}},'Jugadores clave: '+best.map(p=>p.name+' ('+p.me+', '+ROLES_SHORT[p.roles[0]]+')').join(', ')+'.'));
       if(st>=2) b.appendChild(h('div',{style:{marginBottom:'4px'}},'Portero: '+(ps.find(p=>p.dem==='POR')||{name:'-'}).name+' · Defensa media '+Math.round(ps.filter(p=>p.dem==='DEF').reduce((a,p)=>a+p.me,0)/Math.max(1,ps.filter(p=>p.dem==='DEF').length))+' · Ataque media '+Math.round(ps.filter(p=>p.dem==='DEL').reduce((a,p)=>a+p.me,0)/Math.max(1,ps.filter(p=>p.dem==='DEL').length))+'.'));
