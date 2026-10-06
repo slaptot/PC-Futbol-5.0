@@ -17,7 +17,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   imágenes de arranque de iOS) y arranque corregido: el splash ya no tapa el diálogo de contraseña ni
   el de elección de versión, así que la app instalada ya no se queda en "cargando". El manifest ya no
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
-- **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`).
+- **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`), probados en iPhone
+  con la app instalada.
 - **Créditos**: datos de Dinamic Multimedia (PC Fútbol 5.0 y Edición de Oro) y autoría de la web, en
   "Acerca de", en Instrucciones y en este README.
 - **Temporada completa**: fin de temporada con campeones de todas las competiciones, ascensos y
@@ -164,10 +165,29 @@ en `img/splash/`). El icono (`img/icon-*.png`, `img/apple-touch-icon.png`) y las
 con `python3 tools/make_icons.py` a partir del logotipo del menú original. Si al arrancar hay que pedir la
 contraseña o elegir versión, el splash se retira antes para no tapar el diálogo. El botón "Avisos" de la barra inferior activa los avisos push: el jugador acepta
 el permiso, el navegador se suscribe con la clave pública VAPID de `js/push.js` y puede copiar su
-suscripción para enviársela al administrador; `tools/push.py` (con `pywebpush` y la clave privada
-guardada fuera del repositorio) manda un aviso a las suscripciones, que llega como notificación del
-sistema y, al abrir el juego, como alerta con el título, el texto y un enlace opcional. "Probar
-aviso" muestra uno de ejemplo sin servidor.
+suscripción para enviársela al administrador. "Probar aviso" muestra uno de ejemplo sin servidor.
+
+### Envío de avisos a los jugadores
+
+Probado en iPhone con la app instalada (6 de octubre de 2026). Pasos para el administrador:
+
+1. Cada jugador activa los avisos en el juego (en iOS sólo funcionan con la app añadida a la pantalla
+   de inicio), pulsa "Copiar suscripción" y envía el JSON resultante (`endpoint` + `keys`).
+2. Guardar las suscripciones en una lista JSON **fuera del repositorio** (por ejemplo
+   `../suscripciones.json`, junto a la clave privada VAPID `../pcfutbol-vapid-private.b64`). Ni la
+   clave ni las suscripciones deben subirse a GitHub: el repositorio es público.
+3. Instalar `pywebpush` (`pip install pywebpush`) y enviar:
+
+```bash
+python3 tools/push.py ../suscripciones.json "Título" "Texto del aviso" "https://slaptot.github.io/PC-Futbol-5.0/"
+```
+
+El aviso llega como notificación del sistema y, al abrirlo, el juego muestra una alerta con el título,
+el texto y el enlace opcional. El script imprime "Enviados N de M"; una suscripción caducada da error
+y hay que pedir al jugador que la copie de nuevo. El contacto VAPID (`sub`) del script es el correo
+del autor; Apple rechaza direcciones de ejemplo. Las claves se generaron una vez con `pywebpush`
+(`vapid --gen`); la pública está en `js/push.js` y si se cambia, los jugadores deben volver a activar
+los avisos.
 
 ## Publicación en GitHub Pages con contraseña
 
