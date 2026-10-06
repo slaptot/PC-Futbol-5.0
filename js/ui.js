@@ -37,6 +37,12 @@ function img(src,x,y,w,hh,cls){ const e=at(h('img',{src,class:cls||''}),x,y,w,hh
 // iconos del juego: tarjeta amarilla / doble amarilla / roja y cruz de lesionado (img/ui)
 function icoImg(name,hpx,title){ return h('img',{class:'ico',src:'img/ui/'+name+'.png',alt:'',title:title||'',style:{height:(hpx||10)+'px',imageRendering:'pixelated',verticalAlign:'middle'}}); }
 function suspIco(tid,idx,comp){ const s=G&&G.susp&&G.susp[injKey(tid,idx)]; const w=s&&s['w'+(comp||'L')]; return w==='red'?'tarjeta_roja':w==='red2'?'tarjeta2_amar':'tarjeta_amar'; }
+// velocidad del partido en directo (ms por minuto), recordada en el navegador
+const SPEEDS={lenta:[300,'LENTA'],media:[150,'MEDIA'],rapida:[60,'RÁPIDA']};
+function matchSpeedKey(){ try{ const k=localStorage.getItem('pcf5_speed'); return SPEEDS[k]?k:'rapida'; }catch(e){ return 'rapida'; } }
+function matchSpeed(){ return SPEEDS[matchSpeedKey()][0]; }
+function setMatchSpeed(k){ if(SPEEDS[k]) try{ localStorage.setItem('pcf5_speed',k); }catch(e){} }
+function nextSpeedKey(k){ const ks=Object.keys(SPEEDS); return ks[(ks.indexOf(k)+1)%ks.length]; }
 function escImg(tid,size){ if(tid===9999) return 'img/ui/icono_balon_de_la_b.png'; const dir=size==='big'?'escbig':size==='nano'?'nano':size==='ridi'?'ridi':'esc'; return 'img/'+dir+'/'+tid+'.png'; }
 function topbar(opts){
   // opts: team (obj), title, date (Date), sub

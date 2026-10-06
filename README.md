@@ -19,6 +19,14 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Velocidad del partido**: LENTA (300 ms por minuto, unos 30 s), MEDIA (150 ms) o RÁPIDA (60 ms, la de
+  siempre), en el botón OPCIONES de la oficina o con el botón VEL. durante el partido; se recuerda en el
+  navegador (`pcf5_speed`).
+- **Oficina reorganizada**: los botones de la copa nacional y de Europa se unen en COMPETICIONES (diálogo con
+  el estado del club en cada copa y acceso a cada una), y hay un botón EMPLEADOS que abre la pantalla
+  "Personal del club" con los ocho puestos del juego original (segundo entrenador, entrenador de juveniles,
+  fisioterapeuta, psicólogo, ojeador, secretario técnico, asistente y cuidador del césped), preparada para
+  la siguiente función: contratar y despedir empleados por estrellas y sueldo.
 - **Sustituciones durante el partido**: el partido en directo se simula minuto a minuto con estado
   (`matchSim` en `js/engine.js`), así que se pueden hacer hasta tres cambios con el botón CAMBIO: se elige
   quién sale del once y quién entra de los siete convocados; el que entra ocupa el puesto del que sale.
