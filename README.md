@@ -11,6 +11,27 @@ se inspira en la estética del juego original, es obra de **Alberto Muñoz Fuert
 (alberto.munoz.fuertes@proton.me) y no busca beneficio alguno, más allá de la nostalgia del juego de
 su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
 
+## Últimos cambios
+
+- **PWA**: icono de app propio con el logotipo dorado del menú original, splash nuevo (también las
+  imágenes de arranque de iOS) y arranque corregido: el splash ya no tapa el diálogo de contraseña ni
+  el de elección de versión, así que la app instalada ya no se queda en "cargando". El manifest ya no
+  fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
+- **Avisos push** con alerta dentro del juego y script de envío (`tools/push.py`).
+- **Créditos**: datos de Dinamic Multimedia (PC Fútbol 5.0 y Edición de Oro) y autoría de la web, en
+  "Acerca de", en Instrucciones y en este README.
+- **Temporada completa**: fin de temporada con campeones de todas las competiciones, ascensos y
+  descensos en las seis ligas, clasificación europea, premios Pichichi, Zamora y mejor entrenador.
+- **Copas**: sorteos animados con el bombo original, rondas repartidas por la temporada (finales
+  europeas en mayo y Copa en junio), finales a partido único en campo neutral con taquilla al 50 % y
+  pantalla de campeón y finalista.
+- **Economía**: entradas con modelo de asistencia (clasificación, rival, derbis, lleno), ofertas de
+  televisión, sueldos según valor de mercado, premios estipulados y balance por jornada en Finanzas.
+- **Mercado de fichajes** variable y aleatorio con el popup de oferta original; los vendidos pasan al
+  mercado. **Lesiones** con los 17 tipos del juego y curación de pago.
+- **Versión móvil** vertical pantalla a pantalla (alineación, entrenamiento, partido en directo,
+  táctica, fichajes, finanzas, premios, sorteos, finales…), elegible al detectar un móvil.
+
 ## Ejecutar
 
 Necesita servirse por HTTP (usa `fetch` para cargar los JSON):
