@@ -16,7 +16,7 @@ payload=json.dumps({'title':title,'body':body,'url':url})
 ok=0
 for s in (subs if isinstance(subs,list) else [subs]):
     try:
-        webpush(subscription_info=s,data=payload,vapid_private_key=priv,vapid_claims={'sub':'mailto:admin@example.com'}); ok+=1
+        webpush(subscription_info=s,data=payload,vapid_private_key=priv,vapid_claims={'sub':'mailto:alberto.munoz.fuertes@proton.me'}); ok+=1
     except WebPushException as e:
         print('Error:',e)
 print('Enviados',ok,'de',len(subs))
