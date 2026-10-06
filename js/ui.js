@@ -34,6 +34,9 @@ function panel(x,y,w,hh,cls){ return at(h('div',{class:'panel '+(cls||'')}),x,y,
 function lbl(text,x,y,cls,color){ const e=at(h('div',{class:'lbl '+(cls||'')},text),x,y); if(color) e.style.color=color; return e; }
 function txt(text,x,y,w,hh,cls){ const e=at(h('div',{class:'txt '+(cls||'')},text),x,y,w,hh); return e; }
 function img(src,x,y,w,hh,cls){ const e=at(h('img',{src,class:cls||''}),x,y,w,hh); e.onerror=()=>{e.style.visibility='hidden'}; return e; }
+// iconos del juego: tarjeta amarilla / doble amarilla / roja y cruz de lesionado (img/ui)
+function icoImg(name,hpx,title){ return h('img',{class:'ico',src:'img/ui/'+name+'.png',alt:'',title:title||'',style:{height:(hpx||10)+'px',imageRendering:'pixelated',verticalAlign:'middle'}}); }
+function suspIco(tid,idx,comp){ const s=G&&G.susp&&G.susp[injKey(tid,idx)]; const w=s&&s['w'+(comp||'L')]; return w==='red'?'tarjeta_roja':w==='red2'?'tarjeta2_amar':'tarjeta_amar'; }
 function escImg(tid,size){ if(tid===9999) return 'img/ui/icono_balon_de_la_b.png'; const dir=size==='big'?'escbig':size==='nano'?'nano':size==='ridi'?'ridi':'esc'; return 'img/'+dir+'/'+tid+'.png'; }
 function topbar(opts){
   // opts: team (obj), title, date (Date), sub

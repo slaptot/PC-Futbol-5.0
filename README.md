@@ -23,7 +23,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   copa) = 1 partido, que se cumplen en la misma competición (liga o copas). Los sancionados no pueden ser
   titulares ni convocados (la alineación los agrupa en SANCIONADOS y la oficina avisa "SANCIONADOS EN EL
   ONCE"), la alineación automática de todos los equipos los excluye, y la pantalla de Lesionados lista
-  sancionados y amarillas acumuladas. El aviso de cada sanción sale tras el partido. Se reinician al
+  sancionados y amarillas acumuladas, con los iconos del juego original (tarjeta amarilla, doble amarilla,
+  roja y la cruz de lesionado, `img/ui/ico_lesion.png` extraída de la Edición de Oro), que también se usan
+  en la columna EN de la alineación y en los sucesos del partido. El aviso de cada sanción sale tras el partido. Se reinician al
   empezar temporada. (`G.cards`, `G.susp` en `js/market.js`.)
 - **Fotos en los sucesos del partido**: cada línea del partido en directo y del resumen (gol, tarjeta,
   expulsión, lesión) lleva la foto en miniatura del jugador (`img/foto`, precargada), a 16 px en

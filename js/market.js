@@ -24,7 +24,7 @@ function applyCards(hm,aw,r,comp){
     const c=G.cards[k]||(G.cards[k]={L:0,C:0}); const s=G.susp[k]||(G.susp[k]={L:0,C:0}); let why=null, n=0;
     if(e.type==='red'){ n=e.direct?2:1; why=e.direct?'roja directa':'doble amarilla'; }
     else { c[comp]++; const lim=comp==='C'?3:5; if(c[comp]%lim===0){ n=1; why=lim+' amarillas'; } }
-    if(n){ s[comp]+=n; if(t.id===G.team) log.push(p.name+': sancionado '+n+(n===1?' partido':' partidos')+' de '+compName+' ('+why+')'); }
+    if(n){ s[comp]+=n; s['w'+comp]=e.type==='red'?(e.direct?'red':'red2'):'yel'; if(t.id===G.team) log.push(p.name+': sancionado '+n+(n===1?' partido':' partidos')+' de '+compName+' ('+why+')'); }
     else if(t.id===G.team&&e.type==='yellow'&&c[comp]===(comp==='C'?2:4)) log.push(p.name+': '+c[comp]+' amarillas en '+compName+', la próxima es sanción');
   }
   return log;
@@ -39,8 +39,8 @@ function scrLesionados(back){
   list.sort((x,y)=>y.weeks-x.weeks).forEach(x=>{ const k=injKey(G.team,x.p.idx); const kind=injKindOf(k); const cost=injuryCost(kind,x.weeks);
     b.appendChild(h('div',{class:'injrow'},h('div',{class:'f-con injtxt'},'✚ '+x.p.name+' ('+ROLES_SHORT[x.p.roles[0]]+')',h('div',{class:'f-m8',style:{color:'#ff8a60'}},kind+' · '+x.weeks+(x.weeks===1?' semana':' semanas'))),h('div',{class:'btn green injbtn',onclick:()=>{ closeDialog(); cureInjury(G.team,x.p.idx,again); }},'CURAR '+fmtNum(cost)+' M'))); });
   if(list.length) b.appendChild(h('div',{class:'f-m8',style:{color:'#9fb4e8',marginTop:'6px'}},'El coste del tratamiento depende del tipo de lesión. Presupuesto: '+fmtNum(G.budget)+' M.'));
-  const sus=suspendedOf(G.team); if(sus.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'SANCIONADOS')); sus.forEach(x=>b.appendChild(h('div',{class:'injrow'},h('span',{},x.p.name),h('span',{style:{color:'#ff8a60'}},(x.L?x.L+(x.L===1?' partido':' partidos')+' de liga':'')+(x.L&&x.C?' · ':'')+(x.C?x.C+(x.C===1?' partido':' partidos')+' de copa':''))))); }
-  const warn=t.players.filter(p=>cardsOf(G.team,p.idx,'L')%5>=3||cardsOf(G.team,p.idx,'C')%3>=2); if(warn.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'AMARILLAS ACUMULADAS')); warn.forEach(p=>b.appendChild(h('div',{class:'injrow'},h('span',{},p.name),h('span',{style:{color:'#ffb060'}},'liga '+cardsOf(G.team,p.idx,'L')%5+'/5 · copa '+cardsOf(G.team,p.idx,'C')%3+'/3')))); }
+  const sus=suspendedOf(G.team); b.querySelectorAll('.injrow').forEach(r=>r.prepend(icoImg('ico_lesion',11,'Lesionado'))); if(sus.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'SANCIONADOS')); sus.forEach(x=>b.appendChild(h('div',{class:'injrow'},icoImg(suspIco(G.team,x.p.idx,x.L?'L':'C'),11,'Sancionado'),h('span',{},x.p.name),h('span',{style:{color:'#ff8a60'}},(x.L?x.L+(x.L===1?' partido':' partidos')+' de liga':'')+(x.L&&x.C?' · ':'')+(x.C?x.C+(x.C===1?' partido':' partidos')+' de copa':''))))); }
+  const warn=t.players.filter(p=>cardsOf(G.team,p.idx,'L')%5>=3||cardsOf(G.team,p.idx,'C')%3>=2); if(warn.length){ b.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',margin:'8px 0 4px'}},'AMARILLAS ACUMULADAS')); warn.forEach(p=>b.appendChild(h('div',{class:'injrow'},icoImg('tarjeta_amar',11,'Amarillas'),h('span',{},p.name),h('span',{style:{color:'#ffb060'}},'liga '+cardsOf(G.team,p.idx,'L')%5+'/5 · copa '+cardsOf(G.team,p.idx,'C')%3+'/3')))); }
   dialog('LESIONADOS · '+t.name.toUpperCase(),b,[{t:'ACEPTAR',f:back}]);
 }
 // ---- fichajes
