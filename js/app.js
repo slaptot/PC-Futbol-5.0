@@ -24,7 +24,9 @@ function go(name,arg){
   await authGate(); await muiDecide();
   const s=clearScreen(); setBg('fondo7');
   s.appendChild(at(h('div',{class:'f-e4',style:{color:'#ffe24a',textShadow:'1px 1px 0 #000'}},'CARGANDO DATOS...'),340,420));
-  try { await loadData(); } catch(e){ s.appendChild(txt('Error cargando datos: '+e.message+'\nAbre la web desde un servidor HTTP (no file://).',30,440,580,30)); splashOff(); return; }
+  // todas las fuentes del juego se cargan antes de mostrar el menú (si no, cada pantalla nueva cambiaba de tipografía al llegar su fuente)
+  const fontsReady=Promise.race([Promise.all([...document.fonts].map(f=>f.load().catch(()=>{}))), new Promise(r=>setTimeout(r,8000))]);
+  try { await loadData(); await fontsReady; } catch(e){ s.appendChild(txt('Error cargando datos: '+e.message+'\nAbre la web desde un servidor HTTP (no file://).',30,440,580,30)); splashOff(); return; }
   audioInit(); if(UI==='mobile') muiInit(); else { document.body.classList.add('rot'); muiBarDesktop(); }
   if(typeof pushInit==='function') pushInit();
   splashOff();

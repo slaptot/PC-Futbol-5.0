@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Fuentes sin parpadeo**: las 17 fuentes del juego se cargan todas antes de mostrar el menú (en paralelo con
+  los datos, con un tope de 8 s), las seis más usadas se precargan desde el HTML y todas llevan
+  `font-display: block`, así que ninguna pantalla cambia de tipografía al llegar su fuente.
 - **Imágenes optimizadas sin pérdida**: las 6.616 imágenes PNG de `img/` se han recomprimido con oxipng
   (`tools/optimize_png.py`, comprobación píxel a píxel antes de sustituir cada archivo): 43,3 MB → 36,4 MB
   (−16 %); la precarga baja de 12,1 a 8,1 MB (fotos pequeñas −35 %, escudos −44 % a −56 %, fondos −10 %).
