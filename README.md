@@ -19,6 +19,10 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Imágenes optimizadas sin pérdida**: las 6.616 imágenes PNG de `img/` se han recomprimido con oxipng
+  (`tools/optimize_png.py`, comprobación píxel a píxel antes de sustituir cada archivo): 43,3 MB → 36,4 MB
+  (−16 %); la precarga baja de 12,1 a 8,1 MB (fotos pequeñas −35 %, escudos −44 % a −56 %, fondos −10 %).
+  Originales guardados fuera del repositorio en `../img_originales/`. Caché del service worker v7.
 - **Fotos en la alineación**: la tabla de Alineación lleva la foto pequeña de cada jugador junto al dorsal
   (14 px en escritorio, 20 px en móvil; son las de `img/foto`, de 1,6 KB y ya precargadas, así que no pesan).
 - **Motor revisado**: líneas que se mezclan, diferencias de fuerza menos explosivas, uno menos que pesa más,
