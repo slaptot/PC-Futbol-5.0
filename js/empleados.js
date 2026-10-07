@@ -9,7 +9,7 @@ const EMP_ROLES=[
   ['ojeador','Ojeador','Mercado: +20 % de figuras por estrella'],
   ['secretario','Secretario técnico','Fichajes: los clubes aceptan −2 % por estrella'],
   ['asistente','Asistente','Informe del rival en la oficina: once y jugadores clave'],
-  ['cesped','Cuidador del césped','Casa: +1 % de público y −5 % de lesiones por estrella']];
+  ['cesped','Cuidador del césped','Césped: −20 % de desgaste y +1 de recuperación por estrella; casa +1 % público']];
 const EMP_NOMBRES=['Antonio','José','Manuel','Francisco','Juan','Javier','Carlos','Miguel','Luis','Rafael','Pedro','Ángel','Jesús','Alberto','Fernando','Jorge','Sergio','Vicente','Andrés','Ramón','Enrique','Ignacio','Óscar','Julio','Marcos','Raúl','Tomás','Emilio','Gonzalo','Eduardo'];
 const EMP_APELLIDOS=['García','Fernández','López','Martínez','Sánchez','Pérez','Gómez','Martín','Jiménez','Ruiz','Hernández','Díaz','Moreno','Muñoz','Álvarez','Romero','Alonso','Gutiérrez','Navarro','Torres','Domínguez','Gil','Vázquez','Serrano','Blanco','Molina','Morales','Ortega','Delgado','Castro','Ortiz','Rubio','Marín','Sanz','Iglesias','Medina','Garrido','Cortés','Santos','Lozano'];
 const EMP_SUELDO=[0,12,25,50,90,150]; // millones de pesetas por temporada según estrellas

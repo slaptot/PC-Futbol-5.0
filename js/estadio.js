@@ -23,16 +23,17 @@ function stadiumTick(){ // tras cada jornada: obras terminadas, césped y vallas
     else if(w.type==='eq'){ S.eq[d.key]=true; news.push('Las obras para la mejora del equipamiento han terminado ('+d.label+').'); }
     else if(w.type==='pitch'){ S.pitch=100; news.push('Se ha replantado el césped del estadio.'); }
     return false; });
-  S.pitch=Math.min(100,S.pitch+(S.eq.heating?2:1));
+  S.pitch=Math.min(100,S.pitch+(S.eq.heating?2:1)+(typeof empStars==='function'?empStars('cesped'):0)); // recupera 1 (2 con calefacción) más 1 por estrella del Cuidador
   if(S.adsSeason!==(G.seasonIdx||0)&&j>=1){ S.adsSeason=G.seasonIdx||0; const ads=Math.round((t.capacity||20000)/1000*(league(G.league).country===22?7:8)); G.budget=(G.budget||0)+ads; finOther('Vallas publicitarias (temporada)',ads); news.push('Has vendido los derechos de publicidad en vallas por lo que queda de temporada: '+fmtNum(ads)+' millones.'); }
   if(news.length){ G.seasonNews=(G.seasonNews||[]).concat(news); }
 }
-function stadiumAfterHome(){ const S=stadium(); S.pitch=Math.max(0,S.pitch-(S.eq.heating?2:4)-Math.floor(Math.random()*3)); if(S.pitch<25&&!S.works.some(w=>w.type==='pitch')) G.seasonNews=(G.seasonNews||[]).concat(['El césped de '+team(G.team).stadium+' está impracticable: conviene replantarlo (ESTADIO).']); }
+// desgaste tras un partido en casa: 4 puntos (2 con calefacción) más azar, reducido un 20 % por cada estrella del Cuidador del césped (con 5 no se desgasta)
+function stadiumAfterHome(){ const S=stadium(); const st=typeof empStars==='function'?empStars('cesped'):0; const wear=Math.round(((S.eq.heating?2:4)+Math.floor(Math.random()*3))*Math.max(0,1-0.2*st)); S.pitch=Math.max(0,S.pitch-wear); if(S.pitch<25&&!S.works.some(w=>w.type==='pitch')) G.seasonNews=(G.seasonNews||[]).concat(['El césped de '+team(G.team).stadium+' está impracticable: conviene replantarlo (ESTADIO).']); }
 function scrEstadio(){
   const S=stadium(); const t=team(G.team); setBg('fondo6'); const s=clearScreen(); const MUI=(typeof UI!=='undefined'&&UI==='mobile');
   s.appendChild(topbar({team:t,title:'ESTADIO',date:gameDate(),sub:t.stadium.toUpperCase()+' · AFORO '+fmtNum(t.capacity)}));
   const L=panel(10,68,300,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'INSTALACIONES'));
-  const rows=[['GRADAS',fmtNum(t.capacity)+' plazas'+(S.extra?' ('+fmtNum(S.base)+' + '+fmtNum(S.extra)+')':'')],['PARKING',STAD_PARK[0][S.parking]],...STAD_SERV.map(sv=>[sv[1].toUpperCase(),sv[3][S[sv[0]]]]),['EQUIPAMIENTO',STAD_EQ.filter(e=>S.eq[e[0]]).map(e=>e[1]).join(', ')||'Básico'],['CÉSPED',stadPitchText(S.pitch)+' ('+S.pitch+' %)'],['VALLAS',S.adsSeason===(G.seasonIdx||0)?'vendidas esta temporada':'pendiente de vender']];
+  const rows=[['GRADAS',fmtNum(t.capacity)+' plazas'+(S.extra?' ('+fmtNum(S.base)+' + '+fmtNum(S.extra)+')':'')],['PARKING',STAD_PARK[0][S.parking]],...STAD_SERV.map(sv=>[sv[1].toUpperCase(),sv[3][S[sv[0]]]]),['EQUIPAMIENTO',STAD_EQ.filter(e=>S.eq[e[0]]).map(e=>e[1]).join(', ')||'Básico'],['CÉSPED',stadPitchText(S.pitch)+' ('+S.pitch+' %)'+(typeof empStars==='function'&&empStars('cesped')?' · cuidador '+empStars('cesped')+'★':' · sin cuidador')],['VALLAS',S.adsSeason===(G.seasonIdx||0)?'vendidas esta temporada':'pendiente de vender']];
   const sc=at(h('div',{class:'scroll'}),0,20,296,220); L.appendChild(sc); rows.forEach(r=>sc.appendChild(h('div',{class:'injrow'},h('span',{},r[0]),h('span',{style:{color:'#ffe24a',textAlign:'right'}},r[1]))));
   const W=at(h('div',{class:'scroll',style:{maxHeight:'110px'}}),0,244,296,110); L.appendChild(W); W.appendChild(h('div',{class:'f-e5',style:{color:'#ffe24a',padding:'2px 6px'}},'OBRAS EN CURSO'));
   if(!S.works.length) W.appendChild(h('div',{class:'f-p8',style:{padding:'0 6px'}},'Ninguna.')); S.works.forEach(w=>W.appendChild(h('div',{class:'injrow'},h('span',{},w.label),h('span',{style:{color:'#9fd0ff'}},Math.max(0,w.end-(G.jornada||1))+' sem.'))));
@@ -45,6 +46,6 @@ function scrEstadio(){
     ['REPLANTAR CÉSPED',()=>stadStartWork('pitch','Replantar el césped',40,1,{})],
     ['FICHA DEL CLUB',()=>scrDbTeam(G.team,{back:()=>scrEstadio()})]];
   acts.forEach((a,i)=>R.appendChild(btn(a[0],16,30+i*30,278,a[1],i===5?'blue':'green')));
-  R.appendChild(txt('El césped se desgasta con cada partido en casa (la calefacción lo protege) y, en mal estado, aumenta las lesiones y resta público. Las obras empiezan al terminar la jornada.',16,216,278,60,'f-p8'));
+  R.appendChild(txt('El césped se desgasta con cada partido en casa; el Cuidador del césped (EMPLEADOS) lo reduce un 20 % por estrella y acelera la recuperación, y la calefacción lo protege. En mal estado aumenta las lesiones y resta público. Las obras empiezan al terminar la jornada.',16,216,278,70,'f-p8'));
   s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }

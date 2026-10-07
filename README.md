@@ -26,7 +26,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   espectador 3, 12 y 20 pesetas respectivamente, sumado a la taquilla), EQUIPAMIENTO (marcadores +0,5 % de
   público, focos +1 %, calefacción del césped —desgaste a la mitad y −5 % de lesiones en casa—, vestuarios +5 %
   de entrenamiento, enfermería −10 % de duración de las lesiones; 80 a 150 M y 3 semanas), CÉSPED (de 0 a 100,
-  se desgasta 4 puntos por partido en casa, 2 con calefacción, y recupera 1 o 2 por semana; por debajo de 60
+  se desgasta 4 puntos por partido en casa, 2 con calefacción, menos un 20 % por cada estrella del Cuidador
+  del césped (con 5 estrellas no se desgasta), y recupera 1 o 2 por semana más 1 por estrella del cuidador; por debajo de 60
   aumenta las lesiones en casa y por debajo de 45 resta un 2 % de público; replantar cuesta 40 M y 1 semana) y
   VALLAS PUBLICITARIAS (al empezar cada temporada se cobran los derechos: 7 u 8 M por cada 1.000 plazas). Las
   obras se pagan al encargarlas, empiezan al terminar la jornada y avisan al acabar en el diálogo de noticias de
