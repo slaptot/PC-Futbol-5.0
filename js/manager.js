@@ -93,7 +93,14 @@ function scrOficina(){
   M.appendChild(btn('GUARDAR',20,216,130,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
   M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
   M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+(typeof teamMoral==='function'?'\nMoral del equipo: '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma: '+teamForma(t)+' ('+formaText(teamForma(t))+')':'')+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
+  { // resumen del club: bloque con scroll para que nunca se salga del panel
+    const inf=at(h('div',{class:'scroll',style:{fontFamily:'proman8',fontSize:'11px',lineHeight:'12px',color:'#fff',padding:'0 4px'}}),16,288,278,74); M.appendChild(inf);
+    const line=(s0,c)=>inf.appendChild(h('div',{style:{color:c||'#fff',whiteSpace:'normal'}},s0));
+    line('Presupuesto '+fmtNum(G.budget||0)+' M · Lesionados '+injuredOf(G.team).length+(typeof suspendedOf==='function'&&suspendedOf(G.team).length?' · Sancionados '+suspendedOf(G.team).length:''));
+    if(typeof teamMoral==='function') line('Moral '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma '+teamForma(t)+' ('+formaText(teamForma(t))+')','#9fd0ff');
+    if(typeof empWagesWeek==='function'&&G.emp) line('Empleados '+Object.keys(G.emp.hired).length+'/8 · '+fmtNum(empWagesWeek())+' M por jornada','#9fb4e8');
+    if(typeof youthState==='function'&&G.youth&&(G.youth.squad.length||G.youth.search||G.youth.found.length)) line('Juveniles '+G.youth.squad.length+(G.youth.search?' · ojeador buscando':'')+(G.youth.found.length?' · '+G.youth.found.length+' informes':''),'#9fb4e8');
+    line(t.name+' · '+league(G.league).long+' '+(G.season||'96-97'),'#ffe24a'); }
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación
