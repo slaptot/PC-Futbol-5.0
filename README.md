@@ -19,6 +19,15 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Moral y estado de forma** (`js/moral.js`): cada jugador del club tiene MORAL (tiende a 70) y E. FORMA
+  (tiende a 60), de 0 a 100, que sustituyen a los valores fijos de la ficha. Tras cada partido: los que juegan
+  suman +6 de moral por victoria, +1 por empate, −6 por derrota, +3 por gol y −4 por expulsión, y ganan forma
+  según los minutos; los que no juegan pierden 2 de moral y 3 de forma; una lesión hunde la forma. Cada
+  jornada ambas vuelven despacio hacia su media y el Psicólogo amortigua los bajones (−10 % por estrella) y
+  aporta +0,5 de moral por estrella. Influyen en la simulación hasta ±5 % entre los extremos
+  (`playerFormFactor` en `squadStrength`); los demás equipos usan su racha de los últimos cinco partidos
+  (±1 % por victoria o derrota). Se ven en la ficha (E. FORMA y MORAL con su texto), en el panel lateral de
+  Alineación y, como media del equipo, en la oficina. Se reinician al cambiar de temporada.
 - **Jóvenes promesas** (`js/juveniles.js`, botón en EMPLEADOS): con un Ojeador contratado se encarga una
   búsqueda por demarcación (portero, defensa, centrocampista, delantero) que dura entre 10 y 20 jornadas,
   menos cuantas más estrellas tenga; al terminar trae 1-3 informes (o ninguno) de juveniles de 16 a 18 años

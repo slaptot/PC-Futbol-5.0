@@ -93,7 +93,7 @@ function scrOficina(){
   M.appendChild(btn('GUARDAR',20,216,130,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
   M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
   M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
+  M.appendChild(txt('Presupuesto: '+fmtNum(G.budget||0)+' millones · Lesionados: '+injuredOf(G.team).length+(typeof teamMoral==='function'?'\nMoral del equipo: '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma: '+teamForma(t)+' ('+formaText(teamForma(t))+')':'')+'\nDirige al '+t.name+' en la '+league(G.league).long+' '+(G.season||'96-97')+'.',20,292,270,60,'f-p8'));
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación
@@ -221,7 +221,7 @@ function scrAlineacion(state){
     T.appendChild(h('div',{class:'hdr'},'TÁCTICA '+G.formation+' · MEDIA '+lineupME(t,G.lineup)));
     const pl=G.lineup.map(x=>{const rp=slotPos(x); const q=t.players[x.idx]; return {x:rp[0],y:rp[1],n:q.dorsal||'',title:q.name,cls:(rolePenalty(q,x.role)?'bad ':'')+(x.idx===sel?'sel':''),onclick:dotClick(x)};});
     const pc=pitch(0,20,230,140,pl); pc.querySelectorAll('.dot').forEach(d=>{d.style.transform='translate(-7px,-7px)';}); T.appendChild(pc);
-    const info=txt((p?(p.dorsal?p.dorsal+' ':'')+p.name+' · ME '+p.me+' · '+ROLES_SHORT[p.roles[0]]:'')+'\n'+(pend!==null?'CAMBIO: '+t.players[pend].name+' · pulsa su destino en la lista o en el campo':'Doble toque o pulsación larga en un jugador para cambiarlo'),0,166,440,30,'f-p8'); info.style.color=pend!==null?'#ffd080':'#9fb4e8'; T.appendChild(info);
+    const info=txt((p?(p.dorsal?p.dorsal+' ':'')+p.name+' · ME '+p.me+' · '+ROLES_SHORT[p.roles[0]]+(typeof moralLine==='function'?' · '+moralLine(p).toLowerCase():''):'')+'\n'+(pend!==null?'CAMBIO: '+t.players[pend].name+' · pulsa su destino en la lista o en el campo':'Doble toque o pulsación larga en un jugador para cambiarlo'),0,166,440,30,'f-p8'); info.style.color=pend!==null?'#ffd080':'#9fb4e8'; T.appendChild(info);
     T.appendChild(btn('TÁCTICA',0,200,140,()=>scrTactica(),'blue','ico_terreno'));
     T.appendChild(btn('LESIONADOS',150,200,140,()=>scrLesionados(()=>scrAlineacion({sel})),'blue','ico_incidencias'));
     if(subBtn) subBtn.textContent=pend!==null?'CANCELAR CAMBIO':'SUSTITUIR';
@@ -237,10 +237,10 @@ function scrAlineacion(state){
   const side=()=>{ if(MUI){ sideM(); return; } R.innerHTML=''; const p=t.players[sel]; const l=inL(sel); const inB=G.bench.includes(sel); const inj=isInjured(G.team,sel);
     R.appendChild(btn('PARÁMETROS',10,8,150,null,'green')); R.appendChild(btn('ESTADÍSTICAS',10,30,150,()=>scrEstadisticas(),'blue'));
     R.appendChild(lbl('MEDIA EQUIPO',10,58)); R.appendChild(txt(String(lineupME(t,G.lineup)),130,56,30,16,'f-e4'));
-    { const nm=txt(p.name,10,76,150,14,'f-e5'); nm.style.whiteSpace='nowrap'; nm.style.overflow='hidden'; nm.style.textOverflow='ellipsis'; R.appendChild(nm); }
-    PARAM_NAMES.forEach((n,i)=>{ const v=p.attrs[PARAM_IDX[i]]; const x=10+(i%2)*78, y=96+Math.floor(i/2)*30; const L=lbl(n,x,y); L.style.fontFamily='micro8'; L.style.fontSize='10px'; R.appendChild(L); R.appendChild(txt(String(v),x,y+11,30,12,'f-con')); R.appendChild(at(h('div',{class:'bar'},h('i',{style:{width:v+'%'}})),x+26,y+12,46,8)); });
+    { const nm=txt(p.name,10,74,150,14,'f-e5'); nm.style.whiteSpace='nowrap'; nm.style.overflow='hidden'; nm.style.textOverflow='ellipsis'; R.appendChild(nm); const fm=txt(typeof moralLine==='function'?moralLine(p):'',10,87,150,10,'f-m8'); fm.style.fontFamily='micro8'; fm.style.fontSize='8px'; fm.style.color='#9fd0ff'; R.appendChild(fm); }
+    PARAM_NAMES.forEach((n,i)=>{ const v=p.attrs[PARAM_IDX[i]]; const x=10+(i%2)*78, y=98+Math.floor(i/2)*30; const L=lbl(n,x,y); L.style.fontFamily='micro8'; L.style.fontSize='10px'; R.appendChild(L); R.appendChild(txt(String(v),x,y+11,30,12,'f-con')); R.appendChild(at(h('div',{class:'bar'},h('i',{style:{width:v+'%'}})),x+26,y+12,46,8)); });
     const pl=G.lineup.map(x=>{const rp=slotPos(x); const q=t.players[x.idx]; return {x:rp[0],y:rp[1],n:q.dorsal||'',cls:(rolePenalty(q,x.role)?'bad ':'')+(x.idx===sel?'sel':'')};});
-    const pc=pitch(14,186,142,90,pl); pc.querySelectorAll('.dot').forEach(d=>{d.style.width='11px';d.style.height='11px';d.style.fontSize='8px';d.style.lineHeight='9px';d.style.transform='translate(-6px,-6px)';}); R.appendChild(pc);
+    const pc=pitch(14,188,142,90,pl); pc.querySelectorAll('.dot').forEach(d=>{d.style.width='11px';d.style.height='11px';d.style.fontSize='8px';d.style.lineHeight='9px';d.style.transform='translate(-6px,-6px)';}); R.appendChild(pc);
     const subs=t.players.filter(q=>inL(q.idx)<0&&!isOut(G.team,q.idx)).sort(order);
     if(l>=0){
       R.appendChild(btn('SUSTITUIR...',10,282,150,()=>pickDialog('ENTRA POR '+p.name.toUpperCase(),subs,q=>{ G.lineup[l]={idx:q.idx,role:G.lineup[l].role,x:G.lineup[l].x,y:G.lineup[l].y}; G.bench=G.bench.filter(i=>i!==q.idx); if(G.bench.length<7) G.bench.push(sel); sel=q.idx; refresh(); }),'green'));
@@ -359,7 +359,7 @@ function scrPartido(){
   scrMatchLive(hm,aw,lh,la,{title:'PARTIDO',sub:'JORNADA '+G.jornada+' · '+hm.stadium,att:isHome?attendanceModel(hm,aw):null,after:r=>{
     const res=playJornadaAI(G.league,G.jornada); const cal=calOf(G.league); const mi=cal[G.jornada-1].findIndex(m=>m[0]===nm[0]); const rr=Object.assign({},r,{events:slimEvents(r.events)}); res[mi]=rr; G.results[G.league][G.jornada-1]=res;
     LEAGUE_ORDER.forEach(k=>{ if(k!==G.league&&G.jornada<=calOf(k).length) G.results[k][G.jornada-1]=playJornadaAI(k,G.jornada); });
-    applyInjuries(r); statsRecord(hm,aw,lh,la,r); const sanc=applyCards(hm,aw,r,'L'); decInjuries(); weeklyFinance(hm,aw,r); const log=sanc.concat(applyTraining(),applyRust()); const j=G.jornada; G.jornada++; G.step++; marketTick(); if(G.youthLog&&G.youthLog.length){ log.push(...G.youthLog); G.youthLog=null; } saveGame(); if(log.length) dialog(sanc.length?'SANCIONES · ENTRENAMIENTO':'ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
+    applyInjuries(r); statsRecord(hm,aw,lh,la,r); const sanc=applyCards(hm,aw,r,'L'); if(typeof moralAfterMatch==='function'){ moralAfterMatch(hm,aw,r); moralWeekly(); } decInjuries(); weeklyFinance(hm,aw,r); const log=sanc.concat(applyTraining(),applyRust()); const j=G.jornada; G.jornada++; G.step++; marketTick(); if(G.youthLog&&G.youthLog.length){ log.push(...G.youthLog); G.youthLog=null; } saveGame(); if(log.length) dialog(sanc.length?'SANCIONES · ENTRENAMIENTO':'ENTRENAMIENTO',log.slice(0,12).join('\n').replace(/\n/g,'<br>'),[{t:'ACEPTAR',f:()=>scrCalendario({j})}]); else scrCalendario({j});
   }});
 }
 // ---- amistoso
