@@ -19,6 +19,19 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Contratos y fin de temporada de la plantilla** (`js/contratos.js`): cada jugador del club tiene un
+  contrato con ficha y temporadas restantes (los de la base de datos empiezan con 1 a 4 según su id; los
+  fichados, con las del acuerdo). En FICHAJES → CONTRATOS se ven ficha, fecha de fin y cláusulas (R: partidos
+  para renovación, L: libertad por descenso) y se renueva cualquiera: el jugador pide una ficha según su valor y
+  edad (+6 % por temporada a partir de la tercera) y puede rechazar (8 %, 40 % con moral baja). Al terminar la
+  temporada (`seasonSquadEnd`, antes de ascensos y descensos): la cláusula de renovación amplía un año a quien
+  haya jugado 25 partidos o más; los contratos vencidos no renovados causan baja ("ha causado baja al no haber
+  sido renovado", el jugador ficha por otro club); con descenso, los que tienen libertad se van; y en TODOS los
+  clubes los veteranos se retiran (33 años 15 %, 34 30 %, 35 50 %, 36 o más 75 %) y pasan al equipo oculto
+  "Retirados" (id 9998), mientras los clubes de la máquina reciben en su lugar un canterano generado de 18 a 21
+  años de la misma línea (`genYoung`, con nombre de las listas del juego y reaplicado al cargar). La página de
+  balance avisa de los contratos que terminan antes de empezar la temporada, y la oficina muestra al arrancar
+  la nueva un diálogo con todas las novedades de plantilla.
 - **Fuentes sin parpadeo**: las 17 fuentes del juego se cargan todas antes de mostrar el menú (en paralelo con
   los datos, con un tope de 8 s), las seis más usadas se precargan desde el HTML y todas llevan
   `font-display: block`, así que ninguna pantalla cambia de tipografía al llegar su fuente.

@@ -4,7 +4,7 @@ function saveGame(){ if(G) localStorage.setItem('pcf5_save',JSON.stringify(G)); 
 function loadGame(){ try{ const s=localStorage.getItem('pcf5_save'); const g=s?JSON.parse(s):null; return (g&&g.league&&DATA.leagues[g.league]&&(team(g.team)||(g.custom&&g.team===CUSTOM_ID)))?g:null; }catch(e){ return null; } }
 function newGame(tid){
   const t=team(tid); const lg=t.league;
-  G={team:tid,league:lg,jornada:1,formation:'4-4-2',lineup:bestLineup(t,'4-4-2'),results:{},season:'96-97'};
+  G={team:tid,league:lg,jornada:1,formation:'4-4-2',lineup:bestLineup(t,'4-4-2'),results:{},season:'96-97'}; if(typeof retiredTeam==='function') retiredTeam();
   LEAGUE_ORDER.forEach(k=>G.results[k]=[]);
   G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; G.schedVer=2; snapshotBase(); marketInit(); tvOffersInit();
   saveGame();
@@ -17,7 +17,7 @@ function refFor(hm){ return DATA.referees[(G.jornada*7+hm.id)%DATA.referees.leng
 
 function scrLiga(){
   const saved=loadGame();
-  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); if(typeof applyYouth==='function') applyYouth(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
+  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); if(typeof applyYouth==='function') applyYouth(); if(typeof applyGenerated==='function') applyGenerated(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
   scrSelectTeam();
 }
 function scrSelectTeam(state){
@@ -110,6 +110,7 @@ function scrOficina(){
     if(G.youth&&typeof youthState==='function') line('Jóvenes promesas',G.youth.squad.length+' en formación'+(G.youth.search?' · ojeador buscando':'')+(G.youth.found&&G.youth.found.length?' · '+G.youth.found.length+' informes':''));
     line('Plantilla',t.players.length+' jugadores · media '+lineupME(t,G.lineup)); if(G.tv&&typeof tvKind==='function') line('Televisión',tvKind(G.tv));
     dialog('INFORMACIÓN DEL CLUB',b,[{t:'CERRAR'}]); }
+  if(G.seasonNews&&G.seasonNews.length){ const n=G.seasonNews; G.seasonNews=null; saveGame(); setTimeout(()=>dialog('PLANTILLA · NUEVA TEMPORADA',n.join('<br><br>'),[{t:'ACEPTAR',f:()=>scrOficina()}]),50); return; }
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación

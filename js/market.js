@@ -71,12 +71,14 @@ function scrFichajes(state){
   const L=panel(10,68,170,372); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'MERCADO'));
   L.appendChild(btn('COMPRAR',10,22,150,()=>scrFichajes({mode:'buy',lg}),mode==='buy'?'green':'blue'));
   L.appendChild(btn('VENDER',10,44,150,()=>scrFichajes({mode:'sell',lg}),mode==='sell'?'green':'blue'));
+  L.appendChild(btn('CONTRATOS',10,66,150,()=>scrFichajes({mode:'contracts',lg}),mode==='contracts'?'green':'blue'));
   const groups=[['TODAS LAS LIGAS','ALL'],...LEAGUE_ORDER.map(k=>[LEAGUE_SHORT[k],k]),['RESTO EUROPA','EU'],['AMÉRICA','AM']];
   if(mode==='buy'){ if(MUI){ const strip=h('div',{class:'clubstrip',style:{top:'68px',left:'0px'}}); groups.forEach(g=>strip.appendChild(h('div',{class:'f-con8'+(g[1]===lg?' on':''),style:{color:g[1]===lg?'#ffe24a':'#fff',background:g[1]===lg?'#2d49b8':''},onclick:()=>scrFichajes({mode,lg:g[1]})},g[0]))); L.appendChild(strip); requestAnimationFrame(()=>{ const on=strip.querySelector('.on'); if(on) strip.scrollLeft=Math.max(0,on.offsetLeft-strip.clientWidth/2+on.offsetWidth/2); }); }
-    else groups.forEach((g,i)=>L.appendChild(btn(g[0],10,68+i*21,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
+    else groups.forEach((g,i)=>L.appendChild(btn(g[0],10,90+i*21,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
   L.appendChild(txt('Presupuesto:\n'+fmtNum(G.budget)+' M ptas.\nPlantilla: '+me.players.length+' jugadores (mín. 16, máx. 30).',10,262,150,70,'f-p8'));
   (MUI?s:L).appendChild(btn('VOLVER',10,MUI?446:340,150,()=>scrOficina(),'blue','ico_volver'));
   const R=panel(190,68,440,372); s.appendChild(R);
+  if(mode==='contracts'){ contractsTable(R,me,MUI,state); return; }
   if(mode==='sell'){
     R.appendChild(h('div',{class:'hdr'},'VENDER JUGADORES · '+me.name.toUpperCase()));
     const sc=at(h('div',{class:'scroll'}),0,18,436,350); R.appendChild(sc);

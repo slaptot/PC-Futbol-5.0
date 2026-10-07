@@ -76,7 +76,7 @@ function pageNueva(s,ft){
     p.won.length?'Títulos: '+p.won.map(k=>cupName(k)).join(', ')+'.':'Sin títulos de copa esta temporada.',
     p.move, p.europe,
     'Premio de la liga por el '+p.pos+'º puesto: '+fmtNum(p.bonus)+' millones (presupuesto: '+fmtNum((G.budget||0)+p.bonus)+'). Los premios de copa ya se cobraron ronda a ronda.',
-    'Los jugadores cumplen un año más; los contratos y la plantilla se mantienen.',
+    'Los jugadores cumplen un año más. '+(()=>{ const ex=t.players.filter(q=>q.id>0&&contractOf(q).years<=1); return ex.length?'Contratos que terminan: '+ex.map(q=>q.name).join(', ')+'. Renuévalos en FICHAJES → CONTRATOS antes de empezar la temporada o causarán baja.':'Ningún contrato termina esta temporada.'; })()+' Los veteranos pueden retirarse.',
     'Se generará un calendario nuevo para '+league(ft.d1).name+' y '+league(ft.d2).name+' con los ascensos y descensos.'];
   const tx=txt(lines.join('\n\n'),170,30,436,300,'f-p12'); tx.style.lineHeight='15px'; P.appendChild(tx);
   P.appendChild(lbl('CAMPEONES '+seasonLabel(G.seasonIdx||0),16,140)); const ch=[[league(ft.d1).name,ft.s1[0].id],[league(ft.d2).name,ft.s2[0].id]].concat(Object.keys(G.cups).map(k=>[cupName(k),G.cups[k].winner]));
@@ -84,7 +84,7 @@ function pageNueva(s,ft){
 }
 // ---- nueva temporada
 function startNextSeason(){
-  completeLeagues(); const ft=finalTables(); const p=nextSeasonPlan(ft); const me=G.team;
+  completeLeagues(); const ft=finalTables(); const p=nextSeasonPlan(ft); const me=G.team; if(typeof seasonSquadEnd==='function') seasonSquadEnd(p);
   G.leagueMoves=G.leagueMoves||{}; G.lastPos={}; const champions={};
   COUNTRY_D1.forEach(d1=>{ const f=finalTables(d1); const n=swapCount(f.d1);
     const down=f.s1.slice(-n).map(x=>x.id), up=f.s2.slice(0,n).map(x=>x.id);
