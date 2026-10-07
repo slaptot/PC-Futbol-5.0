@@ -24,14 +24,15 @@ function migrateGame(){ if(!G) return; const t=team(G.team); if(!G.training) G.t
 function trainingLoad(){ return Object.values(G.training||{}).reduce((a,b)=>a+b,0); }
 function snapshotBase(){ const t=team(G.team); G.base={}; t.players.forEach(p=>G.base[pkey(p)]=p.attrs.slice()); }
 function ageFactor(p){ const a=playerAge(p); if(a==='-') return 0.8; return a<=22?1.4:a<=26?1:a<=29?0.7:a<=32?0.4:0.2; }
-function declineProb(p){ const a=playerAge(p); if(a==='-'||a<31) return 0; return 0.05*(a-30); }
+function declineProb(p){ const a=playerAge(p); if(a==='-'||a<31) return 0; return 0.06*(a-30); } // 31: 6 %/semana por atributo, 34: 24 %
+function ceilFactor(v){ return Math.max(0.08,Math.min(1,(92-v)/35)); } // subir de 57 es fácil; de 85 cuesta cinco veces más; de 92 casi imposible
 function applyTraining(){
   const t=team(G.team); const log=[]; G.mods=G.mods||{};
   for(const p of t.players){
     if(isInjured(G.team,p.idx)) continue;
     const k=pkey(p); const mods=G.mods[k]||(G.mods[k]=[0,0,0,0,0,0,0,0,0,0]); let changed=false;
     for(const [area,,idxs] of TRAIN_AREAS){ const L=G.training[area]||0; if(area==='por'&&p.dem!=='POR') continue; if(area!=='por'&&p.dem==='POR'&&area!=='fis') continue;
-      for(const i of idxs){ let d=0; if(Math.random()<L*0.05*ageFactor(p)*(1+0.1*empStars('segundo'))+(playerAge(p)!=='-'&&playerAge(p)<=22?L*0.04*empStars('juveniles'):0)) d=1; if(Math.random()<declineProb(p)) d-=1; if(d>0&&p.pot&&p.attrs[i]+d>p.pot) d=0; if(d&&p.attrs[i]+d>=1&&p.attrs[i]+d<=99){ p.attrs[i]+=d; mods[i]+=d; changed=true; } } }
+      for(const i of idxs){ let d=0; if(Math.random()<(L*0.05*ageFactor(p)*(1+0.1*empStars('segundo'))+(playerAge(p)!=='-'&&playerAge(p)<=22?L*0.04*empStars('juveniles'):0))*ceilFactor(p.attrs[i])) d=1; if(Math.random()<declineProb(p)) d-=1; if(d>0&&p.pot&&p.attrs[i]+d>p.pot) d=0; if(d&&p.attrs[i]+d>=1&&p.attrs[i]+d<=99){ p.attrs[i]+=d; mods[i]+=d; changed=true; } } }
     if(changed){ const old=p.me; p.me=calcME(p); if(p.me!==old) log.push(p.name+' '+(p.me>old?'sube':'baja')+' a '+p.me); }
   }
   // riesgo por sobrecarga
@@ -58,6 +59,16 @@ function applyRust(){
     p.me=calcME(p); if(p.me<old) log.push(p.name+' pierde ritmo ('+G.inact[k]+' jornadas sin jugar) y baja a '+p.me); else if(p.me>old) log.push(p.name+' recupera ritmo y sube a '+p.me);
   }
   G.week=wk+1; t._me=undefined; return log;
+}
+// Evolución por edad al cambiar de temporada, para TODOS los equipos (los demás clubes no entrenan): los jóvenes
+// suben y los veteranos bajan. Se guarda en G.mods (por id) y se reaplica al cargar. Jugadores sin edad: sin cambio.
+function ageProgress(){
+  G.mods=G.mods||{}; let n=0;
+  for(const t of Object.values(DATA.teams)){ if(t.id>=9000) continue; for(const p of t.players){ const a=playerAge(p); if(a==='-') continue;
+    const base=a<=20?3:a<=23?2:a<=26?1:a<=29?0:a<=31?-1:a<=33?-2:-3; const k=pkey(p); const m=G.mods[k]||(G.mods[k]=[0,0,0,0,0,0,0,0,0,0]); let ch=false;
+    for(let i=0;i<10;i++){ if(i===9&&p.dem!=='POR') continue; let d=base+(Math.random()<0.5?0:(Math.random()<0.5?1:-1)); if(d>0) d=Math.round(d*ceilFactor(p.attrs[i])*1.4); if(p.pot&&p.attrs[i]+d>p.pot) d=p.pot-p.attrs[i]; const v=Math.max(1,Math.min(99,p.attrs[i]+d)); if(v!==p.attrs[i]){ m[i]+=v-p.attrs[i]; p.attrs[i]=v; ch=true; } }
+    if(ch){ p.me=calcME(p); n++; } } t._me=undefined; }
+  return n;
 }
 function applyMods(){ if(!G) return; G.mods=G.mods||{}; G.rust=G.rust||{}; const keys=new Set([...Object.keys(G.mods),...Object.keys(G.rust)]); for(const k of keys){ const p=findByKey(k); if(!p) continue; const m=G.mods[k]||[0,0,0,0,0,0,0,0,0,0], r=G.rust[k]||[0,0,0,0,0,0,0,0,0,0]; for(let i=0;i<10;i++){ p.attrs[i]=Math.max(1,Math.min(99,p.attrs[i]+m[i]-r[i])); } p.me=calcME(p); } Object.values(DATA.teams).forEach(t=>t._me=undefined); }
 function deltaME(p){ const b=G.base&&G.base[pkey(p)]; if(!b) return 0; const q=Object.assign({},p,{attrs:b}); return p.me-calcME(q); }

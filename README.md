@@ -19,6 +19,9 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Motor revisado**: líneas que se mezclan, diferencias de fuerza menos explosivas, uno menos que pesa más,
+  cambios con efecto proporcional al jugador, techo de progreso en el entrenamiento, declive desde los 31 y
+  evolución por edad de todos los equipos al cambiar de temporada. Detalles y cifras en "Motor de juego".
 - **Oficina agrupada**: los botones se organizan en PARTIDO (alineación, táctica, ver rival), PLANTILLA
   (entrenar, lesionados, fichajes, jóvenes promesas), CLUB (finanzas, empleados, club y estadio) y
   COMPETICIÓN (clasificación, calendario, competiciones, estadísticas, goleadores) dentro de un bloque con
@@ -247,6 +250,47 @@ y abrir <http://localhost:8765>. Cualquier otro servidor estático sirve igual.
   mayúsculas ni acentos, por palabra, frase completa o varias palabras, sobre equipos, jugadores y sus
   biografías, entrenadores, crónicas y declaraciones, árbitros, finales de copa e historia de la Liga.
   El índice se genera con `tools/build_search.py` (`data/search.json`) y cada resultado abre su ficha.
+
+## Motor de juego (revisado el 7 de octubre de 2026)
+
+**Fuerza del equipo** (`squadStrength`, `js/engine.js`). De cada jugador alineado se calcula un valor según su
+línea: portero = atributo portero; defensa = entradas 50 %, agresividad 20 %, resistencia 15 %, velocidad 15 %;
+medio = pase 40 %, regate 20 %, calidad 20 %, resistencia 20 %; delantero = remate 35 %, tiro 30 %, regate 20 %,
+velocidad 15 %. Ese valor se multiplica por: el puesto (`effME`: jugar fuera de su demarcación resta 5 puntos de
+media dentro de la misma línea, 10 o 15 entre líneas y 30 en la portería), el estado físico (lesionado en el
+campo, 50 %) y moral y forma (±5 % entre los extremos; los demás equipos, ±1 % por victoria o derrota de su
+racha). Las líneas se mezclan: ataque = 70 % delanteros + 30 % medios; defensa = 70 % defensas + 30 % medios;
+medio campo = 80 % medios + 10 % defensas + 10 % delanteros, con un peso por número de jugadores en cada
+línea; los valores se acotan (portero mínimo 35, líneas mínimo 30).
+
+**Goles esperados por partido** (`matchSim`): local = 1,6 × (ataque / defensa rival)^1,8 × (medio / medio
+rival)^0,8 × (72 / portero rival)^0,7; visitante igual con 1,15; en campo neutral ambos 1,35. Con un jugador
+menos: propio × (n/11)^1,5, rival × (11/n)^1,1. Cada minuto hay una probabilidad de gol igual a esperados/90,
+goleador según remate y tiro ponderado por línea. Con el estadio lleno, el local gana un 15 % en los últimos
+diez minutos si no va ganando. Tarjetas (3,5 % por minuto, según agresividad), roja directa (0,07 %) y lesiones
+(0,18 % por minuto) son independientes de la fuerza.
+
+**Medido sobre la 1ª División 96-97** (todos contra todos, 462 partidos; 400 repeticiones por emparejamiento):
+2,7 goles por partido; local 44 %, empate 26 %, visitante 30 % (la Liga real 96-97: 2,9 goles, 47/27/26);
+Barcelona (media 80) en casa contra Extremadura (69): 77/15/9 %, fuera 59 % de victorias; dos equipos de
+media 74: 44/26/30 %. Una expulsión en el centro del campo baja los goles propios esperados un 17 % y sube los
+del rival un 18 %. Cambios: quitar a Ronaldo (96) por Giovanni (87) resta un 12 % de goles esperados; por un
+medio de 69 fuera de sitio, un 28 %; un defensa en la portería casi duplica los goles del rival (×1,9).
+Antes de la revisión, el exponente 2,4 y las líneas sin mezclar hacían que un solo cambio restara el 44 % y
+que un defensa en la portería multiplicara por 5 los goles encajados.
+
+**Evolución de los jugadores.** Entrenamiento semanal del club propio (`applyTraining`): por cada atributo del
+área, probabilidad de +1 = nivel × 5 % × factor de edad (1,4 hasta 22 años, 1,0 hasta 26, 0,7 hasta 29, 0,4
+hasta 32, 0,2 después) × techo (`ceilFactor`: (92 − valor)/35, mínimo 0,08: de 57 se sube fácil, de 85
+cuesta cinco veces más, de 92 casi nada) × empleados (segundo entrenador +10 %/estrella; juveniles +4 %/estrella
+hasta 22 años). Declive semanal desde los 31: 6 % × (edad − 30) por atributo. Al cambiar de temporada,
+`ageProgress` aplica a TODOS los equipos (antes los rivales nunca cambiaban) un paso por edad: +3 hasta 20
+años, +2 hasta 23, +1 hasta 26, 0 hasta 29, −1 hasta 31, −2 hasta 33, −3 después (±1 al azar, con techo y
+potencial), guardado en `G.mods`. Resultado medido en una temporada: con el entrenamiento por defecto los
+menores de 23 ganan +3 de media (hasta +4,6 al máximo), 23-26 +1,4, 27-29 +1 y los de 30-32 se quedan igual
+(antes todos subían 2 a 5 puntos por temporada); el paso de temporada añade +3,1 a los de 20 o menos, +1,7
+a 21-23, +0,8 a 24-26 y resta 1,1 a 30-31, 2 a 32-33 y 3,2 a 34 o más. La falta de ritmo (hasta −8 por
+atributo), la moral y la forma se describen en sus apartados.
 
 ## Versión móvil
 

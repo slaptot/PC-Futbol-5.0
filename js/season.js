@@ -95,7 +95,7 @@ function startNextSeason(){
   G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups),awards:G.awards||null});
   G.budget=(G.budget||0)+p.bonus; finOther('Premio de liga · '+p.pos+'º puesto',p.bonus); G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
   G.cal=G.cal||{}; LEAGUE_ORDER.forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
-  G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cards={}; G.susp={}; G.moral={}; G.forma={}; if(G.emp) empTick(true); G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit();
+  G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cards={}; G.susp={}; G.moral={}; G.forma={}; if(G.emp) empTick(true); if(typeof ageProgress==='function') ageProgress(); G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit();
   const t=team(me); if(!G.lineup||G.lineup.length!==11||G.lineup.some(l=>!t.players[l.idx])) G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=[]; G.benchSet=false;
   saveGame();
 }

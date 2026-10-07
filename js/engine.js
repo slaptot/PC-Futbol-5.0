@@ -35,8 +35,11 @@ function squadStrength(t, lineup, hurt){
   const def = lineup.filter(l=>ROLE_DEM[l.role]==='DEF').map(l=>{const a=P(l.idx).attrs; return (a[8]*0.5+a[2]*0.2+a[1]*0.15+a[0]*0.15)*F(l);});
   const mid = lineup.filter(l=>ROLE_DEM[l.role]==='MED').map(l=>{const a=P(l.idx).attrs; return (a[4]*0.4+a[5]*0.2+a[3]*0.2+a[1]*0.2)*F(l);});
   const att = lineup.filter(l=>ROLE_DEM[l.role]==='DEL').map(l=>{const a=P(l.idx).attrs; return (a[6]*0.35+a[7]*0.3+a[5]*0.2+a[0]*0.15)*F(l);});
-  const avg = x=>x.length?x.reduce((a,b)=>a+b,0)/x.length:50;
-  return {gk:avg(gk), def:avg(def)*(0.85+0.03*def.length), mid:avg(mid)*(0.85+0.03*mid.length), att:avg(att)*(0.8+0.07*att.length)};
+  const avg = x=>x.length?x.reduce((a,b)=>a+b,0)/x.length:45; const clamp=(v,lo)=>Math.max(lo,Math.min(99,v));
+  const D=avg(def), M=avg(mid), A=avg(att);
+  // cada línea pesa según cuántos jugadores tiene (un 4-4-2 vale 1,0; con uno menos en una línea baja)
+  const fD=0.85+0.0375*def.length, fM=0.85+0.0375*mid.length, fA=0.80+0.10*att.length;
+  return {gk:clamp(avg(gk),35), def:clamp((0.7*D*fD+0.3*M*fM),30), mid:clamp((0.8*M*fM+0.1*D*fD+0.1*A*fA),30), att:clamp((0.7*A*fA+0.3*M*fM),30)};
 }
 // Lesiones del juego original (MANAGER.EXE): [nombre, semanas mín, semanas máx, peso, coste de curación en millones]
 const INJURIES=[['Gripe',1,1,14,3],['Gastroenteritis',1,1,8,3],['Sobrecarga muscular',1,2,14,6],['Sobrecarga gemelos',1,2,8,6],['Contractura cervicales',1,2,6,8],['Estiramiento abductor',2,3,7,12],['Esguince de tobillo',2,3,10,15],['Conmoción cerebral',1,2,3,10],['Rotura fibrilar',3,4,8,25],['Desgarro muscular',3,5,6,35],['Fractura huesos de la nariz',3,4,3,30],['Distensión de ligamentos',4,6,5,45],['Esguince de rodilla',4,6,4,50],['Rotura de menisco',8,12,2,120],['Fractura tibia y peroné',16,24,1,250],['Rotura tendón de Aquiles',20,28,1,300],['Rotura de ligamentos',24,32,1,400]];
@@ -53,8 +56,10 @@ function matchSim(home, away, lh, la, opts){
   const ends={}; // minuto de salida (expulsión o sustitución)
   let C=null;
   const calc=()=>{ const sh=squadStrength(home,S.lh,S.hurt.H), sa=squadStrength(away,S.la,S.hurt.A); const nh=S.lh.length/11, na=S.la.length/11;
-    const expH=(S.neutral?1.3:1.5)*Math.pow(sh.att/sa.def,2.4)*Math.pow(sh.mid/sa.mid,0.9)*Math.pow(72/sa.gk,0.8)*Math.pow(nh,1.2)*Math.pow(1/na,0.8);
-    const expA=(S.neutral?1.3:1.15)*Math.pow(sa.att/sh.def,2.4)*Math.pow(sa.mid/sh.mid,0.9)*Math.pow(72/sh.gk,0.8)*Math.pow(na,1.2)*Math.pow(1/nh,0.8);
+    // goles esperados por partido: ataque contra defensa (exp. 1,8), centro del campo (0,8), portero rival (0,7),
+    // ventaja de campo (1,6 local / 1,15 visitante; 1,35 en campo neutral) y jugadores en el campo (uno menos: −13 % propio, +10 % rival)
+    const expH=(S.neutral?1.35:1.6)*Math.pow(sh.att/sa.def,1.8)*Math.pow(sh.mid/sa.mid,0.8)*Math.pow(72/sa.gk,0.7)*Math.pow(nh,1.5)*Math.pow(1/na,1.1);
+    const expA=(S.neutral?1.35:1.15)*Math.pow(sa.att/sh.def,1.8)*Math.pow(sa.mid/sh.mid,0.8)*Math.pow(72/sh.gk,0.7)*Math.pow(na,1.5)*Math.pow(1/nh,1.1);
     const scorers=(t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>{const p=t.players[x.idx]; const d=ROLE_DEM[x.role]; return (d==='DEL'?5:d==='MED'?2:0.6)*(p.attrs[6]+p.attrs[7])/100;}); return ()=>t.players[pick(c,w).idx]; };
     const cardable=(t,l)=>{ let c=l.filter(x=>ROLE_DEM[x.role]!=='POR'); if(!c.length) c=l.length?l:t.players.map((p,i)=>({idx:i,role:9})); const w=c.map(x=>t.players[x.idx].attrs[2]/100); return ()=>t.players[pick(c,w).idx]; };
     C={expH,expA,scH:scorers(home,S.lh),scA:scorers(away,S.la),cdH:cardable(home,S.lh),cdA:cardable(away,S.la)}; };
