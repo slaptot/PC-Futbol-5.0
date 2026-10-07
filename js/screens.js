@@ -201,8 +201,8 @@ async function scrFicha(tid, idx, back){
   } else {
   names.forEach((n,i)=>{ A.appendChild(lbl(n,8,26+i*30)); A.appendChild(txt(String(p.attrs[i]),140,26+i*30,30,14,'f-con')); const b=at(h('div',{class:'bar'},h('i',{style:{width:p.attrs[i]+'%'}})),8,40+i*30,160,9); A.appendChild(b); });
   A.appendChild(lbl('MEDIA',8,326)); A.appendChild(txt(String(p.me),140,324,30,14,'f-e4'));
-  { const mine=G&&p.team===G.team&&typeof moralOf==='function'; A.appendChild(lbl('E. FORMA',8,342)); A.appendChild(txt(mine?formaOf(p)+' · '+formaText(formaOf(p)):'-',100,342,76,14,'f-con'));
-  A.appendChild(lbl('MORAL',8,358)); A.appendChild(txt(mine?moralOf(p)+' · '+moralText(moralOf(p)):'-',100,358,76,14,'f-con')); }
+  { const mine=G&&p.team===G.team&&typeof moralOf==='function'; const fx=txt(mine?formaOf(p)+' '+formaText(formaOf(p)):'-',84,342,92,14,'f-con'); fx.style.whiteSpace='nowrap'; fx.style.textAlign='right'; A.appendChild(lbl('E. FORMA',8,342)); A.appendChild(fx);
+  const mx=txt(mine?moralOf(p)+' '+moralText(moralOf(p)):'-',84,358,92,14,'f-con'); mx.style.whiteSpace='nowrap'; mx.style.textAlign='right'; A.appendChild(lbl('MORAL',8,358)); A.appendChild(mx); }
   }
   // textos
   const T=panel(406,66,224,374); s.appendChild(T); T.appendChild(h('div',{class:'hdr'},'INFORME'));
