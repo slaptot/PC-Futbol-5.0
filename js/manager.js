@@ -96,20 +96,18 @@ function scrOficina(){
     ['CLUB',[['FINANZAS',()=>scrFinanzas(),'ico_entrada'],['EMPLEADOS',()=>scrEmpleados(),'ico_salaprensa'],['CLUB Y ESTADIO',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio']]],
     ['COMPETICIÓN',[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['COMPETICIONES',()=>scrCompeticiones(),'ico_coparey'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['GOLEADORES',()=>scrGoleadores(),'ico_golea']]],
   ];
-  const box=at(h('div',{class:'scroll'}),0,18,306,312); M.appendChild(box); let y=4;
+  const box=at(h('div',{class:'scroll'}),0,18,306,312); box.style.overflow='hidden'; M.appendChild(box); let y=4;
   // PARTIDA: fila fija al pie del panel (escritorio); en móvil fluye tras los grupos
   const row=[['GUARDAR',save,'blue'],['OPCIONES',()=>scrOpciones(),'blue'],['NUEVA',nueva,'red'],['MENÚ',()=>{saveGame(); go('menu');},'blue']];
   { const L=lbl('PARTIDA',16,334); L.style.color='#ffe24a'; M.appendChild(L); row.forEach((it,i)=>M.appendChild(btn(it[0],82+i*54,332,52,it[1],it[2]))); }
-  groups.forEach(g=>{ const L=lbl(g[0],16,y); L.style.color='#ffe24a'; box.appendChild(L); y+=14;
-    g[1].forEach((it,i)=>{ box.appendChild(btn(it[0],16+(i%2)*140,y+Math.floor(i/2)*25,130,it[1],it[3]||'blue',it[2])); }); y+=Math.ceil(g[1].length/2)*25+4; });
-  { // resumen del club al pie del bloque
-    const inf=h('div',{style:{position:'absolute',left:'16px',top:y+'px',width:'276px',fontFamily:'proman8',fontSize:'11px',lineHeight:'12px',color:'#fff',paddingBottom:'6px'}}); box.appendChild(inf);
-    const line=(s0,c)=>inf.appendChild(h('div',{style:{color:c||'#fff',whiteSpace:'normal'}},s0));
-    line('Presupuesto '+fmtNum(G.budget||0)+' M · Lesionados '+injuredOf(G.team).length+(typeof suspendedOf==='function'&&suspendedOf(G.team).length?' · Sancionados '+suspendedOf(G.team).length:''));
-    if(typeof teamMoral==='function') line('Moral '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma '+teamForma(t)+' ('+formaText(teamForma(t))+')','#9fd0ff');
-    if(typeof empWagesWeek==='function'&&G.emp) line('Empleados '+Object.keys(G.emp.hired).length+'/8 · '+fmtNum(empWagesWeek())+' M por jornada','#9fb4e8');
-    if(typeof youthState==='function'&&G.youth&&(G.youth.squad.length||G.youth.search||G.youth.found.length)) line('Juveniles '+G.youth.squad.length+(G.youth.search?' · ojeador buscando':'')+(G.youth.found.length?' · '+G.youth.found.length+' informes':''),'#9fb4e8');
-    line(t.name+' · '+league(G.league).long+' '+(G.season||'96-97'),'#ffe24a'); }
+  groups.forEach(g=>{ const L=lbl(g[0],16,y); L.style.color='#ffe24a'; L.style.fontSize='12px'; box.appendChild(L); y+=13;
+    g[1].forEach((it,i)=>{ box.appendChild(btn(it[0],16+(i%2)*140,y+Math.floor(i/2)*24,130,it[1],it[3]||'blue',it[2])); }); y+=Math.ceil(g[1].length/2)*24+3; });
+  { // resumen del club al pie del bloque, en dos líneas
+    const inf=h('div',{style:{position:'absolute',left:'16px',top:(y+2)+'px',width:'276px',fontFamily:'proman8',fontSize:'11px',lineHeight:'12px',color:'#fff'}}); box.appendChild(inf);
+    const line=(s0,c)=>inf.appendChild(h('div',{style:{color:c||'#fff',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}},s0));
+    const nS=typeof suspendedOf==='function'?suspendedOf(G.team).length:0;
+    line('Presupuesto '+fmtNum(G.budget||0)+' M · Lesionados '+injuredOf(G.team).length+(nS?' · Sancionados '+nS:''));
+    if(typeof teamMoral==='function') line('Moral '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma '+teamForma(t)+' ('+formaText(teamForma(t))+')'+(G.emp?' · Empleados '+Object.keys(G.emp.hired).length+'/8':'')+(typeof youthState==='function'&&G.youth&&G.youth.squad.length?' · Juveniles '+G.youth.squad.length:'')+(G.youth&&G.youth.search?' · ojeador buscando':'')+(G.youth&&G.youth.found&&G.youth.found.length?' · '+G.youth.found.length+' informes':''),'#9fd0ff'); }
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación
