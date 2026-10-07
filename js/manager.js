@@ -17,7 +17,7 @@ function refFor(hm){ return DATA.referees[(G.jornada*7+hm.id)%DATA.referees.leng
 
 function scrLiga(){
   const saved=loadGame();
-  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); if(typeof applyYouth==='function') applyYouth(); if(typeof applyGenerated==='function') applyGenerated(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
+  if(saved){ const st=team(saved.team); const sname=st?st.name:(saved.custom&&saved.custom.name)||'Equipo propio'; dialog('LIGA MANAGER','Hay una partida guardada: '+sname+' ('+league(saved.league).name+'), jornada '+saved.jornada+'.',[{t:'CONTINUAR',cls:'green',f:()=>{G=saved; migrateBajas(); applyCustomTeam(); if(typeof applyYouth==='function') applyYouth(); if(typeof applyGenerated==='function') applyGenerated(); if(typeof applyStadium==='function') applyStadium(); applySeasonState(); applyTransfers(); applyMods(); migrateGame(); saveGame(); if(typeof prefetchPhotos==='function') setTimeout(()=>prefetchPhotos(team(G.team).players),2000); scrOficina();}},{t:'NUEVA PARTIDA',cls:'red',f:()=>{ if(customActive()){ localStorage.removeItem('pcf5_save'); location.reload(); return; } scrSelectTeam(); }}]); return; }
   scrSelectTeam();
 }
 function scrSelectTeam(state){
@@ -93,7 +93,7 @@ function scrOficina(){
   const groups=[
     ['PARTIDO',[['ALINEACIÓN',()=>scrAlineacion(),'ico_alineacion'],['TÁCTICA',()=>scrTactica(),'ico_terreno'],['VER RIVAL',()=>rival?scrDbTeam(rival.id,{back:()=>scrOficina()}):scrClasif({lg:sib}),'lupa']]],
     ['PLANTILLA',[['ENTRENAR',()=>scrEntrenamiento(),'ico_terreno'],['LESIONADOS',()=>scrLesionados(()=>scrOficina()),'ico_incidencias'],['FICHAJES',()=>scrFichajes(),'nuevo_fichaje'],['JÓVENES PROMESAS',()=>scrJuveniles(),'ico_alineacion']]],
-    ['CLUB',[['FINANZAS',()=>scrFinanzas(),'ico_entrada'],['EMPLEADOS',()=>scrEmpleados(),'ico_salaprensa'],['CLUB Y ESTADIO',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio']]],
+    ['CLUB',[['FINANZAS',()=>scrFinanzas(),'ico_entrada'],['EMPLEADOS',()=>scrEmpleados(),'ico_salaprensa'],['ESTADIO',()=>scrEstadio(),'ico_estadio']]],
     ['COMPETICIÓN',[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['COMPETICIONES',()=>scrCompeticiones(),'ico_coparey'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['GOLEADORES',()=>scrGoleadores(),'ico_golea'],['INFO',()=>infoClub(),'ayuda0']]],
   ];
   const box=at(h('div',{class:'scroll'}),0,18,306,312); box.style.overflow='hidden'; M.appendChild(box); let y=4;
@@ -110,7 +110,7 @@ function scrOficina(){
     if(G.youth&&typeof youthState==='function') line('Jóvenes promesas',G.youth.squad.length+' en formación'+(G.youth.search?' · ojeador buscando':'')+(G.youth.found&&G.youth.found.length?' · '+G.youth.found.length+' informes':''));
     line('Plantilla',t.players.length+' jugadores · media '+lineupME(t,G.lineup)); if(G.offersIn&&G.offersIn.length) line('Ofertas recibidas',G.offersIn.length+' pendiente'+(G.offersIn.length>1?'s':'')); if(G.tv&&typeof tvKind==='function') line('Televisión',tvKind(G.tv));
     dialog('INFORMACIÓN DEL CLUB',b,[{t:'CERRAR'}]); }
-  if(G.seasonNews&&G.seasonNews.length){ const n=G.seasonNews; G.seasonNews=null; saveGame(); setTimeout(()=>dialog('PLANTILLA · NUEVA TEMPORADA',n.join('<br><br>'),[{t:'ACEPTAR',f:()=>scrOficina()}]),50); return; }
+  if(G.seasonNews&&G.seasonNews.length){ const n=G.seasonNews; G.seasonNews=null; saveGame(); setTimeout(()=>dialog('NOTICIAS DEL CLUB',n.join('<br><br>'),[{t:'ACEPTAR',f:()=>scrOficina()}]),50); return; }
   if(G.offersIn&&G.offersIn.length){ setTimeout(()=>scrOfertasIn(()=>{ if(G.tvOffers&&!G.tv&&!fin) scrTvOffers(()=>scrOficina()); }),50); return; }
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }

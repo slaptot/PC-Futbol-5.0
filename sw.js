@@ -1,7 +1,7 @@
 // Service worker (se registra en todos los modos): caché del "shell", precarga y recursos bajo demanda.
 const V='pcf5-v7';
 const SHELL=['./','./index.html','./css/style.css','./manifest.json',
-  './js/data.js','./js/engine.js','./js/ui.js','./js/screens.js','./js/manager.js','./js/cups.js','./js/market.js','./js/empleados.js','./js/juveniles.js','./js/moral.js','./js/contratos.js','./js/ofertas.js','./js/finance.js','./js/training.js','./js/audio.js','./js/search.js','./js/print.js','./js/custom.js','./js/season.js','./js/mobile.js','./js/auth.js','./js/mui.js','./js/push.js','./js/app.js','./img/icon-192.png','./img/icon-512.png'];
+  './js/data.js','./js/engine.js','./js/ui.js','./js/screens.js','./js/manager.js','./js/cups.js','./js/market.js','./js/empleados.js','./js/juveniles.js','./js/moral.js','./js/contratos.js','./js/ofertas.js','./js/estadio.js','./js/finance.js','./js/training.js','./js/audio.js','./js/search.js','./js/print.js','./js/custom.js','./js/season.js','./js/mobile.js','./js/auth.js','./js/mui.js','./js/push.js','./js/app.js','./img/icon-192.png','./img/icon-512.png'];
 self.addEventListener('install',e=>{ self.skipWaiting(); e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL).catch(()=>{}))); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>{ fetch('./data/precache.json').then(r=>r.json()).then(warm).catch(()=>{}); })); });
 // precarga: guarda en caché lo que falte de la lista (4 descargas a la vez) y avisa a las ventanas al terminar

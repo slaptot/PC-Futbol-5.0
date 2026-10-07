@@ -19,6 +19,18 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Estadio y servicios** (`js/estadio.js`, botón ESTADIO en la oficina, que también da acceso a la ficha del
+  club), con los apartados de la pantalla original: GRADAS (ampliar el aforo en 2.000, 5.000 o 10.000 plazas:
+  100 M por cada 1.000 y 4 semanas por cada 2.000), PARKING (tres niveles: 60/120/200 M, 3 semanas),
+  SERVICIOS (W.C., cafeterías y tiendas en tres niveles; cada nivel atrae un 1 % más de público e ingresa por
+  espectador 3, 12 y 20 pesetas respectivamente, sumado a la taquilla), EQUIPAMIENTO (marcadores +0,5 % de
+  público, focos +1 %, calefacción del césped —desgaste a la mitad y −5 % de lesiones en casa—, vestuarios +5 %
+  de entrenamiento, enfermería −10 % de duración de las lesiones; 80 a 150 M y 3 semanas), CÉSPED (de 0 a 100,
+  se desgasta 4 puntos por partido en casa, 2 con calefacción, y recupera 1 o 2 por semana; por debajo de 60
+  aumenta las lesiones en casa y por debajo de 45 resta un 2 % de público; replantar cuesta 40 M y 1 semana) y
+  VALLAS PUBLICITARIAS (al empezar cada temporada se cobran los derechos: 7 u 8 M por cada 1.000 plazas). Las
+  obras se pagan al encargarlas, empiezan al terminar la jornada y avisan al acabar en el diálogo de noticias de
+  la oficina. El aforo ampliado se guarda en la partida (`G.stadium`) y se reaplica al cargar.
 - **Ofertas de otros clubes** (`js/ofertas.js`): cada jornada hay un 22 % de probabilidad de que un club de
   cualquier liga (de nivel parecido o superior al jugador) haga una oferta por un jugador del club propio,
   más probable cuanto mejor sea (peso (ME − 50)^3, los de 32 o más menos), por el 85 % al 145 % de su valor,
