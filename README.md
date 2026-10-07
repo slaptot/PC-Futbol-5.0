@@ -19,6 +19,8 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Fotos en la alineación**: la tabla de Alineación lleva la foto pequeña de cada jugador junto al dorsal
+  (14 px en escritorio, 20 px en móvil; son las de `img/foto`, de 1,6 KB y ya precargadas, así que no pesan).
 - **Motor revisado**: líneas que se mezclan, diferencias de fuerza menos explosivas, uno menos que pesa más,
   cambios con efecto proporcional al jugador, techo de progreso en el entrenamiento, declive desde los 31 y
   evolución por edad de todos los equipos al cambiar de temporada. Detalles y cifras en "Motor de juego".

@@ -136,6 +136,8 @@ table.t td.red{color:#ff8a60}
 .dlg .btn{position:relative;display:inline-block;margin:8px 6px 0 0}
 .dlg .btn.dis{opacity:.45;cursor:default}
 .ev{font-family:'proman12';font-size:13px;line-height:14px;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.alph{width:14px;height:14px;object-fit:cover;object-position:top;border:1px solid #000;vertical-align:middle;display:block;margin:0 auto}
+body.mui .alph{width:20px;height:20px}
 .ev .evph{width:16px;height:16px;object-fit:cover;object-position:top;border:1px solid #000;flex:none;background:#223}
 body.mui .ev .evph{width:22px;height:22px}
 body.mui #screen .ev .evph{position:static!important}
