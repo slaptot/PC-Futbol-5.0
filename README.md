@@ -19,6 +19,11 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Oficina agrupada**: los botones se organizan en PARTIDO (alineación, táctica, ver rival), PLANTILLA
+  (entrenar, lesionados, fichajes, jóvenes promesas), CLUB (finanzas, empleados, club y estadio) y
+  COMPETICIÓN (clasificación, calendario, competiciones, estadísticas, goleadores) dentro de un bloque con
+  scroll, con el resumen del club al pie (presupuesto, bajas, moral y forma, empleados, juveniles); la fila
+  PARTIDA (guardar, opciones, nueva, menú) queda fija al pie del panel.
 - **Moral y estado de forma** (`js/moral.js`): cada jugador del club tiene MORAL (tiende a 70) y E. FORMA
   (tiende a 60), de 0 a 100, que sustituyen a los valores fijos de la ficha. Tras cada partido: los que juegan
   suman +6 de moral por victoria, +1 por empate, −6 por derrota, +3 por gol y −4 por expulsión, y ganan forma

@@ -86,15 +86,24 @@ function scrOficina(){
   last.forEach((r,i)=>P.appendChild(txt(team(r.home).name+' '+r.gh+' - '+r.ga+' '+team(r.away).name,8,284+i*14,284,14,'f-con')));
   const M=panel(320,70,310,370); s.appendChild(M); M.appendChild(h('div',{class:'hdr'},'OFICINA'));
   const sib=SIBLING[G.league];
-  const items=[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['ALINEACIÓN',()=>scrAlineacion(),'ico_alineacion'],['TÁCTICA',()=>scrTactica(),'ico_terreno'],['ENTRENAR',()=>scrEntrenamiento(),'ico_terreno'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['CLUB',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio'],['GOLEADORES',()=>scrGoleadores(),'ico_golea'],['COMPETICIONES',()=>scrCompeticiones(),'ico_coparey'],['EMPLEADOS',()=>scrEmpleados(),'ico_salaprensa'],['FICHAJES',()=>scrFichajes(),'nuevo_fichaje'],['LESIONADOS',()=>scrLesionados(()=>scrOficina()),'ico_incidencias'],['FINANZAS',()=>scrFinanzas(),'ico_entrada']];
-  items.forEach((it,i)=>M.appendChild(btn(it[0],20+(i%2)*140,24+Math.floor(i/2)*27,130,it[1],'blue',it[2])));
-  M.appendChild(btn(league(sib).name.toUpperCase()+' / VER RIVAL',160,186,130,()=>nm?scrDbTeam(nm[0]===G.team?nm[1]:nm[0],{back:()=>scrOficina()}):scrClasif({lg:sib}),'blue','lupa'));
-  M.appendChild(btn('OPCIONES',160,216,130,()=>scrOpciones(),'blue'));
-  M.appendChild(btn('GUARDAR',20,216,130,()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');},'blue'));
-  M.appendChild(btn('NUEVA PARTIDA',20,240,270,()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]),'red'));
-  M.appendChild(btn('MENÚ PRINCIPAL',20,264,270,()=>{saveGame(); go('menu');},'blue','ico_volver'));
-  { // resumen del club: bloque con scroll para que nunca se salga del panel
-    const inf=at(h('div',{class:'scroll',style:{fontFamily:'proman8',fontSize:'11px',lineHeight:'12px',color:'#fff',padding:'0 4px'}}),16,288,278,74); M.appendChild(inf);
+  // oficina agrupada: PARTIDO · PLANTILLA · CLUB · COMPETICIÓN · PARTIDA, dentro de un bloque con scroll
+  const rival=nm?team(nm[0]===G.team?nm[1]:nm[0]):null;
+  const save=()=>{saveGame(); if(MOBILE) dialog('GUARDAR','Partida guardada en el navegador. En el móvil conviene exportarla a un archivo de vez en cuando: el navegador puede borrar el almacenamiento.',[{t:'ACEPTAR'},{t:'EXPORTAR',cls:'green',f:exportSave},{t:'IMPORTAR',cls:'blue',f:importSave}]); else dialog('GUARDAR','Partida guardada en el navegador.');};
+  const nueva=()=>dialog('NUEVA PARTIDA','¿Abandonar la partida actual?',[{t:'SÍ',cls:'red',f:()=>{localStorage.removeItem('pcf5_save'); if(customActive()||G.leagueMoves){ location.reload(); return; } scrSelectTeam();}},{t:'NO'}]);
+  const groups=[
+    ['PARTIDO',[['ALINEACIÓN',()=>scrAlineacion(),'ico_alineacion'],['TÁCTICA',()=>scrTactica(),'ico_terreno'],['VER RIVAL',()=>rival?scrDbTeam(rival.id,{back:()=>scrOficina()}):scrClasif({lg:sib}),'lupa']]],
+    ['PLANTILLA',[['ENTRENAR',()=>scrEntrenamiento(),'ico_terreno'],['LESIONADOS',()=>scrLesionados(()=>scrOficina()),'ico_incidencias'],['FICHAJES',()=>scrFichajes(),'nuevo_fichaje'],['JÓVENES PROMESAS',()=>scrJuveniles(),'ico_alineacion']]],
+    ['CLUB',[['FINANZAS',()=>scrFinanzas(),'ico_entrada'],['EMPLEADOS',()=>scrEmpleados(),'ico_salaprensa'],['CLUB Y ESTADIO',()=>scrDbTeam(G.team,{back:()=>scrOficina()}),'ico_estadio']]],
+    ['COMPETICIÓN',[['CLASIFICACIÓN',()=>scrClasif(),'ico_liga'],['CALENDARIO',()=>scrCalendario(),'calendario'],['COMPETICIONES',()=>scrCompeticiones(),'ico_coparey'],['ESTADÍSTICAS',()=>scrEstadisticas(),'ico_golea'],['GOLEADORES',()=>scrGoleadores(),'ico_golea']]],
+  ];
+  const box=at(h('div',{class:'scroll'}),0,18,306,312); M.appendChild(box); let y=4;
+  // PARTIDA: fila fija al pie del panel (escritorio); en móvil fluye tras los grupos
+  const row=[['GUARDAR',save,'blue'],['OPCIONES',()=>scrOpciones(),'blue'],['NUEVA',nueva,'red'],['MENÚ',()=>{saveGame(); go('menu');},'blue']];
+  { const L=lbl('PARTIDA',16,334); L.style.color='#ffe24a'; M.appendChild(L); row.forEach((it,i)=>M.appendChild(btn(it[0],82+i*54,332,52,it[1],it[2]))); }
+  groups.forEach(g=>{ const L=lbl(g[0],16,y); L.style.color='#ffe24a'; box.appendChild(L); y+=14;
+    g[1].forEach((it,i)=>{ box.appendChild(btn(it[0],16+(i%2)*140,y+Math.floor(i/2)*25,130,it[1],it[3]||'blue',it[2])); }); y+=Math.ceil(g[1].length/2)*25+4; });
+  { // resumen del club al pie del bloque
+    const inf=h('div',{style:{position:'absolute',left:'16px',top:y+'px',width:'276px',fontFamily:'proman8',fontSize:'11px',lineHeight:'12px',color:'#fff',paddingBottom:'6px'}}); box.appendChild(inf);
     const line=(s0,c)=>inf.appendChild(h('div',{style:{color:c||'#fff',whiteSpace:'normal'}},s0));
     line('Presupuesto '+fmtNum(G.budget||0)+' M · Lesionados '+injuredOf(G.team).length+(typeof suspendedOf==='function'&&suspendedOf(G.team).length?' · Sancionados '+suspendedOf(G.team).length:''));
     if(typeof teamMoral==='function') line('Moral '+teamMoral(t)+' ('+moralText(teamMoral(t))+') · Forma '+teamForma(t)+' ('+formaText(teamForma(t))+')','#9fd0ff');
