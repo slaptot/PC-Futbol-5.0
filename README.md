@@ -19,6 +19,15 @@ su infancia y de poder rejugarlo con sus ídolos futbolísticos del pasado.
   fuerza la orientación horizontal. Al reinstalar la app en el móvil se ven el icono y el splash nuevos.
   Instalada en iPhone, la cabecera, los diálogos y el splash respetan la zona segura (barra de estado e
   isla), con una franja fija que cubre lo que pasa por detrás al hacer scroll.
+- **Ofertas de otros clubes** (`js/ofertas.js`): cada jornada hay un 22 % de probabilidad de que un club de
+  cualquier liga (de nivel parecido o superior al jugador) haga una oferta por un jugador del club propio,
+  más probable cuanto mejor sea (peso (ME − 50)^3, los de 32 o más menos), por el 85 % al 145 % de su valor,
+  válida dos jornadas; no llegan en las tres últimas jornadas ni con 16 jugadores o menos. Se responden en la
+  oficina (ACEPTAR: traspaso inmediato y dinero al presupuesto; RECHAZAR: si la oferta superaba el valor en un
+  20 %, el jugador pierde 4 de moral; MÁS TARDE la deja pendiente). Para figuras de 84 o más, un club grande
+  puede pagar la cláusula de rescisión (12 % de las veces, si no supera 3,5 veces el valor) y el jugador se va
+  sin remedio, como en el original. La cláusula de los jugadores de la base de datos es 3 veces su valor; la
+  de los fichados, la pactada. La pantalla CONTRATOS muestra la cláusula.
 - **Contratos y fin de temporada de la plantilla** (`js/contratos.js`): cada jugador del club tiene un
   contrato con ficha y temporadas restantes (los de la base de datos empiezan con 1 a 4 según su id; los
   fichados, con las del acuerdo). En FICHAJES → CONTRATOS se ven ficha, fecha de fin y cláusulas (R: partidos

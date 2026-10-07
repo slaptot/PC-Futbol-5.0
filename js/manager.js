@@ -108,9 +108,10 @@ function scrOficina(){
     if(typeof teamMoral==='function'){ line('Moral del equipo',teamMoral(t)+' ('+moralText(teamMoral(t))+')'); line('Estado de forma',teamForma(t)+' ('+formaText(teamForma(t))+')'); }
     if(G.emp&&typeof empWagesWeek==='function') line('Empleados',Object.keys(G.emp.hired).length+'/8 · '+fmtNum(empWagesWeek())+' M por jornada');
     if(G.youth&&typeof youthState==='function') line('Jóvenes promesas',G.youth.squad.length+' en formación'+(G.youth.search?' · ojeador buscando':'')+(G.youth.found&&G.youth.found.length?' · '+G.youth.found.length+' informes':''));
-    line('Plantilla',t.players.length+' jugadores · media '+lineupME(t,G.lineup)); if(G.tv&&typeof tvKind==='function') line('Televisión',tvKind(G.tv));
+    line('Plantilla',t.players.length+' jugadores · media '+lineupME(t,G.lineup)); if(G.offersIn&&G.offersIn.length) line('Ofertas recibidas',G.offersIn.length+' pendiente'+(G.offersIn.length>1?'s':'')); if(G.tv&&typeof tvKind==='function') line('Televisión',tvKind(G.tv));
     dialog('INFORMACIÓN DEL CLUB',b,[{t:'CERRAR'}]); }
   if(G.seasonNews&&G.seasonNews.length){ const n=G.seasonNews; G.seasonNews=null; saveGame(); setTimeout(()=>dialog('PLANTILLA · NUEVA TEMPORADA',n.join('<br><br>'),[{t:'ACEPTAR',f:()=>scrOficina()}]),50); return; }
+  if(G.offersIn&&G.offersIn.length){ setTimeout(()=>scrOfertasIn(()=>{ if(G.tvOffers&&!G.tv&&!fin) scrTvOffers(()=>scrOficina()); }),50); return; }
   if(G.tvOffers&&!G.tv&&!fin) setTimeout(()=>scrTvOffers(()=>scrOficina()),50);
 }
 // ---- clasificación

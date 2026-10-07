@@ -121,7 +121,7 @@ function marketTick(){ // tras cada jornada: caducan unos, entran otros y, cada 
   if(!G.market) return marketInit();
   G.market=G.market.filter(m=>m.until>G.jornada&&marketPlayer(m));
   const n=3+Math.floor(Math.random()*4); for(let i=0;i<n&&G.market.length<MARKET_SIZE+6;i++){ const e=marketPick(); if(e) G.market.push(e); }
-  if(typeof empTick==='function') empTick(); if(typeof youthTick==='function') G.youthLog=youthTick(); if(G.jornada-(G.marketStar||0)>=3||Math.random()<0.2*(1+0.2*empStars('ojeador'))){ const e=marketPickStar(); if(e){ G.market.push(e); G.marketStar=G.jornada; } }
+  if(typeof empTick==='function') empTick(); if(typeof offersTick==='function') offersTick(); if(typeof youthTick==='function') G.youthLog=youthTick(); if(G.jornada-(G.marketStar||0)>=3||Math.random()<0.2*(1+0.2*empStars('ojeador'))){ const e=marketPickStar(); if(e){ G.market.push(e); G.marketStar=G.jornada; } }
 }
 function marketPlayer(m){ const t=team(m.t); if(!t||t.id===G.team) return null; const p=t.players.find(q=>q.id===m.id); return p?{p,t,m}:null; }
 function marketList(filter){ return (G.market||[]).map(marketPlayer).filter(Boolean).filter(r=>!filter||filter==='ALL'||marketGroup(r.t)===filter); }

@@ -20,8 +20,8 @@ function contractsTable(R,me,MUI,state){
   R.appendChild(h('div',{class:'hdr'},'CONTRATOS · '+me.name.toUpperCase()));
   const sc=at(h('div',{class:'scroll'}),0,18,436,350); R.appendChild(sc);
   const ps=me.players.filter(p=>p.id>0).slice().sort((a,b)=>contractOf(a).years-contractOf(b).years||b.me-a.me);
-  const cols=[{t:'Nº',w:22,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'ED',w:26,cls:'c',k:p=>playerAge(p)},{t:'ME',w:28,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'FICHA',w:46,cls:'r',k:p=>fmtNum(contractOf(p).ficha)},{t:'HASTA',w:50,cls:'c',k:p=>h('span',{style:{color:contractOf(p).years<=1?'#ff8a60':'#fff'}},contractEnds(p))},{t:'CLÁUS.',w:46,cls:'c',k:p=>h('span',{class:'f-con8',title:'R: partidos para renovación · L: libertad por descenso'},(contractOf(p).renov?'R ':'')+(contractOf(p).libertad?'L':''))},{t:'',w:60,cls:'c',k:p=>h('span',{class:'f-con8',style:{color:'#8dff8d'}},'RENOVAR')}];
-  const colsM=[cols[0],cols[1],cols[3],cols[4],cols[5],cols[7]];
+  const cols=[{t:'Nº',w:22,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'ED',w:26,cls:'c',k:p=>playerAge(p)},{t:'ME',w:28,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'FICHA',w:46,cls:'r',k:p=>fmtNum(contractOf(p).ficha)},{t:'CLÁUSULA',w:60,cls:'r',k:p=>fmtNum(clauseOf(p))},{t:'HASTA',w:50,cls:'c',k:p=>h('span',{style:{color:contractOf(p).years<=1?'#ff8a60':'#fff'}},contractEnds(p))},{t:'CLÁUS.',w:46,cls:'c',k:p=>h('span',{class:'f-con8',title:'R: partidos para renovación · L: libertad por descenso'},(contractOf(p).renov?'R ':'')+(contractOf(p).libertad?'L':''))},{t:'',w:60,cls:'c',k:p=>h('span',{class:'f-con8',style:{color:'#8dff8d'}},'RENOVAR')}];
+  const colsM=[cols[0],cols[1],cols[3],cols[4],cols[6],cols[8]];
   sc.appendChild(table(MUI?colsM:cols,ps,{rowClass:p=>contractOf(p).years<=1?'san':'',onRow:p=>renewDialog(p,()=>scrFichajes(state))}));
 }
 // canterano generado para un club de la máquina (sustituye a un retirado)
