@@ -124,10 +124,26 @@ def tm_contracts(players_bio):
 SECONDARY = {1: [1], 2: [3], 3: [2], 5: [6], 6: [5], 15: [10], 10: [15, 7, 11], 7: [11], 11: [7], 9: [12, 14], 12: [14, 9], 14: [12, 9]}
 
 
-def roles_for(pos, sub, foot, k):
+# sin posición de Transfermarkt: reparto por equipo según la valoración (los mejores, roles principales); estimación
+FB_PATTERN = {'DEF': [5, 6, 2, 3], 'MED': [15, 10, 10, 7, 11], 'DEL': [9, 9, 12, 14]}
+
+
+def fallback_roles(players):
+    """Rol principal de cada jugador sin posición de Transfermarkt: se reparte por grupo y valoración dentro del equipo."""
+    out = {}
+    for dem, pat in FB_PATTERN.items():
+        group = sorted([p for p in players if p['pos'] == dem], key=lambda p: -(p['me'] or 0))
+        for i, p in enumerate(group):
+            out[p['id']] = pat[i % len(pat)]
+    return out
+
+
+def roles_for(pos, sub, foot, k, fallback=None):
     """Rol principal según la posición de Transfermarkt (sub_position) y el pie; el grupo lo fija la API para no cambiar la valoración."""
     side = 'L' if sub in ('Left-Back', 'Left Midfield', 'Left Winger') else 'R' if sub in ('Right-Back', 'Right Midfield', 'Right Winger') else None
-    if pos == 'POR':
+    if sub is None and fallback is not None and pos != 'POR':
+        r = fallback
+    elif pos == 'POR':
         r = 1
     elif pos == 'DEF':
         if sub == 'Left-Back':
@@ -269,6 +285,7 @@ def main():
         if sum(1 for p in keep if p['pos'] == 'POR') < 2:
             extra = [p for p in mine[25:] if p['pos'] == 'POR'][:2]
             keep = keep[:25 - len(extra)] + extra
+        fb = fallback_roles(keep)
         plantilla = []
         for k, p in enumerate(keep):
             b = bio.get(p['id'], {})
@@ -278,7 +295,7 @@ def main():
             if tmc.get('foto'): fotos[str(1000000 + p['id'])] = tmc['foto']
             extra = {k2: v for k2, v in (('contrato_hasta', tmc.get('contrato_hasta')), ('valor_eur', tmc.get('valor_eur')), ('valor_fecha', tmc.get('valor_fecha'))) if v}
             plantilla.append(dict(extra, **{'id': 1000000 + p['id'], 'dorsal': k + 1, 'name': p['name'], 'full': p['name'].upper(),
-                              'roles': roles_for(pos, tmc.get('posicion_tm'), tmc.get('pie'), k), 'country': NAT.get(b.get('nat'), 0), 'c2': 1,
+                              'roles': roles_for(pos, tmc.get('posicion_tm'), tmc.get('pie'), k, fb.get(p['id'])), 'country': NAT.get(b.get('nat'), 0), 'c2': 1,
                               'f1': 0, 'f2': 0, 'f3': 0, 'f4': 0, 'birth': dob(b.get('birth')),
                               'height': b.get('height') or 0, 'weight': b.get('weight') or 0, 'attrs': a,
                               'dem': pos, 'birthplace': '', 'prevclub': '', 'intl': '0'}))
