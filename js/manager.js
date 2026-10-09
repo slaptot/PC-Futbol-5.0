@@ -6,6 +6,7 @@ function newGame(tid){
   const t=team(tid); const lg=t.league; const f=clubFormation(t);
   G={team:tid,league:lg,jornada:1,formation:f,lineup:bestLineup(t,f),results:{},season:seasonLabel(0)}; if(typeof retiredTeam==='function') retiredTeam();
   LEAGUE_ORDER.forEach(k=>G.results[k]=[]);
+  if(typeof TEST_MODE!=='undefined'&&TEST_MODE&&DATA.clasif){ G.lastPos=DATA.clasif.lastPos; G.lastCups=DATA.clasif.lastCups; } // prueba 2024: clasificación de 2023-24 antes de montar las copas
   G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.budget=initBudget(t); G.inj={}; G.transfers=[]; G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; G.mods={}; G.stats={}; G.contracts={}; G.schedVer=2; snapshotBase(); marketInit(); tvOffersInit(); preInit();
   saveGame();
 }
@@ -229,7 +230,7 @@ function scrAlineacion(state){
     // POS / ROL: puesto en el once (verde; naranja con ↓ si pierde media) o demarcación natural (+ si domina varias); lesión o sanción
     const posRol={t:'POS / ROL',w:MUI?90:110,k:p=>{const l=inL(p.idx); const w=G.inj&&G.inj[injKey(G.team,p.idx)]; if(w) return h('span',{class:'f-con8',style:{color:'#ff8a60'}},icoImg('ico_lesion',12),' '+w+(w===1?' SEMANA':' SEMANAS')); const sn=suspOf(G.team,p.idx,nextComp()); if(sn) return h('span',{class:'f-con8',style:{color:'#ff8a60'}},icoImg(suspIco(G.team,p.idx,nextComp()),12),' SANC. '+sn+(sn===1?' PART.':' PART.')); if(l>=0){ const bad=rolePenalty(p,G.lineup[l].role); return h('span',{class:'f-con8',style:{color:bad?'#ff8a60':'#8dff8d'}},ROLES_SHORT[G.lineup[l].role]+(bad?' ↓':'')); } return h('span',{class:'f-con8',style:{color:'#9fb4e8'}},ROLES_SHORT[p.roles[0]]+(p.roles.length>1?' +':''));}};
     const fotoCol={t:'',w:MUI?24:18,cls:'c',k:p=>p.id>0?h('img',{class:'alph',src:fotoPath(p,false),alt:'',onerror:function(){ this.style.visibility='hidden'; }}):''};
-    const colsFull=[{t:'Nº',w:18,cls:'c',k:p=>p.dorsal||''},fotoCol,{t:'JUGADOR',w:132,k:p=>p.name},{t:'EN',w:18,cls:'c',k:p=>isInjured(G.team,p.idx)?icoImg('ico_lesion',11,'Lesionado'):isSuspended(G.team,p.idx,nextComp())?icoImg(suspIco(G.team,p.idx,nextComp()),11,'Sancionado'):99,cell:p=>isOut(G.team,p.idx)?'grey':'g'},{t:'VE',w:20,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:20,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:20,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:20,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:22,cls:'r',k:p=>p.me,cell:()=>'y'},posRol];
+    const colsFull=[{t:'Nº',w:18,cls:'c',k:p=>p.dorsal||''},fotoCol,{t:'JUGADOR',w:132,k:p=>p.name},{t:'EN',w:18,cls:'c',k:p=>isInjured(G.team,p.idx)?icoImg('ico_lesion',11,'Lesionado'):isSuspended(G.team,p.idx,nextComp())?icoImg(suspIco(G.team,p.idx,nextComp()),11,'Sancionado'):energyOf(p),cell:p=>isOut(G.team,p.idx)?'grey':energyOf(p)>=70?'g':energyOf(p)>=40?'y':'rojo'},{t:'VE',w:20,cls:'r',k:p=>p.attrs[0]},{t:'RE',w:20,cls:'r',k:p=>p.attrs[1]},{t:'AG',w:20,cls:'r',k:p=>p.attrs[2]},{t:'CA',w:20,cls:'r',k:p=>p.attrs[3]},{t:'ME',w:22,cls:'r',k:p=>p.me,cell:()=>'y'},posRol];
     const colsM=[colsFull[0],colsFull[1],colsFull[2],colsFull[8],posRol];
     sc.appendChild(table(MUI?colsM:colsFull,rows,{rowClass:p=>(p.idx===pend?'pend ':'')+(p.idx===sel?'sel ':'')+(isInjured(G.team,p.idx)?'les':isSuspended(G.team,p.idx,nextComp())?'san':''),onRow:p=>{ const now=Date.now(); const dbl=(lastClk.idx===p.idx&&now-lastClk.t<450); lastClk={idx:p.idx,t:now};
       if(dbl){ lastClk={idx:null,t:0}; markPend(p); return; }
@@ -377,6 +378,7 @@ function scrMatchLive(hm,aw,lh,la,opts){
   if(mySide){ subBtn=btn('CAMBIO 0/3',240,350,120,()=>subFlow(),'green'); host.appendChild(subBtn); }
 }
 function scrPartido(){
+  if(G.energyWk!==G.jornada){ energyTick(); G.energyWk=G.jornada; } // recuperación de energía al empezar la jornada
   const nm=nextMatch(); if(!nm) return scrOficina();
   const hm=team(nm[0]), aw=team(nm[1]); const isHome=nm[0]===G.team;
   const lh=isHome?G.lineup:bestLineup(hm,teamFormation(hm)), la=isHome?bestLineup(aw,teamFormation(aw)):G.lineup;

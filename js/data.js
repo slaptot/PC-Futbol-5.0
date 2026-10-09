@@ -44,6 +44,7 @@ async function loadData(){
   const test=TEST_MODE?await Promise.all([getJ(TEST_DATA+'teams.json'),getJ(TEST_DATA+'leagues.json')]):[null,null];
   const [teams0, leagues0, referees, liga, cups, names] = await Promise.all(['teams','leagues','referees','liga_history','cups','names'].map(n=>getJ('data/'+n+'.json')));
   const teams=test[0]||teams0, leagues=test[1]||leagues0;
+  if(TEST_MODE) DATA.clasif=await getJ(TEST_DATA+'clasificacion_2023_24.json'); // clasificación de 2023-24 (posiciones y campeones previos)
   DATA.teams = teams; DATA.leagues = leagues; DATA.referees = referees; DATA.liga = liga; DATA.cups = cups; DATA.names = names||{}; // listas de nombres del juego (NOMBRES.xx / APELLIDO.xx) para empleados
   DATA.calendar = {div1: leagues.ESP1.rounds, div2: leagues.ESP2.rounds};
   // post-proceso

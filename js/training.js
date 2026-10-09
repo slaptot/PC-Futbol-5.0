@@ -15,12 +15,12 @@ function migrateBajas(){
   if(G.bench) G.bench=G.bench.map(i=>ix(G.team,i)).filter(i=>i>=0);
   // si un titular era una baja, se regenera la alineación automática (sin el equipo propio aún construido se deja para applyCustomTeam)
   if(G.lineup&&G.lineup.some(l=>l.idx<0)){ const t=DATA.teams[G.team]; if(t&&typeof bestLineup==='function'){ G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=null; G.benchSet=false; } else G.lineup=G.lineup.filter(l=>l.idx>=0); }
-  G.inj=rekey(G.inj); G.injKind=rekey(G.injKind); G.cards=rekey(G.cards); G.susp=rekey(G.susp); G.moral=rekey(G.moral); G.forma=rekey(G.forma); G.mods=rekey(G.mods); G.stats=rekey(G.stats); G.rust=rekey(G.rust); G.inact=rekey(G.inact); G.base=rekey(G.base);
+  G.inj=rekey(G.inj); G.injKind=rekey(G.injKind); G.cards=rekey(G.cards); G.susp=rekey(G.susp); G.moral=rekey(G.moral); G.forma=rekey(G.forma); G.mods=rekey(G.mods); G.stats=rekey(G.stats); G.energy=rekey(G.energy); G.rust=rekey(G.rust); G.inact=rekey(G.inact); G.base=rekey(G.base);
   const ev=e=>{ if(e&&e.player&&e.player.idx!==undefined&&e.player.team!==undefined&&!e.player.name) e.player.idx=ix(e.player.team,e.player.idx); };
   if(G.results) Object.values(G.results).forEach(rs=>rs.forEach(j=>(j||[]).forEach(r=>(r&&r.events||[]).forEach(ev))));
   if(G.cups) Object.values(G.cups).forEach(c=>(c.rounds||[]).forEach(r=>(r.ties||[]).forEach(t=>(t.legs||[]).forEach(l=>(l.events||[]).forEach(ev)))));
 }
-function migrateGame(){ if(!G) return; const t=team(G.team); if(!G.training) G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; if(!G.mods) G.mods={}; if(!G.stats) G.stats={}; if(!G.inj) G.inj={}; if(!G.transfers) G.transfers=[]; if(!G.contracts) G.contracts={}; if(!G.injKind) G.injKind={}; if(!G.rust) G.rust={}; if(!G.inact) G.inact={}; if(!G.cards) G.cards={}; if(!G.susp) G.susp={}; if(!G.emp&&typeof empInit==='function') empInit(); if(!G.moral) G.moral={}; if(!G.forma) G.forma={}; if(typeof contractsInit==='function') contractsInit(); if(G.week===undefined) G.week=0; if(!G.market) marketInit(); if(G.schedVer!==2&&G.sched){ G.schedVer=2; const done=e=>e.type==='liga'?e.j<G.jornada:(G.cups[e.cup]&&G.cups[e.cup].rounds[e.round]&&G.cups[e.cup].rounds[e.round].ties.every(t=>t.winner)); G.sched=buildSchedule(); let i=G.sched.findIndex(e=>!done(e)); G.step=i<0?G.sched.length:i; } if(G.cups&&G.cups.UEFA){ const r=G.cups.UEFA.rounds[4]; if(r&&r.nlegs===2&&r.ties.every(t=>!t.legs.length)) r.nlegs=1; } if(G.tv===undefined){ tvOffersInit(); if(G.jornada>1){ G.tv=G.tvOffers[0]; G.tvOffers=null; } } if(G.budget===undefined) G.budget=initBudget(t); if(!G.base) snapshotBase(); if(!G.cups){ G.cups=buildCups(); } if(!G.sched){ G.sched=buildSchedule(); G.step=Math.max(0,G.sched.findIndex(e=>e.type==='liga'&&e.j===G.jornada)); } LEAGUE_ORDER.forEach(k=>{ if(!G.results[k]) G.results[k]=[]; }); }
+function migrateGame(){ if(!G) return; const t=team(G.team); if(!G.training) G.training={fis:2,fue:1,tec:2,rem:2,def:2,por:1}; if(!G.mods) G.mods={}; if(!G.stats) G.stats={}; if(!G.energy) G.energy={}; for(const k in G.energy){ if(typeof G.energy[k]==='object') G.energy[k]=G.energy[k].e; } if(!G.inj) G.inj={}; if(!G.transfers) G.transfers=[]; if(!G.contracts) G.contracts={}; if(!G.injKind) G.injKind={}; if(!G.rust) G.rust={}; if(!G.inact) G.inact={}; if(!G.cards) G.cards={}; if(!G.susp) G.susp={}; if(!G.emp&&typeof empInit==='function') empInit(); if(!G.moral) G.moral={}; if(!G.forma) G.forma={}; if(typeof contractsInit==='function') contractsInit(); if(G.week===undefined) G.week=0; if(!G.market) marketInit(); if(G.schedVer!==2&&G.sched){ G.schedVer=2; const done=e=>e.type==='liga'?e.j<G.jornada:(G.cups[e.cup]&&G.cups[e.cup].rounds[e.round]&&G.cups[e.cup].rounds[e.round].ties.every(t=>t.winner)); G.sched=buildSchedule(); let i=G.sched.findIndex(e=>!done(e)); G.step=i<0?G.sched.length:i; } if(G.cups&&G.cups.UEFA){ const r=G.cups.UEFA.rounds[4]; if(r&&r.nlegs===2&&r.ties.every(t=>!t.legs.length)) r.nlegs=1; } if(G.tv===undefined){ tvOffersInit(); if(G.jornada>1){ G.tv=G.tvOffers[0]; G.tvOffers=null; } } if(G.budget===undefined) G.budget=initBudget(t); if(!G.base) snapshotBase(); if(!G.cups){ G.cups=buildCups(); } if(!G.sched){ G.sched=buildSchedule(); G.step=Math.max(0,G.sched.findIndex(e=>e.type==='liga'&&e.j===G.jornada)); } LEAGUE_ORDER.forEach(k=>{ if(!G.results[k]) G.results[k]=[]; }); }
 function trainingLoad(){ return Object.values(G.training||{}).reduce((a,b)=>a+b,0); }
 function snapshotBase(){ const t=team(G.team); G.base={}; t.players.forEach(p=>G.base[pkey(p)]=p.attrs.slice()); }
 function ageFactor(p){ const a=playerAge(p); if(a==='-') return 0.8; return a<=22?1.4:a<=26?1:a<=29?0.7:a<=32?0.4:0.2; }
@@ -46,6 +46,12 @@ function applyTraining(){
 const RUST_GRACE=2, RUST_MAX=8, RUST_P=0.25, RUST_BACK=0.5;
 function rustIdx(p){ return p.dem==='POR'?[0,1,2,3,9]:[0,1,2,3,4,5,6,7,8]; }
 function rustOf(p){ return (G&&G.rust&&G.rust[pkey(p)])||[0,0,0,0,0,0,0,0,0,0]; }
+// energía física: 99 al empezar; cada partido resta según los minutos; al empezar cada jornada se recupera 8 más el 28% de lo que le falta para 99
+const ENERGY_MATCH=16;
+function energyOf(p){ const e=G&&G.energy&&G.energy[pkey(p)]; return e===undefined?99:e; }
+function energyFactor(p){ return 0.85+0.15*energyOf(p)/99; } // con energía 0 rinde un 15% menos
+function energyUse(p,minutes){ G.energy=G.energy||{}; const k=pkey(p); G.energy[k]=Math.max(0,energyOf(p)-Math.round(minutes/90*ENERGY_MATCH)); }
+function energyTick(){ if(!G||!G.energy) return; for(const k in G.energy){ const n=Math.min(99,G.energy[k]+8+0.28*(99-G.energy[k])); if(n>=99) delete G.energy[k]; else G.energy[k]=Math.round(n); } }
 function rustTotal(p){ return rustOf(p).reduce((a,b)=>a+b,0); }
 function inactWeeks(p){ return (G&&G.inact&&G.inact[pkey(p)])||0; }
 function applyRust(){
@@ -109,8 +115,8 @@ function statsRecord(hm,aw,lh,la,r){
   G.stats=G.stats||{};
   const S=p=>{ const k=pkey(p); return G.stats[k]||(G.stats[k]={pj:0,min:0,g:0,ta:0,tr:0,t:p.team}); };
   const wk=G.week||0;
-  if(r.minutes){ for(const k in r.minutes){ const [sd,i]=k.split(':'); const t=sd==='H'?hm:aw; const p=t.players[+i]; if(!p) continue; const mn=r.minutes[k]; if(mn<=0) continue; const s=S(p); s.pj++; s.min+=mn; s.t=t.id; s.last=wk; } }
-  else { lh.forEach(l=>{ const s=S(hm.players[l.idx]); s.pj++; s.min+=90; s.t=hm.id; s.last=wk; }); la.forEach(l=>{ const s=S(aw.players[l.idx]); s.pj++; s.min+=90; s.t=aw.id; s.last=wk; }); }
+  if(r.minutes){ for(const k in r.minutes){ const [sd,i]=k.split(':'); const t=sd==='H'?hm:aw; const p=t.players[+i]; if(!p) continue; const mn=r.minutes[k]; if(mn<=0) continue; const s=S(p); s.pj++; s.min+=mn; s.t=t.id; s.last=wk; energyUse(p,mn); } }
+  else { lh.forEach(l=>{ const s=S(hm.players[l.idx]); s.pj++; s.min+=90; s.t=hm.id; s.last=wk; energyUse(hm.players[l.idx],90); }); la.forEach(l=>{ const s=S(aw.players[l.idx]); s.pj++; s.min+=90; s.t=aw.id; s.last=wk; energyUse(aw.players[l.idx],90); }); }
   for(const e of r.events){ const p=e.player.name?e.player:team(e.player.team).players[e.player.idx]; if(!p) continue; const s=S(p);
     if(e.type==='goal') s.g++; else if(e.type==='yellow') s.ta++; else if(e.type==='red'){ s.tr++; if(!r.minutes) s.min-=Math.max(0,90-e.min); } }
 }

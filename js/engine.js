@@ -42,7 +42,7 @@ function bestLineup(t, formation, comp){
 function slotPos(l){ return (l.x!==undefined)?[l.x,l.y]:ROLE_POS[l.role]; }
 function squadStrength(t, lineup, hurt){
   const P = i=>t.players[i];
-  const F = l=>{ const p=P(l.idx); return effME(p,l.role)/Math.max(1,p.me)*(hurt&&hurt.has(l.idx)?0.5:1)*(typeof playerFormFactor==='function'?playerFormFactor(t,p):1); };
+  const F = l=>{ const p=P(l.idx); return effME(p,l.role)/Math.max(1,p.me)*(hurt&&hurt.has(l.idx)?0.5:1)*(typeof playerFormFactor==='function'?playerFormFactor(t,p):1)*(typeof energyFactor==='function'?energyFactor(p):1); };
   const gk = lineup.filter(l=>ROLE_DEM[l.role]==='POR').map(l=>P(l.idx).attrs[9]*F(l));
   const def = lineup.filter(l=>ROLE_DEM[l.role]==='DEF').map(l=>{const a=P(l.idx).attrs; return (a[8]*0.5+a[2]*0.2+a[1]*0.15+a[0]*0.15)*F(l);});
   const mid = lineup.filter(l=>ROLE_DEM[l.role]==='MED').map(l=>{const a=P(l.idx).attrs; return (a[4]*0.4+a[5]*0.2+a[3]*0.2+a[1]*0.2)*F(l);});
