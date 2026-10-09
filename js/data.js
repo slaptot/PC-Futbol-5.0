@@ -25,7 +25,7 @@ const COUNTRIES = {0:'-',1:'Albania',2:'Alemania',3:'Argentina',4:'Australia',5:
   44:'Noruega',45:'Gales',46:'Polonia',47:'Portugal',48:'Rep. Checa',49:'Rumanía',50:'Rusia',51:'Ex-Yugoslavia',52:'Sudáfrica',53:'Suecia',54:'Suiza',
   55:'Turquía',56:'Ucrania',57:'Uruguay',58:'Yugoslavia',59:'Zaire',60:'Armenia',61:'Azerbaiyán',62:'Georgia',63:'Costa Rica',64:'Paraguay',65:'Perú',
   66:'Ecuador',67:'Venezuela',68:'México',69:'EE.UU.',70:'Japón',72:'Estonia',76:'Luxemburgo',77:'Liechtenstein',78:'San Marino',79:'Andorra',80:'Senegal',
-  81:'Túnez',82:'Argelia',84:'Egipto',85:'Zambia',89:'Liberia'};
+  81:'Túnez',82:'Argelia',84:'Egipto',85:'Zambia',89:'Liberia',118:'Irán',119:'Corea del Sur',120:'Malí',121:'Costa de Marfil',122:'Cuba',123:'Jamaica',124:'Nueva Zelanda',125:'Togo',126:'Gabón',127:'Zimbabue',128:'Burkina Faso',129:'Cabo Verde',130:'RD del Congo',131:'Curazao',132:'Rep. Dominicana',133:'Guinea Ecuatorial',134:'Gambia',135:'Guadalupe',136:'Guinea',137:'Guinea-Bisáu',138:'Kosovo',139:'Martinica',140:'Mauritania',141:'Montenegro',142:'Mozambique',143:'Níger',144:'Puerto Rico',145:'Sierra Leona',146:'Surinam',147:'Canadá'};
 
 const MONTHS = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];

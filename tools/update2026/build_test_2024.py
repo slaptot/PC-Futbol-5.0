@@ -22,6 +22,13 @@ NAT = {'Spain': 22, 'England': 30, 'Italy': 36, 'Brazil': 10, 'Argentina': 3, 'F
        'Iceland': 33, 'Finland': 23, 'Norway ': 44, 'Georgia': 62, 'Paraguay': 64, 'Ecuador': 66, 'Peru': 65,
        'Venezuela': 67, 'Cameroon': 13, 'Nigeria': 43, 'Morocco': 41, 'Senegal': 80, 'Ghana': 25, 'Australia': 4,
        'United States': 69, 'Japan': 70, 'Canada': 0}
+# nombres de nacionalidad de la API-Football que no estaban en la tabla (2024): código del juego, o sin código si no existe
+NAT.update({'Türkiye': 55, 'Albania': 1, 'Algeria': 82, 'Andorra': 79, 'Bosnia and Herzegovina': 9, 'Bulgaria': 11, 'Costa Rica': 63,
+            'Cyprus': 15, 'Czechia': 48, 'Egypt': 84, 'Estonia': 72, 'Honduras': 28, 'Israel': 35, 'North Macedonia': 39,
+            'Northern Ireland': 32, 'Republic of Ireland': 31, 'Russia': 50, 'Slovakia': 20, 'Slovenia': 21, 'Tunisia': 81,
+            'USA': 69, 'Zambia': 85})
+# banderas añadidas después (ver build_test_banderas_nuevas.py)
+NAT.update({'Iran': 118, 'Korea Republic': 119, 'Mali': 120, "Côte d'Ivoire": 121, 'Canada': 147, 'Cuba': 122, 'Jamaica': 123, 'New Zealand': 124, 'Togo': 125, 'Gabon': 126, 'Zimbabwe': 127, 'Burkina Faso': 128, 'Cape Verde': 129, 'Congo DR': 130, 'Curaçao': 131, 'Dominican Republic': 132, 'Equatorial Guinea': 133, 'Gambia': 134, 'Guadeloupe': 135, 'Guinea': 136, 'Guinea-Bissau': 137, 'Kosovo': 138, 'Martinique': 139, 'Mauritania': 140, 'Montenegro': 141, 'Mozambique': 142, 'Niger': 143, 'Puerto Rico': 144, 'Sierra Leone': 145, 'Suriname': 146})
 ROLES = {'POR': [1], 'DEF': [5, 6, 2, 3], 'MED': [15, 10, 7, 11], 'DEL': [9, 13, 12, 14]}
 # entrenador de la temporada 2024-25 por club (API-Football). Fuentes: prensa y Wikipedia de cada temporada, ver README.
 # Cuando hubo cambio, el que más partidos dirigió: Alavés (Coudet), Las Palmas (Ramírez), Valladolid (Pezzolano, con varios cambios),
