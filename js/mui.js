@@ -14,7 +14,10 @@ function muiDecide(){
 function muiInit(){ // se llama tras audioInit cuando UI==='mobile'
   document.documentElement.classList.add('mui'); document.body.classList.add('mui');
   const bar=h('div',{id:'mbar'},h('div',{id:'mact'}),h('div',{class:'mrow'}));
-  document.body.appendChild(bar); const row=bar.querySelector('.mrow');
+  document.body.appendChild(bar);
+  // la barra inferior es fija y tapa el final de la página (las últimas filas de la lista): margen de la misma altura
+  new ResizeObserver(()=>{ document.body.style.paddingBottom=bar.offsetHeight+'px'; }).observe(bar);
+  const row=bar.querySelector('.mrow');
   const ab=document.getElementById('audiobar'); if(ab) row.appendChild(ab);
   row.appendChild(h('div',{class:'abtn',onclick:()=>scrAvisos()},'🔔 AVISOS'));
   row.appendChild(h('div',{class:'abtn',onclick:()=>setUI('desktop')},'⇄ ESCRITORIO'));
