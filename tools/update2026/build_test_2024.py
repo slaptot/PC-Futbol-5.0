@@ -23,7 +23,24 @@ NAT = {'Spain': 22, 'England': 30, 'Italy': 36, 'Brazil': 10, 'Argentina': 3, 'F
        'Venezuela': 67, 'Cameroon': 13, 'Nigeria': 43, 'Morocco': 41, 'Senegal': 80, 'Ghana': 25, 'Australia': 4,
        'United States': 69, 'Japan': 70, 'Canada': 0}
 ROLES = {'POR': [1], 'DEF': [5, 6, 2, 3], 'MED': [15, 10, 7, 11], 'DEL': [9, 13, 12, 14]}
-COACH_FILL = {'5005': 'Claudio Giráldez', '5009': 'Luis García Fernández', '5010': 'Paco López', '5019': 'Guillermo Almada'}
+# entrenador de la temporada 2024-25 por club (API-Football). Fuentes: prensa y Wikipedia de cada temporada, ver README.
+# Cuando hubo cambio, el que más partidos dirigió: Alavés (Coudet), Las Palmas (Ramírez), Valladolid (Pezzolano, con varios cambios),
+# Sevilla (García Pimienta), Valencia (Corberán), Cádiz (Garitano), Castellón (Plat), Eibar (Etxeberria), Oviedo (Calleja),
+# Racing Ferrol (Parralo), Sporting (Albés), Zaragoza (Víctor Fernández), Deportivo (Gilsanz), Burgos (Ramis), Cartagena (Abelardo: sin confirmar tras septiembre 2024)
+COACH_2425 = {
+    'Alaves': 'Eduardo Coudet', 'Athletic Club': 'Ernesto Valverde', 'Atletico Madrid': 'Diego Simeone',
+    'Barcelona': 'Hansi Flick', 'Celta Vigo': 'Claudio Giráldez', 'Espanyol': 'Manolo González', 'Getafe': 'José Bordalás',
+    'Girona': 'Míchel', 'Las Palmas': 'Miguel Ángel Ramírez', 'Leganes': 'Borja Jiménez', 'Mallorca': 'Jagoba Arrasate',
+    'Osasuna': 'Vicente Moreno', 'Rayo Vallecano': 'Íñigo Pérez', 'Real Betis': 'Manuel Pellegrini', 'Real Madrid': 'Carlo Ancelotti',
+    'Real Sociedad': 'Imanol Alguacil', 'Sevilla': 'Javier García Pimienta', 'Valencia': 'Carlos Corberán',
+    'Valladolid': 'Paulo Pezzolano', 'Villarreal': 'Marcelino García Toral',
+    'Albacete': 'Alberto González', 'Almeria': 'Rubi', 'Burgos': 'Luis Miguel Ramis', 'Cadiz': 'Gaizka Garitano',
+    'Castellón': 'Johan Plat', 'Cordoba': 'Iván Ania', 'Deportivo La Coruna': 'Óscar Gilsanz', 'Eibar': 'Joseba Etxeberria',
+    'Eldense': 'Dani Ponz', 'Elche': 'Eder Sarabia', 'Granada CF': 'Guille Abascal', 'Huesca': 'Antonio Hidalgo',
+    'Levante': 'Julián Calero', 'Malaga': 'Sergio Pellicer', 'Mirandes': 'Alessio Lisci', 'Oviedo': 'Javi Calleja',
+    'Racing Ferrol': 'Cristóbal Parralo', 'Racing Santander': 'José Alberto López', 'Sporting Gijon': 'Rubén Albés',
+    'Tenerife': 'Álvaro Cervera', 'Zaragoza': 'Víctor Fernández', 'FC Cartagena': 'Abelardo Fernández',
+}
 # nombre del club en la temporada 2024 (API-Football) -> nombre en Transfermarkt (2025/26), para estadio y entrenador
 TM_NAME = {'Alaves': 'Deportivo Alavés', 'Athletic Club': 'Athletic Bilbao', 'Atletico Madrid': 'Atlético de Madrid',
            'Barcelona': 'FC Barcelona', 'Celta Vigo': 'RC Celta de Vigo', 'Espanyol': 'RCD Espanyol Barcelona',
@@ -213,6 +230,10 @@ def venue_stats(rounds, ids):
 
 def main():
     players_all = json.load(open(os.path.join(HERE, 'out', 'esp1_2024', 'players.json'), encoding='utf-8'))
+    players_2 = json.load(open(os.path.join(HERE, 'out', 'esp2_2024', 'players.json'), encoding='utf-8'))
+    api2 = {x['team']['name']: x for x in json.load(open(os.path.join(RAW_AF, 'teams_ESP2.json'), encoding='utf-8'))['response']}
+    players_1 = players_all
+    players_all = players_1 + players_2
     bio = load_bio()
     tm = tm_clubs()
     pbio = {p['id']: (p['name'], (bio.get(p['id']) or {}).get('birth')) for p in players_all}
@@ -222,20 +243,27 @@ def main():
     leagues = json.load(open(os.path.join(DATA, 'leagues.json'), encoding='utf-8'))
     # 1) los clubes de 1996-97 de ESP1 pasan a no tener liga (siguen en la base de datos)
     for tid, t in (teams_json.items() if isinstance(teams_json, dict) else []):
-        if t.get('league') == 'ESP1':
+        if t.get('league') in ('ESP1', 'ESP2'):
             t['league'] = None
     # 2) clubes nuevos
-    names = sorted({p['team'] for p in players_all})
+    names = [(n, 'ESP1') for n in sorted({p['team'] for p in players_1})] + [(n, 'ESP2') for n in sorted({p['team'] for p in players_2})]
     new_ids = {}
-    for i, name in enumerate(names):
+    for i, (name, liga) in enumerate(names):
         tid = BASE_ID + 1 + i
         new_ids[name] = tid
-        club = tm.get(TM_NAME.get(name, name))
-        stadium = club['stadium_name'] if club else name
-        seats = int(float(club['stadium_seats'])) if club and club['stadium_seats'] else 20000
-        coach = club['coach_name'] if club and club['coach_name'] else '-'
-        # clubes sin entrenador en Transfermarkt: entrenador de la temporada 2025-26 (noticias de prensa, ver tools/update2026/README.md)
-        coach = COACH_FILL.get(str(tid), coach) if coach == '-' else coach
+        if liga == 'ESP1':
+            club = tm.get(TM_NAME.get(name, name))
+            stadium = club['stadium_name'] if club else name
+            seats = int(float(club['stadium_seats'])) if club and club['stadium_seats'] else 20000
+            coach = club['coach_name'] if club and club['coach_name'] else '-'
+            founded = '-'
+        else:  # 2ª: sin Transfermarkt; estadio, aforo y fundación de la caché de API-Football
+            v = api2[name]['venue']
+            stadium = v.get('name') or name
+            seats = int(v.get('capacity') or 15000)
+            coach = '-'
+            founded = api2[name]['team'].get('founded') or '-'
+        coach = COACH_2425.get(name, coach)
         mine = sorted([p for p in players_all if p['team'] == name], key=lambda p: -(p['minutes'] or 0))
         keep = mine[:25]
         if sum(1 for p in keep if p['pos'] == 'POR') < 2:
@@ -255,15 +283,16 @@ def main():
                               'height': b.get('height') or 0, 'weight': b.get('weight') or 0, 'attrs': a,
                               'dem': pos, 'birthplace': '', 'prevclub': '', 'intl': '0'}))
         teams_json[str(tid)] = {'id': tid, 'name': name, 'full': name, 'stadium': stadium, 'nat': 22, 'capacity': seats,
-                                'width': 68, 'length': 105, 'founded': '-', 'div': 1, 'league': 'ESP1', 'long': False,
+                                'width': 68, 'length': 105, 'founded': founded, 'div': 1 if liga == 'ESP1' else 2, 'league': liga, 'long': False,
                                 'coach': dict({'id': 0, 'name': coach, 'full': ''}, **({'photo': 'tools/update2026/out/esp1_2024/img/entr/%d.png' % tid} if os.path.exists(os.path.join(OUT, 'img', 'entr', '%d.png' % tid)) else {'photo': 'img/ui/foto_general.png'})), 'coach2': [], 'block': [], 'src': 'ESP',
                                 'members': 0, 'president': '-', 'sponsor': '', 'kit': '', 'positions': [], 'seasons': 0,
                                 'hist': None, 'series': [], 'prueba': True, 'players': plantilla}
     # 3) liga ESP1 con calendario nuevo (ida y vuelta, 38 jornadas)
-    ids_liga = sorted(new_ids.values())
-    leagues['ESP1']['rounds'] = round_robin(ids_liga)
-    racha, hmin, hmax = venue_stats(leagues['ESP1']['rounds'], ids_liga)
-    print('racha máxima local/visitante:', racha, '| partidos en casa por equipo: entre', hmin, 'y', hmax)
+    for liga in ('ESP1', 'ESP2'):
+        ids_liga = sorted(new_ids[n] for n, l in names if l == liga)
+        leagues[liga]['rounds'] = round_robin(ids_liga)
+        racha, hmin, hmax = venue_stats(leagues[liga]['rounds'], ids_liga)
+        print(liga, '| racha máxima local/visitante:', racha, '| partidos en casa por equipo: entre', hmin, 'y', hmax)
     os.makedirs(OUT, exist_ok=True)
     json.dump(teams_json, open(os.path.join(OUT, 'teams.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     json.dump(leagues, open(os.path.join(OUT, 'leagues.json'), 'w', encoding='utf-8'), ensure_ascii=False)

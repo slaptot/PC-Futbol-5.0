@@ -90,7 +90,7 @@ def main():
         previo = json.load(open(os.path.join(OUT, 'entrenadores.json'), encoding='utf-8'))
     result = {}
     for tid, t in sorted(teams.items(), key=lambda x: int(x[0])):
-        if t.get('league') != 'ESP1':
+        if t.get('league') not in ('ESP1', 'ESP2') or not t.get('prueba'):
             continue
         name = (t.get('coach') or {}).get('name', '-')
         rec = {'club': t['name'], 'entrenador': name}

@@ -13,10 +13,9 @@ UA = 'PCFutbolReplicaPrueba/1.0 (prueba local, no publicado)'
 MANAGER = 'Q628099'
 LICENSE_OK = re.compile(r'^(CC0|CC BY|CC BY-SA|Public domain)')
 # fotos elegidas a mano tras revisar la descripción del archivo en Commons (id equipo -> archivo)
-PHOTOS = {'5006': 'Manolo González 2020.png', '5012': 'Alessio Lisci 2021.png', '5018': 'Carlos Corberán 2022.png',
-          '5020': 'Marcelino García Toral.jpg', '5017': 'Firma De Contrato.jpg', '5010': 'Paco López Fernández.jpg',
-          '5019': 'GUILLERMO ALMADA (18745574775).jpg'}
-NO_PHOTO = {'5016': 'Sergio Francisco', '5005': 'Claudio Giráldez', '5009': 'Luis García Fernández'}  # sin foto fiable en Commons
+# fotos elegidas a mano (id equipo -> archivo en Commons); se rellenan tras la búsqueda automática
+PHOTOS = {}
+NO_PHOTO = {}  # id equipo -> nombre, sin foto fiable en Commons
 
 
 def get(url, binary=False):
@@ -162,7 +161,7 @@ def main():
     # 2) datos de cada entrenador
     info_all = {}
     for tid, t in sorted(teams.items(), key=lambda x: int(x[0])):
-        if t.get('league') != 'ESP1' or not t['coach']['name'] or t['coach']['name'] == '-':
+        if t.get('league') not in ('ESP1', 'ESP2') or not t.get('prueba') or not t['coach']['name'] or t['coach']['name'] == '-':
             continue
         name = t['coach']['name']
         surname = norm(name.split()[-1])

@@ -10,10 +10,12 @@ import glob, json, os, statistics, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(HERE, 'raw', 'apifootball')
-OUT = os.path.join(HERE, 'out', 'esp1_2024')
-LEAGUE = 140
-# nivel de la liga: +5 para igualar la media de 1996-97 (elegido en la revisión)
-SHIFT = 5
+# liga: ESP1 (por defecto) o ESP2 -> python3 build_esp1_2024.py ESP2 [--shift N]
+LIGA = next((a for a in sys.argv[1:] if not a.startswith('--') and a in ('ESP1', 'ESP2')), 'ESP1')
+LEAGUE = {'ESP1': 140, 'ESP2': 141}[LIGA]
+OUT = os.path.join(HERE, 'out', 'esp1_2024' if LIGA == 'ESP1' else 'esp2_2024')
+# nivel de la liga: +5 para igualar la media de 1996-97 de 1ª (elegido en la revisión); en 2ª se pasa con --shift
+SHIFT = int(sys.argv[sys.argv.index('--shift') + 1]) if '--shift' in sys.argv else 5
 SEASON = 2024
 MIN_MINUTES = 450
 ATTRS = ['VE', 'RE', 'AG', 'CA', 'PASE', 'REGATE', 'REMATE', 'TIRO', 'ENTRADAS', 'PORTERO']
@@ -47,7 +49,7 @@ def num(x):
 
 
 def load():
-    teams = json.load(open(os.path.join(RAW, 'teams_ESP1.json'), encoding='utf-8'))['response']
+    teams = json.load(open(os.path.join(RAW, 'teams_%s.json' % LIGA), encoding='utf-8'))['response']
     players = {}
     for t in teams:
         tid = t['team']['id']
@@ -100,7 +102,7 @@ def aggregate(p):
 
 
 def reference_1996():
-    """Lee data/teams.json (solo lectura) y devuelve la media ME de los 16 mejores de cada equipo de ESP1 en 1996-97."""
+    """Lee data/teams.json (solo lectura) y devuelve la media ME de los 16 mejores de cada equipo de la liga en 1996-97."""
     path = os.path.join(HERE, '..', '..', 'data', 'teams.json')
     if not os.path.exists(path):
         return []
@@ -109,7 +111,7 @@ def reference_1996():
     ROLE_DEM = {1: 'POR', 2: 'DEF', 3: 'DEF', 4: 'DEF', 5: 'DEF', 6: 'DEF', 7: 'MED', 8: 'MED', 10: 'MED', 11: 'MED', 15: 'MED', 18: 'MED', 12: 'DEL', 13: 'DEL', 14: 'DEL', 16: 'DEL', 17: 'DEL', 9: 'DEL'}
     out = []
     for t in teams:
-        if t.get('league') != 'ESP1':
+        if t.get('league') != LIGA:
             continue
         me = []
         for p in t['players']:
@@ -229,7 +231,7 @@ def main():
         by_team.setdefault(p['team'], []).append(p['me'])
     summary = {t: {'n': len(v), 'best16_me': round(statistics.mean(sorted(v, reverse=True)[:16]), 1)} for t, v in sorted(by_team.items())}
     ref = reference_1996()
-    summary_ref = {'1996-97 ESP1 (mejores 16)': round(statistics.mean(ref), 1) if ref else None, '2024 ESP1 (mejores 16)': round(statistics.mean([v['best16_me'] for v in summary.values()]), 1)}
+    summary_ref = {'1996-97 %s (mejores 16)' % LIGA: round(statistics.mean(ref), 1) if ref else None, '2024 %s (mejores 16)' % LIGA: round(statistics.mean([v['best16_me'] for v in summary.values()]), 1)}
     print('referencia:', summary_ref)
     json.dump(summary, open(os.path.join(OUT, 'teams_summary.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print('jugadores', len(out_players), '| con estadísticas', len(el), '| con prior', len(out_players) - len(el))
