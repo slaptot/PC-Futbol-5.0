@@ -74,7 +74,7 @@ function preOficinaPanel(P){
       b.style.color=g.gh===g.ga?'#ffe24a':mine?'#8dff8d':'#ff8a60'; P.appendChild(b); }
     else if(row.p){ const it=row.p; const pres=it.pres||i===PRE_MAX-1; const b=btn(pres?(i+1)+'. Presentación · '+preName(it.rival)+' · '+fmtNum(preFee(team(it.rival)))+' M':(i+1)+'. '+preName(it.rival)+' · '+(it.home?'en casa':'fuera'),8,y,284,()=>{ if(!started) removePlanned(it); },'blue');
       if(started){ b.style.pointerEvents='none'; b.style.opacity='0.85'; } P.appendChild(b); }
-    else { const it=row.t; const b=btn((i+1)+'. '+it.name+' · '+fmtNum(preFee(team(it.rival)))+' M',8,y,284,()=>{},'blue'); b.style.pointerEvents='none'; b.style.overflow='hidden'; b.style.whiteSpace='nowrap'; b.style.color='#ffe24a'; P.appendChild(b); } }
+    else { const it=row.t; const b=btn((i+1)+'. Presentación · '+preName(it.rival)+' · '+fmtNum(preFee(team(it.rival)))+' M',8,y,284,()=>{},'blue'); b.style.pointerEvents='none'; b.style.overflow='hidden'; b.style.whiteSpace='nowrap'; b.style.color='#ffe24a'; P.appendChild(b); } }
   P.appendChild(txt('Campamento: '+(pr.camp?PRE_CAMPS[pr.camp].name:'sin elegir'),8,246,284,14,'f-p8'));
   if(!started&&preLeft()>0) P.appendChild(btn('PLANIFICAR AUTO',40,266,220,()=>preAutoPlan(),'blue','icono_balon_de_la_b'));
   if(!started) P.appendChild(btn('EMPEZAR PRETEMPORADA',40,300,220,()=>preStart(),'green','ico_liga'));
