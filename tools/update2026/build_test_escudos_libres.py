@@ -25,20 +25,31 @@ def run(*args):
     subprocess.run([MAGICK, *args], check=True)
 
 
+def quitar_fondo(src, dest):
+    """Hace transparente solo el blanco que toca las esquinas (el blanco interior del escudo se conserva)."""
+    w, h = map(int, subprocess.run([MAGICK, 'identify', '-format', '%w %h', src],
+                                   check=True, capture_output=True, text=True).stdout.split())
+    dibujo = []
+    for x, y in [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]:
+        dibujo += ['-draw', f'alpha {x},{y} floodfill']
+    run(src, '-alpha', 'set', '-fuzz', '12%', '-fill', 'none', *dibujo, '-trim', '+repage', dest)
+
+
 def main():
+    os.makedirs(RAW, exist_ok=True)
     for tid, (raw, recorte, fuente) in FUENTES.items():
         src = os.path.join(RAW, raw)
-        # quita el fondo blanco, recorta el margen y encaja en cada tamaño con fondo transparente
-        base = ['-background', 'none']
         if recorte:
             # el recorte se hace sobre el fichero bruto y se guarda en una copia temporal
             tmp = os.path.join(RAW, f'{tid}_recorte.png')
             run(src, '-crop', recorte, '+repage', tmp)
             src = tmp
+        sin_fondo = os.path.join(RAW, f'{tid}_sin_fondo.png')
+        quitar_fondo(src, sin_fondo)
+        # encaja cada tamaño con fondo transparente
         for carpeta, size in SIZES:
             dest = os.path.join(OUT, 'img', carpeta, f'{tid}.png')
-            run(src, '-fuzz', '12%', '-transparent', 'white', '-trim', '+repage', *base,
-                '-resize', size, '-gravity', 'center', '-extent', size, dest)
+            run(sin_fondo, '-background', 'none', '-resize', size, '-gravity', 'center', '-extent', size, dest)
         print(tid, 'ok', fuente)
 
     # registra la fuente y la licencia de cada escudo
