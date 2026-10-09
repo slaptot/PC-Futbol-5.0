@@ -121,7 +121,7 @@ function scrDbase(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
 }
 function scrArbitros(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   state=state||{}; setBg('fondo_dbase'); const s=clearScreen();
-  s.appendChild(topbar({title:'ÁRBITROS',right:'1ª División '+seasonLabel(G.seasonIdx||0)}));
+  s.appendChild(topbar({title:'ÁRBITROS',right:'1ª División '+seasonLabel(G?G.seasonIdx||0:0)})); // sin partida (menú principal) G es null
   const refs=DATA.referees; const ri=state.i||0; const r=refs[ri];
   const left=panel(10,70,230,370); s.appendChild(left); left.appendChild(h('div',{class:'hdr'},'COLEGIADOS'));
   const ls=at(h('div',{class:'scroll'}),0,18,226,348); left.appendChild(ls);
