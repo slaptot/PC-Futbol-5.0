@@ -17,6 +17,8 @@ function scrMenu(){
   setMusic('menu'); setBg('fondo7'); const s=clearScreen();
   for(const [name,x,y,w,f] of MENU_ITEMS){ const e=at(h('div',{class:'menu-item'+(f?'':' dis'),title:f?name:name+' (no disponible)'}),x,y,w,21); if(f) e.onclick=f; s.appendChild(e); }
   s.appendChild(btn('BUSCAR',20,404,120,()=>go('buscar'),'blue','lupa'));
+  // importar una partida guardada en archivo; si hay una partida en el navegador se avisa antes de sustituirla
+  s.appendChild(btn('IMPORTAR PARTIDA',150,404,170,()=>{ if(loadGame()) dialog('IMPORTAR PARTIDA','Hay una partida guardada en el navegador que se sustituirá por el archivo. ¿Continuar?',[{t:'SÍ',cls:'red',f:()=>importSave()},{t:'NO'}]); else importSave(); },'blue'));
   s.appendChild(at(h('div',{class:'hot',title:'Salir',onclick:()=>dialog('PC FÚTBOL 5.0','Réplica web del juego original (Dinamic Multimedia, 1996).<br>Datos y gráficos extraídos de la carpeta DBDAT del juego.')}),582,440,40,36));
   s.appendChild(at(h('div',{class:'hot',title:'Acerca de',onclick:()=>dialog('ACERCA DE PC FÚTBOL 5.0 WEB',CREDITS_HTML)}),545,440,30,36));
 }
@@ -119,7 +121,7 @@ function scrDbase(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
 }
 function scrArbitros(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   state=state||{}; setBg('fondo_dbase'); const s=clearScreen();
-  s.appendChild(topbar({title:'ÁRBITROS',right:'1ª División 96-97'}));
+  s.appendChild(topbar({title:'ÁRBITROS',right:'1ª División '+seasonLabel(G.seasonIdx||0)}));
   const refs=DATA.referees; const ri=state.i||0; const r=refs[ri];
   const left=panel(10,70,230,370); s.appendChild(left); left.appendChild(h('div',{class:'hdr'},'COLEGIADOS'));
   const ls=at(h('div',{class:'scroll'}),0,18,226,348); left.appendChild(ls);
@@ -140,11 +142,12 @@ function scrDbTeam(tid, opts){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   const lines=[t.full,t.stadium+' ('+fmtNum(t.capacity)+')',(t.width?t.length+'x'+t.width+' m · ':'')+'Fundado en '+t.founded,t.president?'Pres.: '+t.president:'',t.members?'Socios: '+fmtNum(t.members):'',t.sponsor?t.sponsor+' / '+t.kit:''].filter(Boolean);
   const it=txt(lines.join('\n'),76,24,140,156,'f-m8'); it.style.lineHeight='11px'; info.appendChild(it);
   if(t.custom) info.appendChild(btn('EDITAR',6,96,64,()=>scrEditarEquipo(t,()=>scrDbTeam(tid,opts)),'green'));
+  // ficha del entrenador: debajo del nombre y el escudo del club
+  if(t.long||t.prueba) info.appendChild(btn('ENTRENADOR',6,150,130,()=>scrCoachBio(tid,()=>scrDbTeam(tid,opts)),'blue','ico_entrada'));
   const camp=panel(10,256,220,184); s.appendChild(camp); camp.appendChild(h('div',{class:'hdr'},'ESTADIO / ENTRENADOR'));
   camp.appendChild(at(h('img',{src:campoImg(t),style:{width:'130px',height:'91px'},onerror:function(){this.style.display='none'}}),6,22));
   camp.appendChild(at(h('img',{src:coachImg(t),style:{width:'60px',height:'72px',objectFit:'cover'},onerror:function(){this.src='img/ui/foto_general.png';this.style.width='32px';this.style.height='32px'}}),144,22));
   const ct=txt('Entrenador: '+(t.coach.full||t.coach.name)+(t.coach2&&t.coach2.length?'\n2º entrenador: '+t.coach2[0].name:''),6,120,208,24,'f-p8'); ct.style.lineHeight='12px'; camp.appendChild(ct);
-  if(t.long) camp.appendChild(btn('BIOGRAFÍA',140,98,70,()=>scrCoachBio(tid,()=>scrDbTeam(tid,opts)),'blue'));
   if(t.custom) camp.appendChild(btn('CAMPO',68,98,68,()=>scrElegirCampo(t.campoId,id=>{ t.campoId=id; if(G&&G.custom){ G.custom.campo=id; saveGame(); } scrDbTeam(tid,opts); }),'green'));
   if(t.custom) camp.appendChild(btn('FOTO',140,98,70,()=>scrFotoEntrenador(photo=>{ t.coach.photo=photo; if(G&&G.custom){ G.custom.photo=photo; saveGame(); } scrDbTeam(tid,opts); }),'green'));
   if(t.hist){ const ht=txt(t.hist[0]+' PJ · '+t.hist[1]+' PG\n'+t.hist[2]+' PE · '+t.hist[3]+' GF\n'+t.hist[4]+' GC'+(t.seasons?' · '+t.seasons+' temp.':''),6,146,210,36,'f-p8'); ht.style.lineHeight='11px'; camp.appendChild(ht); }
@@ -163,7 +166,8 @@ async function scrCoachBio(tid, back){
   const p=panel(10,66,620,374); s.appendChild(p); p.appendChild(h('div',{class:'hdr'},t.coach.full||t.coach.name));
   p.appendChild(at(h('img',{src:coachImg(t),style:{width:'80px',height:'96px',objectFit:'cover'},onerror:function(){this.style.display='none'}}),8,24));
   const tabs=['PRESENTACIÓN','ESTILO','PALMARÉS','OTROS DATOS','TEMPORADA 95-96','TRAYECTORIA','COMO JUGADOR','DECLARACIONES'];
-  const texts=bio?[...bio.coach.texts,bio.coach.career,bio.coach.playercareer,bio.coach.quotes]:[];
+  // pestañas: PRESENTACIÓN, ESTILO, PALMARÉS, (OTROS DATOS), (TEMPORADA 95-96), TRAYECTORIA, COMO JUGADOR, DECLARACIONES
+  const c=bio&&bio.coach; const texts=c?[c.texts[0]||'',c.texts[1]||'',c.texts[2]||'','','',c.career||'',c.playercareer||'',c.quotes||'']:[];
   const body=at(h('div',{class:'scroll f-p12',style:{whiteSpace:'pre-wrap',padding:'4px',lineHeight:'14px'}}),100,24,512,342); p.appendChild(body);
   const show=i=>{ body.textContent=(texts[i]||'Sin datos').replace(/\r/g,''); tabEls.forEach((e,j)=>e.className='btn '+(j===i?'green':'blue')); };
   const tabEls=tabs.map((n,i)=>{ const b=btn(n,8,130+i*22,88,()=>show(i),'blue'); b.style.fontSize='10px'; b.style.fontFamily='micro8'; b.style.letterSpacing='0'; p.appendChild(b); return b; });
@@ -176,13 +180,13 @@ async function scrFicha(tid, idx, back){
   setBg('fondo_dbase'); const s=clearScreen();
   s.appendChild(topbar({team:t,title:'FICHA',right:p.name}));
   const L=panel(10,66,200,374); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},p.name.toUpperCase()));
-  const ph=at(h('div',{class:'ph',style:{background:'#223'}}),6,24,126,184); L.appendChild(ph); if(p.id>0) ph.style.background='#223 url(img/foto/'+p.id+'.png) center/cover no-repeat';
-  ph.appendChild(h('img',{src:'img/fotobig/'+p.id+'.png',style:{width:'124px',height:'182px'},onerror:function(){this.src='img/foto/'+p.id+'.png';this.style.width='124px';this.style.height='124px';this.onerror=function(){this.src='img/ui/foto_general.png';this.style.width='64px';this.style.height='64px';this.style.margin='60px 30px'}}}));
+  const ph=at(h('div',{class:'ph',style:{background:'#223'}}),6,24,126,184); L.appendChild(ph); if(p.id>0) ph.style.background='#223 url('+fotoPath(p,false)+') center/cover no-repeat';
+  ph.appendChild(h('img',{src:fotoPath(p,true),style:{width:'124px',height:'182px'},onerror:function(){this.src=fotoPath(p,false);this.style.width='124px';this.style.height='124px';this.onerror=function(){this.src='img/ui/foto_general.png';this.style.width='64px';this.style.height='64px';this.style.margin='60px 30px'}}}));
   L.appendChild(at(h('img',{src:'img/bandbig/'+p.country+'.png',style:{width:'40px',height:'28px'}}),140,24));
   { const cn=txt(countryName(p.country),138,56,60,24,'f-m8'); cn.style.lineHeight='10px'; cn.style.fontSize='9px'; L.appendChild(cn); }
   L.appendChild(at(h('img',{src:escImg(tid),style:{height:'48px'}}),140,100));
   L.appendChild(txt('Nº '+(p.dorsal||'-'),140,156,50,14,'f-con'));
-  const data=[['NOMBRE',p.full||p.name],['FECHA NAC.',birthStr(p)+(p.birth[2]?' ('+playerAge(p)+' años)':'')],['LUGAR',p.birthplace||countryName(p.country)],['ALTURA / PESO',(p.height?p.height+' cm':'-')+' / '+(p.weight?p.weight+' kg':'-')],['PROCEDENCIA',p.prevclub||'-'],['SITUACIÓN 96-97',sitText(p)],['INTERNACIONAL',p.intl!==undefined?(/^\d+$/.test(p.intl)?p.intl+' veces':p.intl):'-'],['DEMARCACIÓN',p.roles.map(r=>ROLES[r]).join(', ')]];
+  const data=[['NOMBRE',p.full||p.name],['FECHA NAC.',birthStr(p)+(p.birth[2]?' ('+playerAge(p)+' años)':'')],['LUGAR',p.birthplace||countryName(p.country)],['ALTURA / PESO',(p.height?p.height+' cm':'-')+' / '+(p.weight?p.weight+' kg':'-')],['PROCEDENCIA',p.prevclub||'-'],['SITUACIÓN 96-97',sitText(p)],['INTERNACIONAL',p.intl!==undefined?(/^\d+$/.test(p.intl)?p.intl+' veces':p.intl):'-'],['DEMARCACIÓN',p.roles.map(r=>ROLES[r]).join(', ')],...(p.contrato_hasta?[['CONTRATO HASTA',p.contrato_hasta.split('-').reverse().join('/')]]:[]),...(p.valor_eur?[['VALOR (TM '+p.valor_fecha.split('-').reverse().join('/')+')',fmtNum(Math.round(p.valor_eur/1e6))+' M EUR']]:[])];
   const info=at(h('div',{class:'scroll'}),4,212,192,158); L.appendChild(info);
   data.forEach(d=>{ info.appendChild(h('div',{class:'f-m8',style:{color:'#ffe24a',letterSpacing:'1px',marginTop:'4px'}},d[0])); info.appendChild(h('div',{class:'f-p8',style:{whiteSpace:'normal',lineHeight:'12px',paddingRight:'4px'}},String(d[1]))); });
   if(typeof UI!=='undefined'&&UI==='mobile'){ // móvil: foto a la izquierda, datos a la derecha

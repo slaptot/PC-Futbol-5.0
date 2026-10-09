@@ -30,8 +30,20 @@ const COUNTRIES = {0:'-',1:'Albania',2:'Alemania',3:'Argentina',4:'Australia',5:
 const MONTHS = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const DAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
+// ?datos=2024: prueba con la liga 1ª de la temporada 2024 (solo en local; ver tools/update2026/build_test_2024.py)
+const TEST_DATA='tools/update2026/out/esp1_2024/';
+// la partida de prueba se guarda aparte para no sustituir la partida real
+const TEST_MODE=new URLSearchParams(location.search).get('datos')==='2024';
+const SAVE_KEY=TEST_MODE?'pcf5_save_2024':'pcf5_save';
+// año de la temporada 1: 1996 con los datos originales; 2024 con la prueba (edades y fechas de las jornadas)
+const BASE_YEAR=TEST_MODE?2024:1996;
+// foto del jugador: en la prueba 2024 (ids 1000000+) sale de la carpeta de prueba; el resto, de img/
+function fotoPath(p,big){ return (p.id>=1000000?TEST_DATA+'img/':'img/')+(big?'fotobig':'foto')+'/'+p.id+'.png'; }
 async function loadData(){
-  const [teams, leagues, referees, liga, cups, names] = await Promise.all(['teams','leagues','referees','liga_history','cups','names'].map(n=>fetch('data/'+n+'.json').then(r=>r.ok?r.json():null).catch(()=>null)));
+  const getJ=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
+  const test=TEST_MODE?await Promise.all([getJ(TEST_DATA+'teams.json'),getJ(TEST_DATA+'leagues.json')]):[null,null];
+  const [teams0, leagues0, referees, liga, cups, names] = await Promise.all(['teams','leagues','referees','liga_history','cups','names'].map(n=>getJ('data/'+n+'.json')));
+  const teams=test[0]||teams0, leagues=test[1]||leagues0;
   DATA.teams = teams; DATA.leagues = leagues; DATA.referees = referees; DATA.liga = liga; DATA.cups = cups; DATA.names = names||{}; // listas de nombres del juego (NOMBRES.xx / APELLIDO.xx) para empleados
   DATA.calendar = {div1: leagues.ESP1.rounds, div2: leagues.ESP2.rounds};
   // post-proceso
@@ -49,7 +61,8 @@ function sitText(p){ return p.youth?'Juvenil promocionado al primer equipo (pote
 function playerByOrig(tid,idx0){ const t=team(tid); if(!t) return null; return t.players.find(p=>p.idx0===idx0)||(t.bajas||[]).find(p=>p.idx0===idx0)||t.players[idx0]; }
 async function loadBio(tid){
   if (DATA.bios[tid]) return DATA.bios[tid];
-  try { const b = await fetch('data/bio/'+tid+'.json').then(r=>r.ok?r.json():null); DATA.bios[tid]=b; return b; } catch(e){ return null; }
+  const t = DATA.teams&&DATA.teams[tid]; // clubes de la prueba 2024: biografías en la carpeta de prueba
+  try { const b = await fetch((t&&t.prueba?TEST_DATA+'bio/':'data/bio/')+tid+'.json').then(r=>r.ok?r.json():null); DATA.bios[tid]=b; return b; } catch(e){ return null; }
 }
 function calcME(p){
   const a=p.attrs; const m4=(a[0]+a[1]+a[2]+a[3])/4; const dem=ROLE_DEM[p.roles[0]]||'MED'; let v;
@@ -61,7 +74,7 @@ function calcME(p){
 }
 function team(id){ return DATA.teams[id]; }
 function teamsOfDiv(d){ return Object.values(DATA.teams).filter(t=>t.div===d).sort((a,b)=>a.name.localeCompare(b.name)); }
-function playerAge(p, year){ year = year||(1996+((typeof G!=='undefined'&&G&&G.seasonIdx)||0)); return p.birth[2]>1900 ? (year - p.birth[2] - ((p.birth[1]>8)?1:0)) : '-'; }
+function playerAge(p, year){ year = year||(BASE_YEAR+((typeof G!=='undefined'&&G&&G.seasonIdx)||0)); return p.birth[2]>1900 ? (year - p.birth[2] - ((p.birth[1]>8)?1:0)) : '-'; }
 function birthStr(p){ if(!p.birth[2]) return '-'; if(!p.birth[0]) return String(p.birth[2]); return p.birth[0]+'/'+p.birth[1]+'/'+p.birth[2]; }
 function countryName(c){ return COUNTRIES[c] || ('País '+c); }
 function imgOr(src, fallback){ return src; }
@@ -69,9 +82,9 @@ const CAMPO_IDS=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,25,
 function campoImg(t,base){ return (base||'')+'img/campo/'+((t&&t.campoId)||(t&&t.id))+'.png'; }
 function coachImg(t,base){ const c=t&&t.coach; if(c&&c.photo) return c.photo; return (base||'')+'img/entr/'+(c?c.id:0)+'.png'; }
 function fmtNum(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
-// Fecha de cada jornada de la 96-97 (1ª: 42 jornadas, 2ª: 38). Aproximación: domingos consecutivos desde el 1-9-1996
+// Fecha de cada jornada (1ª: 42 jornadas, 2ª: 38; con la prueba 2024, 38). Aproximación: domingos consecutivos desde el 1-9 del año base
 function jornadaDate(j, div){
-  const start = new Date(1996,8,1); // 1 de septiembre de 1996
+  const start = new Date(BASE_YEAR,8,1); // 1 de septiembre del año base
   const skip = [16,17]; // navidad
   let d = new Date(start); let n=1;
   while(n<j){ d.setDate(d.getDate()+7); n++; if(d.getMonth()===11 && d.getDate()>=22){ d.setDate(d.getDate()+14);} }

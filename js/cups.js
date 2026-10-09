@@ -9,7 +9,7 @@ const CUP_DEFS={
 function cupAfter(k){ const N=calOf(G.league).length; const d=CUP_DEFS[k]; const out=[]; let last=0; d.at.forEach(f=>{ let j=Math.max(last+1,Math.round(f*N)); if(j>N) j=N; out.push(j); last=j; }); return out; }
 const CUP_NAMES={22:'Copa del Rey',30:'FA Cup',36:'Coppa Italia'};
 function cupName(k){ return k==='COPA'?(CUP_NAMES[league(G.league).country]||'Copa'):CUP_DEFS[k].name; }
-function teamME(t){ if(t._me===undefined){ const l=bestLineup(t,'4-4-2'); t._me=l.length>=11?lineupME(t,l):0; } return t._me; }
+function teamME(t){ if(t._me===undefined){ const l=bestLineup(t,teamFormation(t)); t._me=l.length>=11?lineupME(t,l):0; } return t._me; }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const k=Math.floor(Math.random()*(i+1)); [a[i],a[k]]=[a[k],a[i]]; } return a; }
 function buildCups(){
   const me=team(G.team); const country=league(G.league).country; const sib=SIBLING[G.league];
@@ -67,7 +67,7 @@ function resolveTie(tie){
 }
 function simLeg(tie,leg,nlegs,live,after){
   const [hid,aid]=tieLeg(tie,leg,nlegs); const hm=team(hid), aw=team(aid);
-  const lh=hid===G.team?G.lineup:bestLineup(hm,'4-4-2','C'), la=aid===G.team?G.lineup:bestLineup(aw,'4-4-2','C');
+  const lh=hid===G.team?G.lineup:bestLineup(hm,teamFormation(hm),'C'), la=aid===G.team?G.lineup:bestLineup(aw,teamFormation(aw),'C');
   if(live){ const round=G.cups[G.curCup].rounds[G.curRound]; const venue=round&&round.venue?team(round.venue):null;
     scrMatchLive(hm,aw,lh,la,{title:cupName(G.curCup).toUpperCase(),sub:CUP_DEFS[G.curCup].rounds[G.curRound]+(nlegs>1?(leg===0?' · IDA':' · VUELTA'):'')+' · '+(venue?venue.stadium+' (campo neutral)':hm.stadium),att:venue?finalAttendance(venue,[hid,aid]):(hid===G.team?attendanceModel(hm,aw):null),neutral:!!venue,comp:'C',after:r=>{ applyInjuries(r); statsRecord(hm,aw,lh,la,r); G.pendingSanc=applyCards(hm,aw,r,'C'); if(typeof moralAfterMatch==='function') moralAfterMatch(hm,aw,r); if(venue) finalFinance(G.curCup,round,r); else cupMatchFinance(hm,aw,r); tie.legs.push(Object.assign({home:hid,away:aid},r,{events:slimEvents(r.events)})); after(); }}); return; }
   const r=simulateMatch(hm,aw,lh,la,{comp:'C'}); applyInjuries(r); statsRecord(hm,aw,lh,la,r); applyCards(hm,aw,r,'C'); tie.legs.push({home:hid,away:aid,gh:r.gh,ga:r.ga,att:r.att,events:slimEvents(r.events)}); after();

@@ -11,7 +11,19 @@ const FORMATIONS = {
   '4-2-3-1':[[1,6,50],[2,24,86],[6,24,62],[5,24,38],[3,24,14],[15,40,62],[10,40,38],[16,62,82],[13,64,50],[17,62,18],[9,84,50]],
   '5-4-1':[[1,6,50],[2,28,90],[6,22,68],[4,15,50],[5,22,32],[3,28,10],[7,50,86],[15,46,60],[10,50,38],[11,50,14],[9,82,50]],
   '3-4-3':[[1,6,50],[6,24,72],[4,17,50],[5,24,28],[7,50,86],[15,46,60],[10,50,38],[11,50,14],[12,76,86],[9,84,50],[14,76,14]],
+  '3-2-3-2':[[1,6,50],[6,24,72],[4,17,50],[5,24,28],[15,46,62],[15,46,38],[12,62,84],[13,66,50],[14,62,16],[9,82,64],[9,82,36]],
+  '4-1-3-2':[[1,6,50],[2,24,86],[6,24,62],[5,24,38],[3,24,14],[15,38,50],[7,56,84],[10,56,50],[11,56,16],[9,80,64],[9,80,36]],
 };
+// esquema de cada club de 1ª división según la previa de la temporada 96-97 (ROBIN0.DBC, «Sistema de juego»).
+// Los demás clubes juegan con 4-4-2, que es el que dan por supuesto los textos cuando no dicen otro.
+const TEAM_FORMATION={'Barcelona':'4-2-3-1','Deportivo':'5-4-1','Zaragoza':'4-4-2','Real Madrid':'4-4-2','Athletic':'3-2-3-2',
+  'Sevilla':'4-4-2','Valencia':'5-3-2','Racing':'4-4-2','Oviedo':'4-2-3-1','Tenerife':'4-4-2','Real Sociedad':'4-4-2',
+  'At. Madrid':'4-4-2','Sporting':'4-4-2','Celta':'4-4-2','Logroñés':'4-4-2','Valladolid':'5-3-2','Espanyol':'4-4-2',
+  'Betis':'4-4-2','Compostela':'4-4-2','Rayo':'4-4-2','Hércules':'4-1-3-2','Extremadura':'4-4-2'};
+// esquema habitual de un club (en una partida nueva o de un equipo propio, el del club que ocupa)
+function clubFormation(t){ const c=t&&t.custom?team(t.replaced):t; return (c&&TEAM_FORMATION[c.name])||'4-4-2'; }
+// esquema con el que juega un equipo: el que elige el usuario para el suyo, el del club para los demás
+function teamFormation(t){ if(t&&typeof G!=='undefined'&&G&&t.id===G.team&&G.formation) return G.formation; return clubFormation(t); }
 function bestLineup(t, formation, comp){
   const slots = FORMATIONS[formation||'4-4-2'];
   const used = new Set(); const lineup=[];
@@ -75,7 +87,7 @@ function matchSim(home, away, lh, la, opts){
     if(rnd()<C.expA/90){ S.ga++; S.events.push({min:m,type:'goal',side:'A',player:C.scA(),score:[S.gh,S.ga]}); }
     const sendOff=(sd,p,direct)=>{ S.events.push(Object.assign({min:m,type:'red',side:sd,player:p},direct?{direct:true}:{})); const l=side(sd).l; const k=l.findIndex(x=>x.idx===p.idx); if(k>=0) l.splice(k,1); S.hurt[sd].delete(p.idx); ends[sd+':'+p.idx]=m; C=null; };
     if(rnd()<0.035){ const sd=rnd()<0.5?'H':'A'; const p=(sd==='H'?C.cdH:C.cdA)(); const k=sd+p.idx; if(S.yellows.has(k)){ S.yellows.delete(k); sendOff(sd,p,false); } else { S.yellows.add(k); S.events.push({min:m,type:'yellow',side:sd,player:p}); } }
-    if(!S.done&&rnd()<0.0007){ const sd=rnd()<0.5?'H':'A'; const p=(sd==='H'?C.cdH:C.cdA)(); sendOff(sd,p,true); }
+    if(!S.done&&rnd()<0.0007){ if(!C) calc(); const sd=rnd()<0.5?'H':'A'; const p=(sd==='H'?C.cdH:C.cdA)(); sendOff(sd,p,true); }
     if(rnd()<0.0018){ const sd=rnd()<0.5?'H':'A'; const {t,l}=side(sd); if(l.length){ const x=l[Math.floor(rnd()*l.length)]; const p=t.players[x.idx]; if(!S.events.some(e=>e.type==='injury'&&e.player===p)){ const inj=randomInjury(); S.events.push({min:m,type:'injury',side:sd,player:p,weeks:inj.weeks,kind:inj.kind}); S.hurt[sd].add(p.idx); C=null;
       if(S.ai[sd]) S.sub(sd,p.idx,aiBench(sd,x.role)); } } }
     if(m>=90){ S.done=true; }

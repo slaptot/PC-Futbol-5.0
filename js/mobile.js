@@ -44,16 +44,16 @@ function prefetchImgs(urls){
   let i=0; const next=()=>{ if(i>=urls.length) return; fetch(urls[i++],{priority:'low'}).catch(()=>{}).finally(()=>idle(next)); };
   for(let k=0;k<3;k++) idle(next);
 }
-function prefetchPhotos(players){ prefetchImgs((players||[]).filter(p=>p&&p.id>0).map(p=>'img/fotobig/'+p.id+'.png')); }
+function prefetchPhotos(players){ prefetchImgs((players||[]).filter(p=>p&&p.id>0).map(p=>fotoPath(p,true))); }
 // ---- exportar / importar la partida (el almacenamiento del navegador móvil puede borrarse)
 function exportSave(){
-  const s=localStorage.getItem('pcf5_save'); if(!s) return dialog('EXPORTAR','No hay partida guardada.');
+  const s=localStorage.getItem(SAVE_KEY); if(!s) return dialog('EXPORTAR','No hay partida guardada.');
   const blob=new Blob([s],{type:'application/json'}); const url=URL.createObjectURL(blob);
   const g=JSON.parse(s); const name='pcfutbol5-'+(g.custom?g.custom.name:(team(g.team)||{}).name||'partida').replace(/[^\w]+/g,'_')+'-j'+g.jornada+'.json';
   const a=h('a',{href:url,download:name}); document.body.appendChild(a); a.click(); setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); },1000);
 }
 function importSave(){
   const f=h('input',{type:'file',accept:'.json,application/json',style:{display:'none'}}); document.body.appendChild(f);
-  f.onchange=()=>{ const file=f.files[0]; f.remove(); if(!file) return; const fr=new FileReader(); fr.onload=()=>{ try{ const g=JSON.parse(fr.result); if(!g||!g.league||!g.team) throw new Error('formato'); localStorage.setItem('pcf5_save',JSON.stringify(g)); dialog('IMPORTAR','Partida importada. Se reinicia el juego para cargarla.',[{t:'ACEPTAR',f:()=>location.reload()}]); }catch(e){ dialog('IMPORTAR','El archivo no es una partida válida.'); } }; fr.readAsText(file); };
+  f.onchange=()=>{ const file=f.files[0]; f.remove(); if(!file) return; const fr=new FileReader(); fr.onload=()=>{ try{ const g=JSON.parse(fr.result); if(!g||!g.league||!g.team) throw new Error('formato'); localStorage.setItem(SAVE_KEY,JSON.stringify(g)); localStorage.setItem('pcf5_resume','1'); location.reload(); }catch(e){ dialog('IMPORTAR','El archivo no es una partida válida.'); } }; fr.readAsText(file); };
   f.click();
 }

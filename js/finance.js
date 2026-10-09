@@ -18,11 +18,22 @@ function attendanceModel(hm,aw,price,detail){ // asistencia estimada a un partid
 function gateIncome(att,price,cap){ const g=att*(price||ticketPrice())/1e6; return Math.round(cap&&att>=cap?g*1.1:g); } // con lleno, un 10 % más (bar, tienda)
 function isFull(hm,att){ return !!(hm&&att>=(hm.capacity||20000)); }
 // ---- televisión: ofertas al empezar la liga según la posición del año anterior
+// cadenas de cada país de la liga del club (España: las del juego original; Italia e Inglaterra: cadenas de la época)
+const TV_CHANNELS={
+  22:[['Canal Plus','TVE','Antena 3']],
+  36:[['RAI','Mediaset','Telepiù']],
+  30:[['BBC','ITV','BSkyB']]};
+// logotipos de las cadenas (img/tv): Telepiù no tiene logotipo de la época disponible
+const TV_LOGO={'Canal Plus':'canalplus','TVE':'tve','Antena 3':'antena3','RAI':'rai','Mediaset':'mediaset','BBC':'bbc','ITV':'itv','BSkyB':'bskyb'};
+function tvChannels(base){
+  const c=(league(G.league)||{}).country; const [fijo,prima,partidos]=(TV_CHANNELS[c]||TV_CHANNELS[22])[0];
+  return [{name:fijo,kind:'Contrato fijo',fixed:base,winBonus:0,perMatch:0},{name:prima,kind:'Contrato con prima por victoria',fixed:Math.round(base*0.7),winBonus:Math.round(base*0.03),perMatch:0},{name:partidos,kind:'Contrato con partidos televisados',fixed:Math.round(base*0.45),winBonus:0,perMatch:Math.round(base*0.05)}];
+}
 function tvOffersInit(){
   const me=team(G.team); const lp=G.lastPos&&G.lastPos[me.id]; let pos=lp?lp.pos:(me.positions&&me.positions.length?me.positions[me.positions.length-1]:12); const d1=G.league.endsWith('1'); if(lp&&lp.lg!==G.league) pos=d1?10:3;
   const N=mgrIds(G.league).length; const q=1-(Math.min(pos,N)-1)/Math.max(1,N-1); // 1 = campeón
   const base=Math.round(d1?(500+1100*q):(120+260*q));
-  G.tvOffers=[{name:'Canal Plus',kind:'Contrato fijo',fixed:base,winBonus:0,perMatch:0},{name:'TVE',kind:'Contrato con prima por victoria',fixed:Math.round(base*0.7),winBonus:Math.round(base*0.03),perMatch:0},{name:'Antena 3',kind:'Contrato con partidos televisados',fixed:Math.round(base*0.45),winBonus:0,perMatch:Math.round(base*0.05)}];
+  G.tvOffers=tvChannels(base);
   G.tv=null;
 }
 function tvKind(o){ return o.kind||(o.perMatch?'Contrato con partidos televisados':o.winBonus?'Contrato con prima por victoria':'Contrato fijo'); }
@@ -30,7 +41,7 @@ function tvIncome(hm,r){ const tv=G.tv; if(!tv) return 0; const N=Math.max(30,ca
 function scrTvOffers(after){
   const me=team(G.team); const body=h('div',{});
   body.appendChild(h('div',{style:{marginBottom:'6px'}},'Las televisiones presentan sus ofertas por los derechos del '+me.name+' para esta temporada. Elige una:'));
-  G.tvOffers.forEach(o=>{ const l1=o.name+' · '+tvKind(o); const l2=fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); body.appendChild(h('div',{class:'btn blue tvoffer',onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},h('div',{class:'l1'},l1),h('div',{class:'l2'},l2))); });
+  G.tvOffers.forEach(o=>{ const l1=o.name+' · '+tvKind(o); const l2=fmtNum(o.fixed)+' millones fijos'+(o.winBonus?' + '+fmtNum(o.winBonus)+' M por victoria':'')+(o.perMatch?' + '+fmtNum(o.perMatch)+' M por partido televisado en casa':''); const logo=TV_LOGO[o.name]; const txt=h('div',{style:{flex:'1',minWidth:'0'}},h('div',{class:'l1'},l1),h('div',{class:'l2'},l2)); const b=h('div',{class:'btn blue tvoffer',style:logo?{display:'flex',alignItems:'center',gap:'8px'}:{},onclick:()=>{ G.tv=o; G.tvOffers=null; saveGame(); closeDialog(); after&&after(); }},logo?h('img',{src:'img/tv/'+logo+'.png',alt:'',style:{flex:'0 0 73px',width:'73px',height:'40px',objectFit:'contain'}}):null,txt); body.appendChild(b); });
   dialog('OFERTAS DE TELEVISIÓN',body,[]);
 }
 // ---- balance semanal: taquilla, televisión y sueldos

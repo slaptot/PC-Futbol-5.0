@@ -392,3 +392,22 @@ body.mui #screen .topbar{top:env(safe-area-inset-top)}
 body.mui #screen .panel.finfix{top:env(safe-area-inset-top)}
 body.mui .dlg{top:calc(env(safe-area-inset-top) + 4vh)!important;top:calc(env(safe-area-inset-top) + 4dvh)!important;max-height:calc(86dvh - env(safe-area-inset-top))}
 #splash{padding-top:env(safe-area-inset-top)}
+
+/* ---- mapa de Europa para elegir país (partida nueva y rival de los amistosos de pretemporada) */
+.mapbox{position:absolute;overflow:hidden;border:2px solid #5f78c8;background:#1a2b70}
+.mapbox .mapimg{position:absolute;left:0;top:0;width:100%;height:100%;display:block;-webkit-user-drag:none;user-select:none}
+.mapbox .mzona{position:absolute;border-radius:50%;cursor:pointer;border:2px solid transparent;box-sizing:border-box}
+.mapbox .mzona:hover{background:rgba(255,226,74,.2);border-color:#ffe24a}
+.mapbox .mzona.sel{background:rgba(255,226,74,.38);border-color:#ffe24a;box-shadow:0 0 0 1px #000}
+.mapbox .mzona .mbandera{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:20px;border:1px solid #000;box-shadow:0 0 0 1px #ffe24a;pointer-events:none}
+.mapbox .mzona .mnom{position:absolute;left:50%;top:-44px;transform:translateX(-50%);white-space:nowrap;color:#ffe24a;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;pointer-events:none;opacity:0}
+.mapbox .mzona:hover .mnom,.mapbox .mzona.sel .mnom{opacity:1}
+body.mui #screen .mapbox{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;margin:6px auto;flex:0 0 auto}
+body.mui #screen .mapbox .mapimg{position:static!important;width:100%!important;height:auto!important}
+body.mui #screen .mapbox .mzona{position:absolute!important}
+body.mui #screen .mapbox .mzona .mbandera,body.mui #screen .mapbox .mzona .mnom{position:absolute!important}
+body.mui #screen .mapbox .mzona .mnom{opacity:1}
+
+/* lista de países del resto de Europa y América (3 columnas; 2 en móvil) */
+.teamlist.paises{grid-template-columns:repeat(3,1fr)}
+body.mui .teamlist.paises{grid-template-columns:repeat(2,1fr)}

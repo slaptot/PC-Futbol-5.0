@@ -4,7 +4,10 @@ function normTxt(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,
 async function loadSearch(){
   if(SEARCH.docs) return SEARCH.docs;
   const d=await fetch('data/search.json').then(r=>r.json());
-  SEARCH.docs=d; SEARCH.norm=d.map(x=>normTxt(x[2]+'\n'+x[3])); return d;
+  // con ?datos=2024: también los equipos, entrenadores y jugadores de la prueba
+  const extra=TEST_MODE?await fetch(TEST_DATA+'search.json').then(r=>r.ok?r.json():[]).catch(()=>[]):[];
+  const all=d.concat(extra);
+  SEARCH.docs=all; SEARCH.norm=all.map(x=>normTxt(x[2]+'\n'+x[3])); return all;
 }
 function runSearch(q,limit){
   const nq=normTxt(q.trim()); if(nq.length<2) return [];

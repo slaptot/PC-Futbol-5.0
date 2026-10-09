@@ -117,7 +117,7 @@ function statsRecord(hm,aw,lh,la,r){
 function statOf(p){ return (G.stats&&G.stats[pkey(p)])||{pj:0,min:0,g:0,ta:0,tr:0}; }
 function scrEstadisticas(state){
   state=state||{tab:'equipo'}; const t=team(G.team); setBg('fondo4'); const s=clearScreen();
-  s.appendChild(topbar({team:t,title:'ESTADÍSTICAS',date:gameDate(),sub:'TEMPORADA 96-97'}));
+  s.appendChild(topbar({team:t,title:'ESTADÍSTICAS',date:gameDate(),sub:'TEMPORADA '+seasonLabel(G.seasonIdx||0)}));
   const P=panel(10,68,440,372); s.appendChild(P);
   const sc=at(h('div',{class:'scroll'}),0,18,436,352); P.appendChild(sc);
   if(state.tab==='equipo'){ P.appendChild(h('div',{class:'hdr'},t.name.toUpperCase()));

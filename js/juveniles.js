@@ -16,7 +16,7 @@ function youthNew(dem){
   const pot=Math.min(95,Math.round(58+Math.random()*16+stars*3+(Math.random()<0.15*stars?8:0)));
   const startME=Math.max(35,pot-16-Math.floor(Math.random()*10)); const f=startME/Math.max(1,tpl.me);
   const attrs=tpl.attrs.map(a=>Math.max(5,Math.min(99,Math.round(a*f*(0.9+Math.random()*0.2)))));
-  const year=1996+(G.seasonIdx||0); const age=16+Math.floor(Math.random()*3);
+  const year=BASE_YEAR+(G.seasonIdx||0); const age=16+Math.floor(Math.random()*3);
   const p={id:900000+(Y.seq++),name:'',full:'',roles:[roles[Math.floor(Math.random()*roles.length)]],country:(league(G.league)||{}).country||22,c2:1,f1:99,f2:2,f3:3,f4:0,
     birth:[1+Math.floor(Math.random()*28),1+Math.floor(Math.random()*12),year-age],height:168+Math.floor(Math.random()*22),weight:60+Math.floor(Math.random()*18),attrs,dem,pot,youth:true,joined:G.jornada};
   const nm=empName().split(' '); p.name=nm[nm.length-1]; p.full=empName(); p.me=calcME(p); return p;

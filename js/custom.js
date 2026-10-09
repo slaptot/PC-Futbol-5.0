@@ -26,6 +26,42 @@ function removeCustomTeam(){
 const CAL_ALIAS={}; let CAL_CACHE={};
 function calAliased(k){ if(!Object.keys(CAL_ALIAS).length) return league(k).rounds; if(CAL_CACHE[k]) return CAL_CACHE[k]; const m=id=>CAL_ALIAS[id]||id; CAL_CACHE[k]=league(k).rounds.map(r=>r.map(x=>[m(x[0]),m(x[1]),x[2],x[3],x[4]])); return CAL_CACHE[k]; }
 function applyCustomTeam(){ if(G&&G.custom&&!DATA.teams[CUSTOM_ID]) buildCustomTeam(G.custom); }
+// ---- media de un equipo con la misma fórmula que la ficha del club (los 11 mejores en 4-4-2)
+function squadMetric(players,f){ const l=bestLineup({id:-1,players},f||'4-4-2'); return l.length?Math.round(l.reduce((a,x)=>a+players[x.idx].me,0)/l.length):0; }
+// equipo al azar con el mismo número de jugadores por demarcación que el club sustituido y una media igual a la suya
+// o hasta 4 puntos superior (nunca inferior: el aleatorio no puede salir peor que el club que sustituye).
+// Los jugadores son de otros clubes de la base de datos; se parte de una selección al azar y se cambian jugadores
+// de la misma demarcación mientras la media se acerca al objetivo.
+function randomSquadFor(replacedId){
+  const club=team(replacedId); const f=clubFormation(club); const target=standingsAll(club).me;
+  const need={POR:0,DEF:0,MED:0,DEL:0}; club.players.forEach(p=>{ if(need[p.dem]!==undefined) need[p.dem]++; });
+  const tot=()=>need.POR+need.DEF+need.MED+need.DEL;
+  while(tot()>25){ const k=['DEL','MED','DEF'].filter(x=>need[x]>1).sort((a,b)=>need[b]-need[a])[0]; if(!k) break; need[k]--; }
+  while(tot()<16) need.DEL++;
+  need.POR=Math.min(3,Math.max(2,need.POR)); // siempre entre 2 y 3 porteros, aunque el club tenga más o menos
+  const pool={POR:[],DEF:[],MED:[],DEL:[]};
+  // ningún jugador por debajo de la media más baja del club sustituido
+  const floor=Math.min(...club.players.filter(p=>p.me>0).map(p=>p.me)); // se ignoran registros vacíos (media 0)
+  for(const t of Object.values(DATA.teams)){ if(t.id>=9000||t.custom||t.id===replacedId) continue; for(const p of t.players){ if(!p.id||!pool[p.dem]||p.me<floor) continue; pool[p.dem].push({t,p}); } }
+  const shuffle=a=>a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+  const groups=['POR','DEF','MED','DEL'];
+  let best=null;
+  const ok=d=>d>=0&&d<=4; const dist=d=>d<0?-d:d>4?d-4:0;
+  for(let attempt=0;attempt<30&&!(best&&ok(best.d));attempt++){
+    const sel={}; groups.forEach(g=>sel[g]=shuffle(pool[g]).slice(0,need[g]));
+    const all=()=>groups.flatMap(g=>sel[g]);
+    let d=squadMetric(all().map(e=>e.p),f)-target;
+    for(let it=0;it<1500&&!ok(d);it++){
+      const g=groups[Math.floor(Math.random()*groups.length)]; if(!sel[g].length) continue;
+      const i=Math.floor(Math.random()*sel[g].length); const cand=pool[g][Math.floor(Math.random()*pool[g].length)];
+      if(sel[g].includes(cand)) continue;
+      const old=sel[g][i]; sel[g][i]=cand; const nd=squadMetric(all().map(e=>e.p),f)-target;
+      if(dist(nd)<=dist(d)||Math.random()<0.02) d=nd; else sel[g][i]=old;
+    }
+    if(!best||dist(d)<dist(best.d)||(dist(d)===dist(best.d)&&d<best.d)) best={picks:all(),d};
+  }
+  return {club,target,best};
+}
 // ---- pantalla de creación
 function scrCrearEquipo(state){
   state=state||{}; setMusic('manager'); setBg('seleccion_fondo'); const s=clearScreen();
@@ -44,7 +80,7 @@ function scrCrearEquipo(state){
   T.appendChild(lbl('AFORO',210,42)); const ica=at(h('input',{class:'select',type:'text',value:st.capacity||'',placeholder:String(rep.capacity),style:{width:'80px',height:'20px',fontFamily:'futcon12',fontSize:'15px',padding:'0 4px',outline:'none'}}),210,56); ica.oninput=()=>st.capacity=ica.value.replace(/\D/g,''); T.appendChild(ica);
   T.appendChild(lbl('FOTO DEL CAMPO',300,42)); T.appendChild(btn('ELEGIR CAMPO',300,56,110,()=>scrElegirCampo(st.campo||st.replaced,id=>{ st.campo=id; scrCrearEquipo({st}); }),'green'));
   T.appendChild(at(h('img',{src:'img/campo/'+(st.campo||st.replaced)+'.png',style:{width:'54px',height:'30px',border:'1px solid #000',background:'#000'},onerror:function(){this.style.visibility='hidden'}}),416,46));
-  { const n=txt('Vacío: datos del club sustituido. Se puede cambiar luego en Club.',478,44,138,34,'f-m8'); n.style.lineHeight='11px'; T.appendChild(n); }
+  { const n=txt('Datos del club sustituido.',478,44,138,34,'f-m8'); n.style.lineHeight='11px'; T.appendChild(n); }
   // selector de jugadores
   const L=panel(10,152,370,288); s.appendChild(L); L.appendChild(h('div',{class:'hdr'},'JUGADORES DE LA BASE DE DATOS'));
   const groups=[['POR','PORTEROS'],['DEF','DEFENSAS'],['MED','MEDIOS'],['DEL','DELANTEROS']];
@@ -55,19 +91,21 @@ function scrCrearEquipo(state){
   const renderList=()=>{ const st0=list.scrollTop; list.innerHTML=''; const nq=normTxt(st.q.trim()); const ps=pickedSet(); const rows=[];
     for(const t of Object.values(DATA.teams)){ if(t.id>=9000||t.custom) continue; for(const p of t.players){ if(!p.id||p.dem!==st.filter||ps.has(p.id)) continue; if(nq&&!normTxt(p.name+' '+t.name).includes(nq)) continue; rows.push({p,t}); } }
     rows.sort((a,b)=>b.p.me-a.p.me); const shown=rows.slice(0,120); if(rows.length>shown.length) shown.push({__group:'… '+(rows.length-shown.length)+' MÁS · USA EL BUSCADOR PARA AFINAR'});
-    list.appendChild(table([{t:'JUGADOR',w:110,k:r=>r.p.name},{t:'CLUB',w:90,k:r=>h('span',{class:'f-con8'},r.t.name)},{t:'',w:18,k:r=>h('img',{src:'img/band/'+r.p.country+'.png',style:{width:'14px',height:'10px'}})},{t:'ED',w:26,cls:'c',k:r=>playerAge(r.p)},{t:'ROL',w:70,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]])},{t:'ME',w:28,cls:'r',k:r=>r.p.me,cell:()=>'y'}],shown,{onRow:r=>{ if(st.picked.length>=25) return dialog('EQUIPO','Máximo 25 jugadores.'); st.picked.push([r.t.id,r.p.id,r.p.name,r.p.dem,r.p.me]); renderList(); renderSquad(); }}));
+    list.appendChild(table([{t:'JUGADOR',w:110,k:r=>r.p.name},{t:'CLUB',w:90,k:r=>h('span',{class:'f-con8'},r.t.name)},{t:'',w:18,k:r=>h('img',{src:'img/band/'+r.p.country+'.png',style:{width:'14px',height:'10px'}})},{t:'ED',w:26,cls:'c',k:r=>playerAge(r.p)},{t:'ROL',w:70,k:r=>h('span',{class:'f-con8'},ROLES_SHORT[r.p.roles[0]])},{t:'ME',w:28,cls:'r',k:r=>r.p.me,cell:()=>'y'}],shown,{onRow:r=>{ if(st.picked.length>=25) return dialog('EQUIPO','Máximo 25 jugadores.'); st.picked.push([r.t.id,r.p.id,r.p.name,r.p.dem,r.p.me,r.p]); renderList(); renderSquad(); }}));
     list.scrollTop=st0; };
   const R=panel(390,152,240,288); s.appendChild(R);
-  const squad=at(h('div',{class:'scroll'}),0,18,236,222); R.appendChild(squad);
+  const squad=at(h('div',{class:'scroll'}),0,18,236,200); R.appendChild(squad);
   const renderSquad=()=>{ R.querySelector('.hdr')?.remove(); R.insertBefore(h('div',{class:'hdr'},'MI PLANTILLA ('+st.picked.length+'/25)'),R.firstChild); squad.innerHTML='';
     const order={POR:0,DEF:1,MED:2,DEL:3}; const rows=st.picked.slice().sort((a,b)=>order[a[3]]-order[b[3]]||b[4]-a[4]);
     squad.appendChild(table([{t:'JUGADOR',k:r=>r[2]},{t:'DEM',w:34,cls:'c',k:r=>r[3]},{t:'ME',w:28,cls:'r',k:r=>r[4],cell:()=>'y'},{t:'',w:20,cls:'c',k:()=>h('span',{style:{color:'#ff8a60'}},'✕')}],rows,{onRow:r=>{ st.picked=st.picked.filter(x=>x[1]!==r[1]); renderList(); renderSquad(); }}));
-    const c={POR:0,DEF:0,MED:0,DEL:0}; st.picked.forEach(x=>c[x[3]]++); const me=st.picked.length?Math.round(st.picked.reduce((a,x)=>a+x[4],0)/st.picked.length):0;
-    const info=R.querySelector('.cinfo'); if(info) info.remove(); R.appendChild(at(h('div',{class:'cinfo f-p8'},'POR '+c.POR+' · DEF '+c.DEF+' · MED '+c.MED+' · DEL '+c.DEL+' · Media '+me),6,244,228,14)); };
+    const c={POR:0,DEF:0,MED:0,DEL:0}; st.picked.forEach(x=>c[x[3]]++); const me=st.picked.length?squadMetric(st.picked.map(x=>x[5]),clubFormation(team(st.replaced))):0;
+    const info=R.querySelector('.cinfo'); if(info) info.remove(); R.appendChild(at(h('div',{class:'cinfo f-m8',style:{lineHeight:'10px'}},'POR '+c.POR+' · DEF '+c.DEF+' · MED '+c.MED+' · DEL '+c.DEL,h('br'),'Media '+me+(st.ref?' · '+st.ref+' '+st.refMedia:'')),6,219,228,20)); };
+  R.appendChild(btn('ALEATORIO',8,240,224,()=>{ const club=team(st.replaced); const run=()=>{ const r=randomSquadFor(st.replaced); if(!r.best) return; st.picked=r.best.picks.map(e=>[e.t.id,e.p.id,e.p.name,e.p.dem,e.p.me,e.p]); st.ref=club.name; st.refMedia=r.target; if(!(r.best.d>=0&&r.best.d<=4)) dialog('ALEATORIO','No se ha podido igualar la media del club (diferencia '+r.best.d+'). Se ha dejado la selección más cercana.'); renderList(); renderSquad(); };
+    if(st.picked.length) return dialog('ALEATORIO','Se sustituirá la plantilla elegida por un equipo al azar con la estructura y la media de '+club.name+' ('+standingsAll(club).me+').',[{t:'GENERAR',cls:'green',f:run},{t:'CANCELAR'}]); run(); },'blue'));
   R.appendChild(btn('CREAR Y EMPEZAR',8,262,224,()=>{ const name=st.name.trim(); if(name.length<2) return dialog('EQUIPO','Escribe el nombre del equipo.'); if(st.picked.length<16) return dialog('EQUIPO','Necesitas al menos 16 jugadores.'); const c={POR:0}; st.picked.forEach(x=>c[x[3]]=(c[x[3]]||0)+1); if((c.POR||0)<2) return dialog('EQUIPO','Elige al menos dos porteros.');
     const def={name,league:st.league,replaced:st.replaced,players:st.picked.map(x=>[x[0],x[1]]),photo:st.photo||null,stadium:(st.stadium||'').trim()||null,capacity:parseInt(st.capacity)||null,campo:st.campo||null}; buildCustomTeam(def); newGame(CUSTOM_ID); G.custom=def; saveGame(); scrOficina(); },'green'));
   renderList(); renderSquad();
-  s.appendChild(btn('VOLVER',540,446,90,()=>scrSelectTeam({lg:st.league}),'blue','ico_volver'));
+  s.appendChild(btn('VOLVER',540,446,90,()=>scrSelectTeam({lg:st.league,sel:st.replaced}),'blue','ico_volver'));
   setTimeout(()=>inp.focus(),50);
 }
 

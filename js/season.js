@@ -1,5 +1,6 @@
 // Fin de temporada: pantallas de campeones, ascensos y descensos, y arranque de la temporada siguiente
-function seasonLabel(i){ const y=96+i; return String(y%100).padStart(2,'0')+'-'+String((y+1)%100).padStart(2,'0'); }
+function curSeasonLabel(){ return seasonLabel((typeof G!=='undefined'&&G&&G.seasonIdx)||0); }
+function seasonLabel(i){ const y=BASE_YEAR+i; return String(y%100).padStart(2,'0')+'-'+String((y+1)%100).padStart(2,'0'); }
 function mgrDate(k,j){ const d=new Date(roundDate(k,j)); if(G&&G.seasonIdx) d.setFullYear(d.getFullYear()+G.seasonIdx); return d; }
 function mgrIds(k){ return [...new Set(calOf(k).flat().map(m=>m[0]))]; }
 function divKeys(lg){ lg=lg||G.league; const sib=SIBLING[lg]; const d1=lg.endsWith('1')?lg:sib; return [d1,SIBLING[d1]]; }
@@ -77,7 +78,7 @@ function pageNueva(s,ft){
     p.move, p.europe,
     'Premio de la liga por el '+p.pos+'º puesto: '+fmtNum(p.bonus)+' millones (presupuesto: '+fmtNum((G.budget||0)+p.bonus)+'). Los premios de copa ya se cobraron ronda a ronda.',
     'Los jugadores cumplen un año más. '+(()=>{ const ex=t.players.filter(q=>q.id>0&&contractOf(q).years<=1); return ex.length?'Contratos que terminan: '+ex.map(q=>q.name).join(', ')+'. Renuévalos en FICHAJES → CONTRATOS antes de empezar la temporada o causarán baja.':'Ningún contrato termina esta temporada.'; })()+' Los veteranos pueden retirarse.',
-    'Se generará un calendario nuevo para '+league(ft.d1).name+' y '+league(ft.d2).name+' con los ascensos y descensos.'];
+    'Se generará un calendario nuevo para '+league(ft.d1).name+' y '+league(ft.d2).name+' con los ascensos y descensos. Antes de la primera jornada hay pretemporada: amistosos y campamento.'];
   const tx=txt(lines.join('\n\n'),170,30,436,300,'f-p12'); tx.style.lineHeight='15px'; P.appendChild(tx);
   P.appendChild(lbl('CAMPEONES '+seasonLabel(G.seasonIdx||0),16,140)); const ch=[[league(ft.d1).name,ft.s1[0].id],[league(ft.d2).name,ft.s2[0].id]].concat(Object.keys(G.cups).map(k=>[cupName(k),G.cups[k].winner]));
   const cl=txt(ch.map(x=>x[0].toUpperCase()+'\n   '+(x[1]?team(x[1]).name:'-')).join('\n'),16,156,150,200,'f-m8'); cl.style.lineHeight='11px'; P.appendChild(cl);
@@ -92,10 +93,12 @@ function startNextSeason(){
     f.s1.forEach((x,i)=>G.lastPos[x.id]={lg:f.d1,pos:i+1}); f.s2.forEach((x,i)=>G.lastPos[x.id]={lg:f.d2,pos:i+1});
     champions[f.d1]=f.s1[0].id; champions[f.d2]=f.s2[0].id; });
   G.lastCups={}; Object.keys(G.cups).forEach(k=>G.lastCups[k]=G.cups[k].winner);
+  // palmarés: títulos de la temporada que acaba (liga, copas y premios individuales)
+  ensurePalmares(); G.palmares.push(...palmaresTemporada(seasonLabel(G.seasonIdx||0),G.league,p.pos,p.won,seasonAwards()));
   G.history=G.history||[]; G.history.push({season:seasonLabel(G.seasonIdx||0),league:G.league,pos:p.pos,won:p.won,champions:Object.assign(champions,G.lastCups),awards:G.awards||null});
   G.budget=(G.budget||0)+p.bonus; finOther('Premio de liga · '+p.pos+'º puesto',p.bonus); G.league=p.lg; G.seasonIdx=(G.seasonIdx||0)+1; G.season=seasonLabel(G.seasonIdx);
   G.cal=G.cal||{}; LEAGUE_ORDER.forEach(k=>{ G.cal[k]=roundRobin(teamsOfLeague(k).map(t=>t.id)); }); CAL_CACHE={};
-  G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cards={}; G.susp={}; G.moral={}; G.forma={}; if(G.emp) empTick(true); if(typeof ageProgress==='function') ageProgress(); G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit();
+  G.jornada=1; G.results={}; LEAGUE_ORDER.forEach(k=>G.results[k]=[]); G.stats={}; G.cards={}; G.susp={}; G.moral={}; G.forma={}; if(G.emp) empTick(true); if(typeof ageProgress==='function') ageProgress(); G.cups=buildCups(); G.sched=buildSchedule(); G.step=0; G.finLog=[]; tvOffersInit(); preInit();
   const t=team(me); if(!G.lineup||G.lineup.length!==11||G.lineup.some(l=>!t.players[l.idx])) G.lineup=bestLineup(t,G.formation||'4-4-2'); G.bench=[]; G.benchSet=false;
   saveGame();
 }
@@ -126,8 +129,36 @@ function pagePremios(s){
   const card=(x,title,imgSrc,name,sub,detail,mine)=>{ const b=at(h('div',{class:'award'+(mine?' mine':'')}),x,26,196,300);
     b.appendChild(h('div',{class:'f-e5 at'},title)); b.appendChild(h('img',{class:'aph',src:imgSrc,onerror:function(){this.src='img/ui/foto_general.png';this.classList.add('gen');}}));
     b.appendChild(h('div',{class:'f-e4 nm'},name)); b.appendChild(h('div',{class:'f-con8 sb'},sub)); b.appendChild(h('div',{class:'f-p8 dt'},detail)); if(mine) b.appendChild(h('div',{class:'f-e5 mn'},'¡TU EQUIPO! +50 M')); return b; };
-  if(a.pichichi){ const t=team(a.pichichi.team), p=t.players[a.pichichi.idx]; P.appendChild(card(10,'PICHICHI','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.pichichi.goals+' goles · máximo goleador de la liga',t.id===G.team)); }
-  if(a.zamora){ const t=team(a.zamora.team), p=t.players[a.zamora.idx]; P.appendChild(card(212,'ZAMORA','img/fotobig/'+p.id+'.png',p?p.name:'-',t.name,a.zamora.gc+' goles en contra en '+a.zamora.pj+' partidos ('+a.zamora.coef+' por partido)',t.id===G.team)); }
+  if(a.pichichi){ const t=team(a.pichichi.team), p=t.players[a.pichichi.idx]; P.appendChild(card(10,'PICHICHI',fotoPath(p,true),p?p.name:'-',t.name,a.pichichi.goals+' goles · máximo goleador de la liga',t.id===G.team)); }
+  if(a.zamora){ const t=team(a.zamora.team), p=t.players[a.zamora.idx]; P.appendChild(card(212,'ZAMORA',fotoPath(p,true),p?p.name:'-',t.name,a.zamora.gc+' goles en contra en '+a.zamora.pj+' partidos ('+a.zamora.coef+' por partido)',t.id===G.team)); }
   if(a.coach){ const t=team(a.coach.team); P.appendChild(card(414,'MEJOR ENTRENADOR',coachImg(t),t.coach.name,t.name,a.coach.pos+'º en la liga con la '+a.coach.exp+'ª mejor plantilla',t.id===G.team)); }
   if(!a.pichichi&&!a.zamora) P.appendChild(txt('Sin datos suficientes esta temporada.',10,40,400,20,'f-p12'));
+}
+
+// ---- palmarés: títulos del club durante toda la partida, guardados con la partida (G.palmares)
+function palmaresTemporada(season,lg,pos,won,awards){
+  const out=[]; if(pos===1) out.push({season,tipo:'Liga',nombre:league(lg).long,key:'LIGA'});
+  (won||[]).forEach(k=>out.push({season,tipo:'Copa',nombre:cupName(k),key:k}));
+  const jug=(tid,idx)=>{ const t=team(tid), p=t&&t.players[idx]; return p?p.name:'-'; };
+  if(awards){
+    if(awards.pichichi&&awards.pichichi.team===G.team) out.push({season,tipo:'Pichichi',nombre:jug(awards.pichichi.team,awards.pichichi.idx)});
+    if(awards.zamora&&awards.zamora.team===G.team) out.push({season,tipo:'Trofeo Zamora',nombre:jug(awards.zamora.team,awards.zamora.idx)});
+    if(awards.coach&&awards.coach.team===G.team) out.push({season,tipo:'Mejor entrenador',nombre:team(awards.coach.team).coach.name});
+  }
+  return out;
+}
+// partidas anteriores a esta versión: el palmarés se reconstruye del historial de temporadas
+// imagen del trofeo: la liga (img/palmares) o el trofeo de cada copa (img/sorteo); null si no tiene
+function palmImg(x){ if(x.key==='LIGA') return 'img/palmares/liga.png'; if(x.key&&SORTEO_IMG[x.key]) return 'img/sorteo/'+SORTEO_IMG[x.key]+'.png'; return null; }
+function ensurePalmares(){ if(G.palmares) return; G.palmares=[]; (G.history||[]).forEach(h=>G.palmares.push(...palmaresTemporada(h.season,h.league,h.pos,h.won,h.awards))); }
+function scrPalmares(){
+  ensurePalmares(); const t=team(G.team), L=G.palmares; setBg('fondo0'); const s=clearScreen();
+  const cnt=tipo=>L.filter(x=>x.tipo===tipo).length;
+  s.appendChild(topbar({team:t,title:'PALMARÉS',date:gameDate(),sub:L.length+' TÍTULOS EN LA PARTIDA'}));
+  const P=panel(10,68,620,372); s.appendChild(P); P.appendChild(h('div',{class:'hdr'},'TÍTULOS DE '+t.name.toUpperCase()));
+  P.appendChild(txt('Ligas: '+cnt('Liga')+' · Copas: '+cnt('Copa')+' · Trofeos de pretemporada: '+cnt('Trofeo')+' · Premios individuales: '+(L.length-cnt('Liga')-cnt('Copa')-cnt('Trofeo')),10,24,600,16,'f-p12'));
+  if(!L.length) P.appendChild(txt('Todavía no hay títulos. Ganar la liga, una copa, un trofeo de pretemporada o un premio individual los añade aquí.',10,50,600,36,'f-p12'));
+  else { const sc=at(h('div',{class:'scroll'}),0,46,616,320); P.appendChild(sc);
+    sc.appendChild(table([{t:'TROFEO',w:70,cls:'c',k:r=>{ const src=palmImg(r); return src?h('img',{src,alt:'',style:{height:'40px',maxWidth:'60px',objectFit:'contain',display:'block',margin:'0 auto'}}):''; }},{t:'TEMPORADA',w:100,k:r=>r.season},{t:'TIPO',w:130,k:r=>r.tipo},{t:'TÍTULO',k:r=>r.nombre}],L.slice().reverse(),{})); }
+  s.appendChild(btn('VOLVER',540,446,90,()=>scrOficina(),'blue','ico_volver'));
 }

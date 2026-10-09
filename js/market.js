@@ -75,8 +75,8 @@ function scrFichajes(state){
   const groups=[['TODAS LAS LIGAS','ALL'],...LEAGUE_ORDER.map(k=>[LEAGUE_SHORT[k],k]),['RESTO EUROPA','EU'],['AMÉRICA','AM']];
   if(mode==='buy'){ if(MUI){ const strip=h('div',{class:'clubstrip',style:{top:'68px',left:'0px'}}); groups.forEach(g=>strip.appendChild(h('div',{class:'f-con8'+(g[1]===lg?' on':''),style:{color:g[1]===lg?'#ffe24a':'#fff',background:g[1]===lg?'#2d49b8':''},onclick:()=>scrFichajes({mode,lg:g[1]})},g[0]))); L.appendChild(strip); requestAnimationFrame(()=>{ const on=strip.querySelector('.on'); if(on) strip.scrollLeft=Math.max(0,on.offsetLeft-strip.clientWidth/2+on.offsetWidth/2); }); }
     else groups.forEach((g,i)=>L.appendChild(btn(g[0],10,90+i*21,150,()=>scrFichajes({mode,lg:g[1]}),g[1]===lg?'green':'blue'))); }
-  L.appendChild(txt('Presupuesto:\n'+fmtNum(G.budget)+' M ptas.\nPlantilla: '+me.players.length+' jugadores (mín. 16, máx. 30).',10,262,150,70,'f-p8'));
-  (MUI?s:L).appendChild(btn('VOLVER',10,MUI?446:340,150,()=>scrOficina(),'blue','ico_volver'));
+  L.appendChild(txt('Presupuesto:\n'+fmtNum(G.budget)+' M ptas.\nPlantilla: '+me.players.length+' jugadores (mín. 16, máx. 30).',10,284,150,100,'f-p8'));
+  (MUI?s:L).appendChild(btn('VOLVER',10,MUI?446:392,150,()=>scrOficina(),'blue','ico_volver'));
   const R=panel(190,68,440,372); s.appendChild(R);
   if(mode==='contracts'){ contractsTable(R,me,MUI,state); return; }
   if(mode==='sell'){
@@ -100,7 +100,7 @@ const MARKET_SIZE=24;
 function fichaOf(p){ return Math.max(2,Math.round(playerValue(p)*0.08)); } // ficha anual: 8 % del valor de mercado
 function contractFicha(p){ const c=G.contracts&&G.contracts['i'+p.id]; return c?c.ficha:fichaOf(p); }
 function marketGroup(t){ if(t.league) return t.league; return t.id>=2800?'AM':'EU'; }
-function marketCandidates(){ return Object.values(DATA.teams).filter(t=>t.id!==G.team&&t.players.length>=15&&t.id<9000&&(t.league||t.id>=200)); }
+function marketCandidates(){ return Object.values(DATA.teams).filter(t=>t.id!==G.team&&t.players.length>=15&&t.id<9000&&(t.league||t.id>=200)&&(!TEST_MODE||t.prueba)); } // con ?datos=2024 solo los clubes de la prueba
 function mkEntry(p,t,star){ const v=playerValue(p); return {t:t.id,id:p.id,until:G.jornada+3+Math.floor(Math.random()*4),ask:Math.round(v*(0.9+Math.random()*0.4)),ficha:Math.round(fichaOf(p)*(0.9+Math.random()*0.3)),star:!!star}; }
 function inMarket(id){ return (G.market||[]).some(m=>m.id===id); }
 function marketPick(){ // jugador normal: primero la liga (ponderada) y luego un club y un jugador al azar
@@ -123,7 +123,7 @@ function marketTick(){ // tras cada jornada: caducan unos, entran otros y, cada 
   const n=3+Math.floor(Math.random()*4); for(let i=0;i<n&&G.market.length<MARKET_SIZE+6;i++){ const e=marketPick(); if(e) G.market.push(e); }
   if(typeof empTick==='function') empTick(); if(typeof offersTick==='function') offersTick(); if(typeof stadiumTick==='function') stadiumTick(); if(typeof youthTick==='function') G.youthLog=youthTick(); if(G.jornada-(G.marketStar||0)>=3||Math.random()<0.2*(1+0.2*empStars('ojeador'))){ const e=marketPickStar(); if(e){ G.market.push(e); G.marketStar=G.jornada; } }
 }
-function marketPlayer(m){ const t=team(m.t); if(!t||t.id===G.team) return null; const p=t.players.find(q=>q.id===m.id); return p?{p,t,m}:null; }
+function marketPlayer(m){ const t=team(m.t); if(!t||t.id===G.team||(TEST_MODE&&!t.prueba)) return null; const p=t.players.find(q=>q.id===m.id); return p?{p,t,m}:null; }
 function marketList(filter){ return (G.market||[]).map(marketPlayer).filter(Boolean).filter(r=>!filter||filter==='ALL'||marketGroup(r.t)===filter); }
 // ---- popup "HACER OFERTA", con los conceptos del juego original
 function scrOferta(r,state){

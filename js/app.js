@@ -30,6 +30,9 @@ function go(name,arg){
   audioInit(); if(UI==='mobile') muiInit(); else { document.body.classList.add('rot'); muiBarDesktop(); }
   if(typeof pushInit==='function') pushInit();
   splashOff();
-  go('menu');
+  // tras importar un archivo, la partida se abre en la liga, en la jornada guardada
+  let resume=null; try{ resume=localStorage.getItem('pcf5_resume'); localStorage.removeItem('pcf5_resume'); }catch(e){}
+  const sv=resume?loadGame():null;
+  if(sv) continueSaved(sv); else go('menu');
   if(typeof warmCache==='function') setTimeout(warmCache,1500);
 })();

@@ -43,7 +43,7 @@ function matchSpeedKey(){ try{ const k=localStorage.getItem('pcf5_speed'); retur
 function matchSpeed(){ return SPEEDS[matchSpeedKey()][0]; }
 function setMatchSpeed(k){ if(SPEEDS[k]) try{ localStorage.setItem('pcf5_speed',k); }catch(e){} }
 function nextSpeedKey(k){ const ks=Object.keys(SPEEDS); return ks[(ks.indexOf(k)+1)%ks.length]; }
-function escImg(tid,size){ if(tid===9999) return 'img/ui/icono_balon_de_la_b.png'; const dir=size==='big'?'escbig':size==='nano'?'nano':size==='ridi'?'ridi':'esc'; return 'img/'+dir+'/'+tid+'.png'; }
+function escImg(tid,size){ if(tid===9999) return 'img/ui/icono_balon_de_la_b.png'; const dir=size==='big'?'escbig':size==='nano'?'nano':size==='ridi'?'ridi':'esc'; const t=DATA.teams&&DATA.teams[tid]; return (t&&t.prueba?TEST_DATA+'img/':'img/')+dir+'/'+tid+'.png'; }
 function topbar(opts){
   // opts: team (obj), title, date (Date), sub
   const tb=h('div',{class:'topbar'});

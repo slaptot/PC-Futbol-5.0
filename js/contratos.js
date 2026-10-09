@@ -4,7 +4,9 @@
 // los veteranos se retiran (en todos los clubes; los de la máquina reciben un canterano generado en su lugar).
 const RETIRED_ID=9998;
 function retiredTeam(){ if(!DATA.teams[RETIRED_ID]) DATA.teams[RETIRED_ID]={id:RETIRED_ID,name:'Retirados',full:'Jugadores retirados',stadium:'-',nat:0,capacity:0,players:[],bajas:[],hidden:true}; return DATA.teams[RETIRED_ID]; }
-function contractOf(p){ G.contracts=G.contracts||{}; const k='i'+p.id; if(!G.contracts[k]) G.contracts[k]={ficha:fichaOf(p),years:1+((p.id*7+3)%4)}; return G.contracts[k]; }
+// años de contrato que quedan: con la fecha real de Transfermarkt (prueba 2024) o, si no la hay, un valor fijo por jugador
+function contratoYears(p){ const y=p.contrato_hasta?+String(p.contrato_hasta).slice(0,4):0; return y?Math.max(1,y-BASE_YEAR):1+((p.id*7+3)%4); }
+function contractOf(p){ G.contracts=G.contracts||{}; const k='i'+p.id; if(!G.contracts[k]) G.contracts[k]={ficha:fichaOf(p),years:contratoYears(p)}; return G.contracts[k]; }
 function contractsInit(){ const t=team(G.team); if(t) t.players.forEach(p=>{ if(p.id>0) contractOf(p); }); }
 function contractEnds(p){ const c=contractOf(p); return seasonLabel((G.seasonIdx||0)+Math.max(0,c.years-1)); }
 function renewDemand(p,years){ const base=Math.max(contractFicha(p),fichaOf(p)); const age=playerAge(p); const f=(age!=='-'&&age>=31)?0.9:(age!=='-'&&age<=23)?1.1:1; return Math.round(base*f*(1+0.06*Math.max(0,years-2))*(1.02+0.08*Math.random())); }
@@ -20,7 +22,7 @@ function contractsTable(R,me,MUI,state){
   R.appendChild(h('div',{class:'hdr'},'CONTRATOS · '+me.name.toUpperCase()));
   const sc=at(h('div',{class:'scroll'}),0,18,436,350); R.appendChild(sc);
   const ps=me.players.filter(p=>p.id>0).slice().sort((a,b)=>contractOf(a).years-contractOf(b).years||b.me-a.me);
-  const cols=[{t:'Nº',w:22,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'ED',w:26,cls:'c',k:p=>playerAge(p)},{t:'ME',w:28,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'FICHA',w:46,cls:'r',k:p=>fmtNum(contractOf(p).ficha)},{t:'CLÁUSULA',w:60,cls:'r',k:p=>fmtNum(clauseOf(p))},{t:'HASTA',w:50,cls:'c',k:p=>h('span',{style:{color:contractOf(p).years<=1?'#ff8a60':'#fff'}},contractEnds(p))},{t:'CLÁUS.',w:46,cls:'c',k:p=>h('span',{class:'f-con8',title:'R: partidos para renovación · L: libertad por descenso'},(contractOf(p).renov?'R ':'')+(contractOf(p).libertad?'L':''))},{t:'',w:60,cls:'c',k:p=>h('span',{class:'f-con8',style:{color:'#8dff8d'}},'RENOVAR')}];
+  const cols=[{t:'Nº',w:22,cls:'c',k:p=>p.dorsal||''},{t:'JUGADOR',k:p=>p.name},{t:'ED',w:26,cls:'c',k:p=>playerAge(p)},{t:'ME',w:28,cls:'r',k:p=>p.me,cell:()=>'y'},{t:'FICHA',w:46,cls:'r',k:p=>fmtNum(contractOf(p).ficha)},{t:'CLÁUSULA',w:60,cls:'r',k:p=>fmtNum(clauseOf(p))},{t:'HASTA',w:50,cls:'c',k:p=>h('span',{style:{color:contractOf(p).years<=1?'#ff8a60':'#fff'}},contractEnds(p))},{t:'',w:60,cls:'c',k:p=>h('span',{class:'f-con8',style:{color:'#8dff8d'}},'RENOVAR')}];
   const colsM=[cols[0],cols[1],cols[3],cols[4],cols[6],cols[8]];
   sc.appendChild(table(MUI?colsM:cols,ps,{rowClass:p=>contractOf(p).years<=1?'san':'',onRow:p=>renewDialog(p,()=>scrFichajes(state))}));
 }
@@ -28,7 +30,7 @@ function contractsTable(R,me,MUI,state){
 function genYoung(t,dem){
   G.genSeq=G.genSeq||1; const roles=YOUTH_DEMS.find(d=>d[0]===dem)[2]; const pool=Object.values(DATA.teams).filter(x=>x.id<9000).flatMap(x=>x.players).filter(p=>p.dem===dem&&p.me>=55&&p.me<=75&&!p.youth&&!p.gen);
   const tpl=pool[Math.floor(Math.random()*pool.length)]; const pot=Math.min(92,Math.round(66+Math.random()*18)); const me0=Math.max(45,pot-10-Math.floor(Math.random()*10)); const f=me0/Math.max(1,tpl.me);
-  const year=1996+(G.seasonIdx||0); const age=18+Math.floor(Math.random()*4); const c=String(t.nat||22); const L=DATA.names&&DATA.names[c]; const nm=L&&L.n?L.n[Math.floor(Math.random()*L.n.length)]:'Juan', ap=L&&L.a?L.a[Math.floor(Math.random()*L.a.length)]:'García';
+  const year=BASE_YEAR+(G.seasonIdx||0); const age=18+Math.floor(Math.random()*4); const c=String(t.nat||22); const L=DATA.names&&DATA.names[c]; const nm=L&&L.n?L.n[Math.floor(Math.random()*L.n.length)]:'Juan', ap=L&&L.a?L.a[Math.floor(Math.random()*L.a.length)]:'García';
   const p={id:800000+(G.genSeq++),name:ap,full:nm+' '+ap,roles:[roles[Math.floor(Math.random()*roles.length)]],country:t.nat||22,c2:1,f1:99,f2:2,f3:3,f4:0,birth:[1+Math.floor(Math.random()*28),1+Math.floor(Math.random()*12),year-age],height:170+Math.floor(Math.random()*20),weight:62+Math.floor(Math.random()*16),attrs:tpl.attrs.map(a=>Math.max(5,Math.min(99,Math.round(a*f*(0.9+Math.random()*0.2))))),dem,pot,gen:true};
   p.me=calcME(p); return p;
 }
