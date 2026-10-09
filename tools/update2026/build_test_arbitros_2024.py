@@ -3,7 +3,7 @@
 Entrada (caché en out/esp1_2024/arb/, descargada de es.wikipedia):
   lista.json           Primera 2024-25 y Segunda 2024-25 ya ajustadas con el informe arbitral de la RFEF 2024/25
   wiki_arbitros.json   texto de cada artículo de árbitro (plantilla «Ficha de árbitro»), foto y error si no existe
-Salida: out/esp1_2024/referees.json y out/esp1_2024/img/arb/<id>.png (80x96, pixelado como el resto del juego).
+Salida: out/esp1_2024/referees.json y out/esp1_2024/img/arb/<id>.png (160x192; el juego la muestra a 80x96).
 Fotos de Wikimedia Commons, todas con licencia libre (CC BY o CC BY-SA); los autores están en el README.
 Los que no tienen artículo en es.wikipedia salen con fecha 0/0/0 y «Sin datos» en ciudad, colegio y profesión."""
 import json, os, re, subprocess, urllib.parse
@@ -78,10 +78,10 @@ def registro(nombre_wiki, cat, art, intl):
             'prof': d.get('prof') or 'Sin datos', 'intl': intl, 'img': d.get('img') or None}
 
 
-def pixelar(src, dest):
-    # encaja en 80x96 con la cabeza arriba, reduce a 40x48 y vuelve a ampliar: aspecto pixelado de 1996
-    subprocess.run([MAGICK, src, '-resize', '80x96^', '-gravity', 'north', '-extent', '80x96',
-                    '-filter', 'point', '-resize', '40x48', '-resize', '80x96', dest], check=True)
+def escalar(src, dest):
+    # 160x192 (el doble de 80x96) con la cabeza arriba; el juego la muestra a 80x96, así que sale nítida
+    subprocess.run([MAGICK, src, '-resize', '160x192^', '-gravity', 'north', '-extent', '160x192',
+                    '-unsharp', '0x0.6', dest], check=True)
 
 
 def main():
@@ -99,7 +99,7 @@ def main():
             subprocess.run(['curl', '-sL', '-A', UA, '-o', crudo,
                             'https://commons.wikimedia.org/wiki/Special:FilePath/' +
                             urllib.parse.quote(r['img'].replace(' ', '_')) + '?width=400'], check=True)
-            pixelar(crudo, os.path.join(OUT, 'img', 'arb', f'{rid}.png'))
+            escalar(crudo, os.path.join(OUT, 'img', 'arb', f'{rid}.png'))
         salida.append({'id': rid, 'name': r['nombre'], 'cat': r['cat'], 'place': r['place'], 'birth': r['birth'],
                        'prof': r['prof'], 'intl': r['intl'], 'dem': r['dem']})
     json.dump(salida, open(os.path.join(OUT, 'referees.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
