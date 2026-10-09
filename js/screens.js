@@ -127,7 +127,7 @@ function scrArbitros(state){ setMusic(AUDIO.ctx==='manager'?'manager':'db');
   const ls=at(h('div',{class:'scroll'}),0,18,226,348); left.appendChild(ls);
   refs.forEach((x,i)=>ls.appendChild(h('div',{class:'f-con',style:{padding:'1px 4px',cursor:'pointer',background:i===ri?'#2d49b8':'',color:i===ri?'#ffe24a':'#fff'},onclick:()=>scrArbitros({i})},x.name)));
   const right=panel(250,70,380,370); s.appendChild(right); right.appendChild(h('div',{class:'hdr'},r.name));
-  right.appendChild(at(h('div',{class:'ph'},h('img',{src:'img/arb/'+r.id+'.png',style:{width:'80px',height:'96px'},onerror:function(){this.src='img/ui/foto_general.png';this.style.width='80px';this.style.height='96px'}})),12,30,82,98));
+  right.appendChild(at(h('div',{class:'ph'},h('img',{src:arbPhoto(r),style:{width:'80px',height:'96px'},onerror:function(){this.src='img/ui/foto_general.png';this.style.width='80px';this.style.height='96px'}})),12,30,82,98));
   const rows=[['Nombre',r.name],['Colegio',r.dem],['Nacimiento',birthStr({birth:r.birth})+' ('+r.place+')'],['Profesión',r.prof],['Internacional',r.intl],['Categoría',r.cat===1?'Primera División':'Segunda División']];
   rows.forEach((x,i)=>{ right.appendChild(lbl(x[0].toUpperCase(),110,30+i*28)); right.appendChild(txt(String(x[1]),110,43+i*28,260,14,'f-con')); });
   s.appendChild(btn('IMPRIMIR PDF',400,446,130,()=>printRef(r),'blue','ico_impresora'));

@@ -1,0 +1,590 @@
+[
+ {
+  "id": 1000001,
+  "name": "Javier ALBEROLA ROJAS",
+  "cat": 1,
+  "place": "Ciudad Real",
+  "birth": [
+   22,
+   6,
+   1991
+  ],
+  "prof": "Técnico en actividades deportivas",
+  "intl": "Sí",
+  "dem": "Castellano-manchego"
+ },
+ {
+  "id": 1000002,
+  "name": "Mateo BUSQUETS FERRER",
+  "cat": 1,
+  "place": "Palma de Mallorca",
+  "birth": [
+   31,
+   10,
+   1993
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Islas Baleares"
+ },
+ {
+  "id": 1000003,
+  "name": "Adrián CORDERO VEGA",
+  "cat": 1,
+  "place": "Santander",
+  "birth": [
+   15,
+   6,
+   1984
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Cántabro"
+ },
+ {
+  "id": 1000004,
+  "name": "Guillermo CUADRA FERNÁNDEZ",
+  "cat": 1,
+  "place": "Madrid",
+  "birth": [
+   25,
+   4,
+   1984
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Balear"
+ },
+ {
+  "id": 1000005,
+  "name": "Ricardo DE BURGOS BENGOETXEA",
+  "cat": 1,
+  "place": "Bilbao",
+  "birth": [
+   16,
+   3,
+   1986
+  ],
+  "prof": "Protésico dental",
+  "intl": "Sí",
+  "dem": "Vizcaíno"
+ },
+ {
+  "id": 1000006,
+  "name": "Isidro DÍAZ DE MERA ESCUDEROS",
+  "cat": 1,
+  "place": "Daimiel",
+  "birth": [
+   24,
+   8,
+   1989
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Castilla-La Mancha"
+ },
+ {
+  "id": 1000007,
+  "name": "Víctor GARCÍA VERDURA",
+  "cat": 1,
+  "place": "Mataró]]",
+  "birth": [
+   12,
+   10,
+   1994
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000008,
+  "name": "Jesús GIL MANZANO",
+  "cat": 1,
+  "place": "Extremadura",
+  "birth": [
+   4,
+   2,
+   1984
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Extremeño"
+ },
+ {
+  "id": 1000009,
+  "name": "Alejandro José HERNÁNDEZ HERNÁNDEZ",
+  "cat": 1,
+  "place": "Arrecife",
+  "birth": [
+   10,
+   11,
+   1982
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Las Palmas"
+ },
+ {
+  "id": 1000010,
+  "name": "Francisco José HERNÁNDEZ MAESO",
+  "cat": 1,
+  "place": "Bruselas",
+  "birth": [
+   31,
+   8,
+   1988
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Extremeño"
+ },
+ {
+  "id": 1000011,
+  "name": "Juan MARTÍNEZ MUNUERA",
+  "cat": 1,
+  "place": "Benidorm",
+  "birth": [
+   13,
+   7,
+   1982
+  ],
+  "prof": "Funcionario",
+  "intl": "Sí",
+  "dem": "Valenciano"
+ },
+ {
+  "id": 1000012,
+  "name": "José Luis MUNUERA MONTERO",
+  "cat": 1,
+  "place": "Jaén]]",
+  "birth": [
+   19,
+   5,
+   1983
+  ],
+  "prof": "Empresa farmacéutica",
+  "intl": "Sí",
+  "dem": "Andalucía"
+ },
+ {
+  "id": 1000013,
+  "name": "Alejandro MUÑIZ RUIZ",
+  "cat": 1,
+  "place": "Santander",
+  "birth": [
+   24,
+   5,
+   1991
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Cantabro"
+ },
+ {
+  "id": 1000014,
+  "name": "Miguel Ángel ORTIZ ARIAS",
+  "cat": 1,
+  "place": "Madrid",
+  "birth": [
+   23,
+   11,
+   1984
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Madrileño"
+ },
+ {
+  "id": 1000015,
+  "name": "Alejandro QUINTERO GONZÁLEZ",
+  "cat": 1,
+  "place": "Huelva",
+  "birth": [
+   3,
+   5,
+   1993
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Andaluz"
+ },
+ {
+  "id": 1000016,
+  "name": "José María SÁNCHEZ MARTÍNEZ",
+  "cat": 1,
+  "place": "Lorca",
+  "birth": [
+   3,
+   10,
+   1983
+  ],
+  "prof": "Economista",
+  "intl": "Sí",
+  "dem": "Murciano"
+ },
+ {
+  "id": 1000017,
+  "name": "César SOTO GRADO",
+  "cat": 1,
+  "place": "Candeleda",
+  "birth": [
+   17,
+   6,
+   1980
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Riojano"
+ },
+ {
+  "id": 1000018,
+  "name": "Iosu GALECH APEZTEGUÍA",
+  "cat": 1,
+  "place": "Pamplona",
+  "birth": [
+   12,
+   12,
+   1990
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Navarro"
+ },
+ {
+  "id": 1000019,
+  "name": "José Luis GUZMÁN MANSILLA",
+  "cat": 1,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000020,
+  "name": "Miguel SESMA ESPINOSA",
+  "cat": 1,
+  "place": "Logroño",
+  "birth": [
+   31,
+   1,
+   1995
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Riojano"
+ },
+ {
+  "id": 1000021,
+  "name": "Álvaro MORENO ARAGÓN",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000022,
+  "name": "Andrés FUENTES MOLINA",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000023,
+  "name": "Carlos MUÑIZ MUÑOZ",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000024,
+  "name": "Daniel PALENCIA CABALLERO",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000025,
+  "name": "Dámaso ARCEDIANO MONESCILLO",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000026,
+  "name": "Eder MALLO FERNÁNDEZ",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000027,
+  "name": "Germán CID CAMACHO",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000028,
+  "name": "Jon Ander GONZÁLEZ ESTEBAN",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000029,
+  "name": "José Antonio SÁNCHEZ VILLALOBOS",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000030,
+  "name": "Manuel Ángel PÉREZ HERNÁNDEZ",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000031,
+  "name": "Manuel Jesús ORELLANA CID",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000032,
+  "name": "Marta HUERTA DE AZA",
+  "cat": 2,
+  "place": "Palencia",
+  "birth": [
+   31,
+   12,
+   1990
+  ],
+  "prof": "Sin datos",
+  "intl": "Sí",
+  "dem": "Tinerfeño"
+ },
+ {
+  "id": 1000033,
+  "name": "Miguel GONZÁLEZ DÍAZ",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000034,
+  "name": "Rafael SÁNCHEZ LÓPEZ",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000035,
+  "name": "Salvador LAX FRANCO",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000036,
+  "name": "Saúl AIS REIG",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000037,
+  "name": "Sergiu Claudiu MURESAN MURESAN",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000038,
+  "name": "Luis BESTARD SERVERA",
+  "cat": 2,
+  "place": "Palma de Mallorca",
+  "birth": [
+   29,
+   3,
+   1994
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Balear"
+ },
+ {
+  "id": 1000039,
+  "name": "Alonso DE ENA WOLF",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000040,
+  "name": "Gorka ETAYO HERRERA",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000041,
+  "name": "Alejandro MORILLA TURRIÓN",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ },
+ {
+  "id": 1000042,
+  "name": "Alejandro OJAOS VALERA",
+  "cat": 2,
+  "place": "Sin datos",
+  "birth": [
+   0,
+   0,
+   0
+  ],
+  "prof": "Sin datos",
+  "intl": "No",
+  "dem": "Sin datos"
+ }
+]

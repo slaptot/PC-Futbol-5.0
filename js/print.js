@@ -59,9 +59,9 @@ function printCoach(t,bio){
 }
 function printRef(r){
   const base=location.href.replace(/[^/]*$/,'');
-  let b=ptop('ÁRBITRO','Colegio '+pesc(r.dem)+'<small>1ª División 96-97</small>',pesc(r.name.split(' ').slice(-2).join(' '))+'<small>'+(r.cat===1?'Primera División':'Segunda División')+'</small>');
+  let b=ptop('ÁRBITRO','Colegio '+pesc(r.dem)+'<small>1ª División '+(TEST_MODE?'24-25':'96-97')+'</small>',pesc(r.name.split(' ').slice(-2).join(' '))+'<small>'+(r.cat===1?'Primera División':'Segunda División')+'</small>');
   const rows=[['NOMBRE',r.name],['COLEGIO',r.dem],['NACIMIENTO',birthStr({birth:r.birth})+' ('+r.place+')'],['PROFESIÓN',r.prof],['INTERNACIONAL',r.intl],['CATEGORÍA',r.cat===1?'Primera División':'Segunda División']];
-  b+='<div class="row"><div class="panel" style="flex:0 0 150px"><div class="hdr">FOTO</div><div class="in" style="text-align:center"><img src="'+base+'img/arb/'+r.id+'.png" style="width:80px;height:96px;border:1px solid #000" onerror="this.src=\''+base+'img/ui/foto_general.png\';this.onerror=null"></div></div>';
+  b+='<div class="row"><div class="panel" style="flex:0 0 150px"><div class="hdr">FOTO</div><div class="in" style="text-align:center"><img src="'+base+arbPhoto(r)+'" style="width:80px;height:96px;border:1px solid #000" onerror="this.src=\''+base+'img/ui/foto_general.png\';this.onerror=null"></div></div>';
   b+='<div class="panel col"><div class="hdr">'+pesc(r.name.toUpperCase())+'</div><div class="in">'+rows.map(x=>'<div class="lbl">'+x[0]+'</div><div class="val">'+pesc(x[1])+'</div>').join('')+'</div></div></div>';
   printDoc('Árbitro · '+r.name,b);
 }

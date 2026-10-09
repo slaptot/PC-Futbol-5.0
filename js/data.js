@@ -39,13 +39,16 @@ const SAVE_KEY=TEST_MODE?'pcf5_save_2024':'pcf5_save';
 const BASE_YEAR=TEST_MODE?2024:1996;
 // foto del jugador: en la prueba 2024 (ids 1000000+) sale de la carpeta de prueba; el resto, de img/
 function fotoPath(p,big){ return (p.id>=1000000?TEST_DATA+'img/':'img/')+(big?'fotobig':'foto')+'/'+p.id+'.png'; }
+// foto del colegiado: en la prueba 2024 (ids 1000000+) sale de la carpeta de prueba; el resto, de img/arb/
+function arbPhoto(r){ return (r.id>=1000000?TEST_DATA:'')+'img/arb/'+r.id+'.png'; }
 async function loadData(){
   const getJ=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
   const test=TEST_MODE?await Promise.all([getJ(TEST_DATA+'teams.json'),getJ(TEST_DATA+'leagues.json')]):[null,null];
   const [teams0, leagues0, referees, liga, cups, names] = await Promise.all(['teams','leagues','referees','liga_history','cups','names'].map(n=>getJ('data/'+n+'.json')));
   const teams=test[0]||teams0, leagues=test[1]||leagues0;
   if(TEST_MODE) DATA.clasif=await getJ(TEST_DATA+'clasificacion_2023_24.json'); // clasificación de 2023-24 (posiciones y campeones previos)
-  DATA.teams = teams; DATA.leagues = leagues; DATA.referees = referees; DATA.liga = liga; DATA.cups = cups; DATA.names = names||{}; // listas de nombres del juego (NOMBRES.xx / APELLIDO.xx) para empleados
+  const refsTest=TEST_MODE?await getJ(TEST_DATA+'referees.json'):null; // colegiados de 2024-25
+  DATA.teams = teams; DATA.leagues = leagues; DATA.referees = refsTest||referees; DATA.liga = liga; DATA.cups = cups; DATA.names = names||{}; // listas de nombres del juego (NOMBRES.xx / APELLIDO.xx) para empleados
   DATA.calendar = {div1: leagues.ESP1.rounds, div2: leagues.ESP2.rounds};
   // post-proceso
   for (const id in teams){
